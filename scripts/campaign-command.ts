@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import {
-  type DogfoodPlan,
   buildSwitchDecision,
+  type DogfoodPlan,
   evaluateCampaign,
   writeSwitchDecisionFiles,
 } from '@rolekit/evals'
@@ -38,8 +38,7 @@ try {
   }
 
   const canonicalRoot =
-    canonicalOpt ??
-    (existsSync(join(process.cwd(), 'dogfood', 'reports')) ? process.cwd() : null)
+    canonicalOpt ?? (existsSync(join(process.cwd(), 'dogfood', 'reports')) ? process.cwd() : null)
   const decision = buildSwitchDecision(evaluation, { campaignRoot: root, canonicalRoot })
   const written = writeSwitchDecisionFiles(decision, { campaignRoot: root, canonicalRoot })
   const payload = {

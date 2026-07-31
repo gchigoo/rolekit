@@ -5,14 +5,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 import {
-  CONFIRM_TRIGGERS,
   buildExpectedSteerMessage,
   buildSwitchDecision,
+  type CampaignEvaluation,
+  CONFIRM_TRIGGERS,
   canonical,
+  type DogfoodPlan,
   evaluateCampaign,
   pathsQualifyPatch,
-  type CampaignEvaluation,
-  type DogfoodPlan,
 } from '../src/campaign.ts'
 
 function sha(text: string): string {

@@ -1,18 +1,19 @@
-import { createHash } from 'node:crypto'
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import {
   existsSync,
   lstatSync,
   mkdirSync,
   readdirSync,
   readFileSync,
+  type Stats,
   writeFileSync,
 } from 'node:fs'
 import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { parse as parseYaml } from 'yaml'
+import { checkResearch } from '../../../scripts/check-research.ts'
 import { evaluateRun } from './evaluate.ts'
 import { auditRunIntegrity } from './integrity.ts'
-import { checkResearch } from '../../../scripts/check-research.ts'
 
 const ITEM_ORDER = [
   'RK-01',
@@ -445,9 +446,7 @@ export async function buildCampaignArtifacts(
       add('gate', 'confirm_pending', gate.key, gate.run_ref, gate.record_sha256)
   }
 
-  const researchChecks: ResearchCheck[] = [
-    evaluateResearchCheck(root, workitems, runs, raw),
-  ]
+  const researchChecks: ResearchCheck[] = [evaluateResearchCheck(root, workitems, runs, raw)]
   const live = evaluateLiveEvidence(root, raw, input.plan, workitems, runs, add)
   if (!researchChecks[0]?.pass)
     add('research', 'research_check_failed', 'RK-06', researchChecks[0]?.run_ref ?? null)
@@ -666,7 +665,7 @@ export function scanRunContent(runDir: string): { sha256: string | null; errors:
         errors.push('temporary_file')
         continue
       }
-      let stat
+      let stat: Stats
       try {
         stat = lstatSync(abs)
       } catch {
@@ -919,7 +918,11 @@ function evaluateCallerCrashPack(
     return { receipt_sha256: receiptSha, pass: false }
   }
   const receipt = readJson(join(packDir, 'receipt.json'))
-  if (!isObject(receipt) || receipt.type !== 'caller-crash-handoff' || receipt.item_key !== 'RK-01') {
+  if (
+    !isObject(receipt) ||
+    receipt.type !== 'caller-crash-handoff' ||
+    receipt.item_key !== 'RK-01'
+  ) {
     add('live-evidence', 'caller_crash_receipt_invalid', 'RK-01', null, receiptSha)
     return { receipt_sha256: receiptSha, pass: false }
   }
@@ -1042,8 +1045,7 @@ function evaluateSteerAssertions(
   add: AddBlocker,
 ): LiveEvidence['steer'] {
   const nonceSource = readJson(join(raw, 'steer-nonces.json'))
-  const nonces =
-    isObject(nonceSource) && isObject(nonceSource.nonces) ? nonceSource.nonces : null
+  const nonces = isObject(nonceSource) && isObject(nonceSource.nonces) ? nonceSource.nonces : null
   const planned = (plan.steer_assertions ?? []).filter(
     (item) => item.item_key === 'RK-03' || item.item_key === 'RK-05',
   )
@@ -1079,8 +1081,7 @@ function evaluateSteerAssertions(
         const control = readJson(join(steerDir, name))
         if (!isObject(control) || control.state !== 'accepted') continue
         if (control.message !== expected || control.message_sha256 !== expectedSha) continue
-        const eligible =
-          isObject(task) && task.executor === 'pi' && run?.status === 'completed'
+        const eligible = isObject(task) && task.executor === 'pi' && run?.status === 'completed'
         hits.push({ run_ref: ref, eligible })
       }
     }
@@ -1161,7 +1162,12 @@ function verifySteerDelivery(
   const expected = Buffer.from(`rolekit-steer/v1\nnonce=${nonce}\n`, 'utf8')
   if (!bytes.equals(expected)) return false
   const argv = assertion.acceptance_argv
-  if (argv.length !== 4 || argv[0] !== 'node' || argv[2] !== rel || argv[3] !== assertion.nonce_sha256)
+  if (
+    argv.length !== 4 ||
+    argv[0] !== 'node' ||
+    argv[2] !== rel ||
+    argv[3] !== assertion.nonce_sha256
+  )
     return false
   const script = join(projectRoot, String(argv[1]))
   if (!existsSync(script)) return false
@@ -1320,11 +1326,15 @@ function computePatchInfo(
       patch_qualifies: false,
     }
   }
-  const names = spawnSync('git', ['diff', '--name-only', `${evidence.pre_head}..${evidence.commit}`], {
-    cwd: projectRoot,
-    encoding: 'utf8',
-    shell: false,
-  })
+  const names = spawnSync(
+    'git',
+    ['diff', '--name-only', `${evidence.pre_head}..${evidence.commit}`],
+    {
+      cwd: projectRoot,
+      encoding: 'utf8',
+      shell: false,
+    },
+  )
   const paths =
     names.status === 0
       ? names.stdout
@@ -1340,11 +1350,7 @@ function computePatchInfo(
         ['diff', '--binary', `${evidence.pre_head}..${evidence.commit}`],
         { cwd: projectRoot, encoding: 'buffer', shell: false },
       )
-      return diff.status === 0
-        ? diff.stdout.length
-          ? sha(diff.stdout)
-          : EMPTY_PATCH_SHA
-        : null
+      return diff.status === 0 ? (diff.stdout.length ? sha(diff.stdout) : EMPTY_PATCH_SHA) : null
     })()
   const qualifies = pathsQualifyPatch(item.patch_class, paths)
   return {
@@ -1448,8 +1454,7 @@ function directoryNames(path: string): string[] {
   try {
     return readdirSync(path, { withFileTypes: true })
       .filter(
-        (entry) =>
-          entry.isDirectory() && !entry.isSymbolicLink() && entry.name.startsWith('run-'),
+        (entry) => entry.isDirectory() && !entry.isSymbolicLink() && entry.name.startsWith('run-'),
       )
       .map((entry) => entry.name)
   } catch {

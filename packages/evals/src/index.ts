@@ -18,10 +18,10 @@ export type {
   SwitchDecision,
 } from './campaign.ts'
 export {
-  CONFIRM_TRIGGERS,
   buildCampaignArtifacts,
   buildExpectedSteerMessage,
   buildSwitchDecision,
+  CONFIRM_TRIGGERS,
   canonical,
   evaluateCampaign,
   pathsQualifyPatch,

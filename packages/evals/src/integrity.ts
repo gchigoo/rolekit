@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import type { Dirent } from 'node:fs'
 import { lstat, readdir, readFile, realpath } from 'node:fs/promises'
 import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { validateArtifact } from '@rolekit/core'
@@ -175,7 +176,7 @@ async function auditJsonSurfaces(root: string, errors: Set<string>): Promise<voi
 }
 
 async function parseJsonTree(root: string, rel: string, errors: Set<string>): Promise<void> {
-  let entries
+  let entries: Dirent[]
   try {
     entries = await readdir(join(root, rel), { withFileTypes: true })
   } catch {

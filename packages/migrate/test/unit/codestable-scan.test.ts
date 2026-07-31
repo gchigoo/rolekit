@@ -70,7 +70,7 @@ describe('codestable sample-scan', () => {
     const text = await readFile(join(fixtureRoot, 'attention.md'), 'utf8')
     const { rules } = parseAttentionRules(text, attentionFileDigest(text))
     assert.equal(rules.length, 1)
-    assert.equal(rules[0]!.h2, '报告语言')
+    assert.equal(rules[0]?.h2, '报告语言')
   })
 
   it('discards 10 .gitkeep files as empty-placeholder only', async () => {

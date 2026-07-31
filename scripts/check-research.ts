@@ -263,5 +263,3 @@ const isMain = Boolean(entry) && entry.toLowerCase() === self.toLowerCase()
 if (isMain) {
   main()
 }
-
-

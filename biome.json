@@ -13,7 +13,10 @@
       "!**/evals/seeds-negative",
       "!**/packages/evals/test/fixtures",
       "!**/packages/runner/test/fixtures",
-      "!**/.rolekit"
+      "!**/.rolekit",
+      "!**/.rolekit.pre-cutover-backup",
+      "!**/dogfood",
+      "!**/archive"
     ]
   },
   "formatter": {
