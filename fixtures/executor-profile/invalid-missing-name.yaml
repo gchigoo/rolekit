@@ -1,0 +1,3 @@
+schema: rolekit/executor-profile@1
+adapter: pi-rpc
+model: default

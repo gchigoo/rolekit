@@ -1,0 +1,41 @@
+schema: rolekit/task-contract@1
+id: RK-20260728-001
+kind: implementation
+role: implementer
+executor: pi-default
+objective: Add JWT authentication middleware to the API gateway
+context:
+  required_files:
+    - packages/api/src/server.ts
+    - packages/api/src/routes/health.ts
+  docs:
+    - docs/security/auth.md
+scope:
+  writable:
+    - packages/api/src/**
+    - packages/api/test/**
+  forbidden:
+    - packages/api/src/legacy/**
+    - "**/.env*"
+constraints:
+  - Do not introduce new authentication libraries beyond jose
+  - Preserve existing /health unauthenticated access
+deliverables:
+  - JWT verify middleware
+  - Unit tests for expired and malformed tokens
+acceptance:
+  commands:
+    - run: npm test -- packages/api/test/auth.test.ts
+      expect_exit: 0
+  assertions:
+    - Unauthenticated /v1/* requests return 401
+    - /health remains publicly reachable
+execution:
+  worktree: isolated
+  max_tool_calls: 80
+  network: deny
+  timeout_minutes: 30
+escalation:
+  on_scope_change: return_blocked
+  on_new_dependency: require_approval
+  on_ambiguous_requirement: return_question

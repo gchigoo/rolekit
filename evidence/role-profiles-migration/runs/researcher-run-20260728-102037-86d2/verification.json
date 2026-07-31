@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "command": "node -e \"const fs=require('fs');const p='docs/research-notes.md';if(!fs.existsSync(p))process.exit(1);const t=fs.readFileSync(p,'utf8');process.exit(t.trim().length>0?0:1)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": []
+}

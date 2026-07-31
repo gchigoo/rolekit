@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "command": "node -e \"const fs=require('fs');const t=fs.readFileSync('src/dogfood-1.txt','utf8').trim();process.exit(t==='dogfood-ok-1'?0:1)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": []
+}

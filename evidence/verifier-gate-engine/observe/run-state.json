@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-111344-ac3a",
+  "task_id": "RK-20260728-VG-OBS",
+  "attempt": 1,
+  "adapter": "pi-rpc",
+  "verifier_mode": "enhanced",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-2Wcwpt\\.rolekit\\worktrees\\run-20260728-111344-ac3a",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T11:14:06.812Z",
+  "started_at": "2026-07-28T11:13:45.084Z",
+  "deadline_at": "2026-07-28T11:21:45.084Z",
+  "terminal_status": "completed",
+  "reason": null
+}

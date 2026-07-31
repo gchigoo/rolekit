@@ -1,0 +1,139 @@
+version: 1
+campaign_id: rk-v2-hd-20260729
+projects:
+  rolekit-self: projects/rolekit-self
+  ctxline: projects/ctxline
+items:
+  - key: RK-01
+    project: rolekit-self
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: "Implement durable Pi steer transport, capability declaration, set_steering_mode gate, and idempotent SteeringControl pending/accepted/failed with RFC8785 golden coverage."
+    task_ref: tasks/RK-01.json
+    depends_on: []
+    workitem:
+      mode: create
+  - key: RK-02
+    project: rolekit-self
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: "Close the nine-phase Recovery Matrix, active exit transition_intent barrier, D3a winner CAS races, and owner-loss failed/lost semantics with fault-matrix tests proving one executor/result/finished."
+    task_ref: tasks/RK-02.json
+    depends_on: [RK-01]
+    workitem:
+      mode: create
+  - key: RK-03
+    project: rolekit-self
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: Complete WorkItem question/drop/resume/migrated-unclaimed claim loop with recovery_runs_count markers and next_action exports; prove RK-03 steer accepted-only with frozen nonce.
+    task_ref: tasks/RK-03.json
+    depends_on: [RK-02]
+    workitem:
+      mode: create
+  - key: RK-04
+    project: rolekit-self
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: "Deliver ErrorCatalog, auditRunIntegrity, evaluateCampaign/buildCampaignArtifacts, product dogfood harness, and steer-delivery checker; exercise g03 owner-loss then same-id recovery attempt."
+    task_ref: tasks/RK-04.json
+    depends_on: [RK-03]
+    workitem:
+      mode: create
+  - key: RK-05
+    project: rolekit-self
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: Expand lint-adapters/command-map generation to the full D11 flag table and merge operator/cutover docs; prove RK-05 steer delivery writes evidence file via checker.
+    task_ref: tasks/RK-05.json
+    depends_on: [RK-04]
+    workitem:
+      mode: create
+  - key: RK-06
+    project: rolekit-self
+    profile: researcher
+    kind: research
+    patch_class: research
+    lane: delegated
+    objective: "Run a real chatgpt-codex research task documenting current Pi steer and recovery limits for runbook citation, keeping the tracked worktree clean."
+    task_ref: tasks/RK-06.json
+    depends_on: [RK-05]
+    workitem:
+      mode: create
+  - key: CTX-01
+    project: ctxline
+    profile: implementer
+    kind: implementation
+    patch_class: code
+    lane: delegated
+    objective: "Make ctxline reject unknown/positional args with exit 2, usage on stderr, empty stdout; also reject help/version conflicts with other args."
+    task_ref: tasks/CTX-01.json
+    depends_on: [RK-06]
+    workitem:
+      mode: create
+  - key: CTX-02
+    project: ctxline
+    profile: qa
+    kind: fix
+    patch_class: test
+    lane: delegated
+    objective: "Fix Windows pipe total deadline to start before first poll, incomplete chunk must not extend deadline, 2000ms incomplete-stdin fallback; 4MiB transcript cap excludes trailing incomplete; CRLF+malformed JSONL counts deterministic."
+    task_ref: tasks/CTX-02.json
+    depends_on: [CTX-01]
+    workitem:
+      mode: create
+  - key: CTX-03
+    project: ctxline
+    profile: reviewer
+    kind: review
+    patch_class: review
+    lane: delegated
+    objective: Independently review CTX-01/CTX-02 patches on a baseline containing both evidence commits; emit a non-empty review artifact and keep cargo fmt/test green.
+    task_ref: tasks/CTX-03.json
+    depends_on: [CTX-01, CTX-02]
+    workitem:
+      mode: create
+  - key: RK-07
+    project: rolekit-self
+    profile: reviewer
+    kind: review
+    patch_class: review
+    lane: delegated
+    objective: Independently review the frozen pre-review campaign bundle for rolekit-v2 hardening-dogfood-switchover migrated WorkItem; write rk-07.md and rk-07.json only.
+    task_ref: tasks/RK-07.json
+    depends_on: [RK-01, RK-02, RK-03, RK-04, RK-05, RK-06, CTX-01, CTX-02, CTX-03]
+    workitem:
+      mode: migrated-roadmap
+      roadmap_slug: rolekit-v2
+      item_slug: hardening-dogfood-switchover
+live_assertions:
+  caller_crash:
+    item_key: RK-01
+  owner_loss:
+    item_key: RK-04
+    recovery_task_ref: tasks/RK-04-owner-loss-recovery.json
+    deadline_grace_ms: 1000
+    kill_margin_ms: 60000
+steer_assertions:
+  - item_key: RK-03
+    nonce_sha256: 820d16393649ac3e0e2a6f748df98ed99038ff304c076f73b8041e44606f6ec1
+    proves_delivery: false
+  - item_key: RK-05
+    nonce_sha256: 434324ea088ec2f31bd210a15dc2e7e94cd947ccddb874654f5b7e01e67e0557
+    proves_delivery: true
+    relative_file: dogfood/steer-evidence/rk-v2-hd-20260729/rk-05.txt
+    acceptance_argv:
+      - node
+      - dogfood/scripts/check-steer-delivery.mjs
+      - dogfood/steer-evidence/rk-v2-hd-20260729/rk-05.txt
+      - 434324ea088ec2f31bd210a15dc2e7e94cd947ccddb874654f5b7e01e67e0557

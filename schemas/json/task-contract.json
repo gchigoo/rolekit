@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rolekit/task-contract@1",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "kind",
+    "role",
+    "executor",
+    "objective",
+    "context",
+    "scope",
+    "constraints",
+    "deliverables",
+    "acceptance",
+    "execution",
+    "escalation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/task-contract@1",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "kind": {
+      "anyOf": [
+        {
+          "const": "implementation",
+          "type": "string"
+        },
+        {
+          "const": "research",
+          "type": "string"
+        },
+        {
+          "const": "review",
+          "type": "string"
+        },
+        {
+          "const": "fix",
+          "type": "string"
+        }
+      ]
+    },
+    "role": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "executor": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "objective": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "required": [
+        "required_files",
+        "docs"
+      ],
+      "properties": {
+        "required_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "docs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "writable",
+        "forbidden"
+      ],
+      "properties": {
+        "writable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "required": [
+        "commands",
+        "assertions"
+      ],
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "run",
+              "expect_exit"
+            ],
+            "properties": {
+              "run": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "expect_exit": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "worktree",
+        "max_tool_calls",
+        "network",
+        "timeout_minutes"
+      ],
+      "properties": {
+        "worktree": {
+          "anyOf": [
+            {
+              "const": "isolated",
+              "type": "string"
+            },
+            {
+              "const": "in-place",
+              "type": "string"
+            }
+          ]
+        },
+        "max_tool_calls": {
+          "type": "number"
+        },
+        "network": {
+          "anyOf": [
+            {
+              "const": "deny",
+              "type": "string"
+            },
+            {
+              "const": "allow",
+              "type": "string"
+            }
+          ]
+        },
+        "timeout_minutes": {
+          "type": "number"
+        }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "required": [
+        "on_scope_change",
+        "on_new_dependency",
+        "on_ambiguous_requirement"
+      ],
+      "properties": {
+        "on_scope_change": {
+          "anyOf": [
+            {
+              "const": "return_blocked",
+              "type": "string"
+            },
+            {
+              "const": "require_approval",
+              "type": "string"
+            },
+            {
+              "const": "return_question",
+              "type": "string"
+            }
+          ]
+        },
+        "on_new_dependency": {
+          "anyOf": [
+            {
+              "const": "return_blocked",
+              "type": "string"
+            },
+            {
+              "const": "require_approval",
+              "type": "string"
+            },
+            {
+              "const": "return_question",
+              "type": "string"
+            }
+          ]
+        },
+        "on_ambiguous_requirement": {
+          "anyOf": [
+            {
+              "const": "return_blocked",
+              "type": "string"
+            },
+            {
+              "const": "require_approval",
+              "type": "string"
+            },
+            {
+              "const": "return_question",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

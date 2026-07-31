@@ -1,0 +1,41 @@
+schema: rolekit/task-contract@1
+id: RK-PROFILE-RESEARCHER-EXAMPLE
+kind: research
+role: researcher
+executor: pi
+objective: >-
+  Research what src/seed.txt contains and how a downstream implementer should treat it.
+  Write concise research notes to docs/research-notes.md. No citation index or activity.json
+  requirements for this baseline profile link.
+context:
+  required_files:
+    - src/seed.txt
+  docs: []
+scope:
+  writable:
+    - docs/research-notes.md
+  forbidden:
+    - src/**
+    - "**/.env*"
+    - package.json
+constraints:
+  - Keep investigation read-only except the notes deliverable
+  - Label facts versus inferences
+  - Do not require retrieval tool calls or citation indexes
+deliverables:
+  - docs/research-notes.md
+acceptance:
+  commands:
+    - run: node -e "const fs=require('fs');const p='docs/research-notes.md';if(!fs.existsSync(p))process.exit(1);const t=fs.readFileSync(p,'utf8');process.exit(t.trim().length>0?0:1)"
+      expect_exit: 0
+  assertions:
+    - docs/research-notes.md exists and is non-empty
+execution:
+  worktree: isolated
+  max_tool_calls: 25
+  network: allow
+  timeout_minutes: 8
+escalation:
+  on_scope_change: return_blocked
+  on_new_dependency: require_approval
+  on_ambiguous_requirement: return_question

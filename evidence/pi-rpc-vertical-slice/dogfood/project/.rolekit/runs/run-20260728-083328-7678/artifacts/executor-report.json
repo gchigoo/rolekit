@@ -1,0 +1,17 @@
+{
+  "schema": "rolekit/executor-report@1",
+  "task_id": "RK-20260728-DOG-S1",
+  "status": "completed",
+  "summary": "{\n  \"schema\": \"rolekit/executor-report@1\",\n  \"status\": \"completed\",\n  \"summary\": \"Created the requested file with exact content.\",\n  \"changed_files\": [\n    \"src/dogfood-1.txt\"\n  ],\n  \"decisions\": [\n    \"Wrote exactly 12 bytes without a trailing newline.\"\n  ],\n  \"assumptions\": [],\n  \"evidence\": [\n    \"Acceptance command exited with code 0.\",\n    \"File content inspected as \\\"dogfood-ok-1\\\" with length 12 bytes.\",\n    \"git status reports only src/dogfood-1.txt as untracked.\"\n  ],\n  \"risks\": [],\n  \"",
+  "changed_files": [
+    "src/dogfood-1.txt"
+  ],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "events.jsonl"
+  ],
+  "risks": [],
+  "unresolved": [],
+  "recommended_next_action": "verify and integrate"
+}

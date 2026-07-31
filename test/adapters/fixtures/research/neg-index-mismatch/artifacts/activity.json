@@ -1,0 +1,7 @@
+{
+  "response_id": "resp_x",
+  "model": "gpt-5.6",
+  "status": "completed",
+  "tool_calls": [{"id":"ws_1","type":"web_search_call","status":"completed"}],
+  "annotations": [{"type":"url_citation","start_index":0,"end_index":5,"url":"https://other.example/","title":"Other"}]
+}

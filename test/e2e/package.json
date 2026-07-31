@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "main": "./load-all.ts",
+  "private": true,
+  "description": "Node 24 --test directory entry (loads all e2e suites)"
+}

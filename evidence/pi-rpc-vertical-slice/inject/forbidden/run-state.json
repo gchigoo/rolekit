@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-090628-fc90",
+  "task_id": "RK-20260728-INJ-FORB",
+  "attempt": 1,
+  "adapter": "pi-rpc",
+  "verifier_mode": "minimal",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-9RMwQx\\.rolekit\\worktrees\\run-20260728-090628-fc90",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T09:06:53.652Z",
+  "started_at": "2026-07-28T09:06:28.646Z",
+  "deadline_at": "2026-07-28T09:11:28.646Z",
+  "terminal_status": "failed",
+  "reason": "verification failed"
+}

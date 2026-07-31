@@ -1,0 +1,9 @@
+schema: rolekit/executor-profile@1
+name: openai-responses
+adapter: openai-responses
+model: gpt-5.6
+settings:
+  reasoning_effort: xhigh
+  max_tool_calls: 30
+  search_context_size: high
+  poll_interval_ms: 10000

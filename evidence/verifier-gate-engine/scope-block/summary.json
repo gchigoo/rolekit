@@ -1,0 +1,16 @@
+{
+  "scenario": "scope-violation-block",
+  "ok": true,
+  "run_id": "run-20260728-111408-d2a5",
+  "project": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-BZiKis",
+  "adapter": "pi-rpc",
+  "envelope_status": "failed",
+  "human_gates": 0,
+  "observe_events": 0,
+  "gate_records": 1,
+  "scope_violations": [
+    "forbidden:forbidden-out.txt"
+  ],
+  "integrated_forbidden": false,
+  "injection": "worktree-forbidden-out.txt-after-prepare-before-start"
+}

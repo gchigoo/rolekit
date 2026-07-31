@@ -1,0 +1,32 @@
+schema: rolekit/task-contract@1
+id: RK-20260728-M02
+kind: implementation
+role: minimal-implementer
+executor: mock-leak
+objective: Intentionally write outside writable scope
+context:
+  required_files:
+    - src/seed.txt
+  docs: []
+scope:
+  writable:
+    - src/**
+  forbidden:
+    - forbidden-out.txt
+constraints: []
+deliverables:
+  - should fail scope
+acceptance:
+  commands:
+    - run: node -e "process.exit(0)"
+      expect_exit: 0
+  assertions: []
+execution:
+  worktree: isolated
+  max_tool_calls: 20
+  network: deny
+  timeout_minutes: 5
+escalation:
+  on_scope_change: return_blocked
+  on_new_dependency: require_approval
+  on_ambiguous_requirement: return_question

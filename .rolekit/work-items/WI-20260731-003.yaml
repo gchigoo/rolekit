@@ -1,0 +1,15 @@
+schema: "rolekit/work-item@1"
+id: "WI-20260731-003"
+kind: "feature"
+title: "pi/codex/cursor 三份薄 Skill 入口，至少 2 宿主各完成大于等于 1 次经 Skill 驱动 CLI 的委派 run"
+status: "done"
+gate: null
+gate_log: []
+lane: null
+lane_reason: null
+lane_overrides: []
+depends_on:
+  - "WI-20260731-005"
+runs: []
+created: "2026-07-24T00:00:00.000Z"
+updated: "2026-07-31T01:41:35.535Z"

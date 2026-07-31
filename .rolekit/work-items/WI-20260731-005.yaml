@@ -1,0 +1,15 @@
+schema: "rolekit/work-item@1"
+id: "WI-20260731-005"
+kind: "feature"
+title: "PiRpcExecutor（capabilities 声明 start/status/cancel/collect，steer 调用返回 unsupported_operation）+ 隔离 worktree + MinimalVerifier（exit code + scope diff + 主工作区基线检查）+ rolekit run 命令 + runs 落盘，四阶段验收（MockExecutor 单测 / Pi RPC smoke / 越界与主区注入均被拦截 / 真实 dogfood 连续 2 次成功 + 1 次 cancel）"
+status: "done"
+gate: null
+gate_log: []
+lane: null
+lane_reason: null
+lane_overrides: []
+depends_on:
+  - "WI-20260731-001"
+runs: []
+created: "2026-07-24T00:00:00.000Z"
+updated: "2026-07-31T01:41:35.535Z"

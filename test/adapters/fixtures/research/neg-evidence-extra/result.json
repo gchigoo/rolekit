@@ -1,0 +1,23 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "task_id": "RK-RESEARCH-POS",
+  "status": "completed",
+  "summary": "ok",
+  "changed_files": [],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "artifacts/report.md",
+    "artifacts/activity.json",
+    "artifacts/extra.txt"
+  ],
+  "risks": [],
+  "unresolved": [],
+  "verification": {
+    "passed": true,
+    "checks": [],
+    "scope_violations": []
+  },
+  "scope_violations": [],
+  "recommended_next_action": "done"
+}

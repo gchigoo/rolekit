@@ -1,0 +1,10 @@
+{
+  "schema": "rolekit/executor-profile@1",
+  "name": "mock",
+  "adapter": "mock",
+  "settings": {
+    "delay_ms": 20,
+    "write_file": "src/adapter-pi.txt",
+    "write_content": "adapter-pi-ok\n"
+  }
+}

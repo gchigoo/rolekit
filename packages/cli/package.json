@@ -1,0 +1,15 @@
+{
+  "name": "@rolekit/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "rolekit": "./bin/rolekit.js"
+  },
+  "dependencies": {
+    "@rolekit/core": "*",
+    "@rolekit/migrate": "*",
+    "@rolekit/runner": "*",
+    "yaml": "^2.8.0"
+  }
+}

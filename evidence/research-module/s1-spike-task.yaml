@@ -1,0 +1,39 @@
+schema: rolekit/task-contract@1
+id: RK-20260729-S1B
+kind: research
+role: researcher
+executor: chatgpt-codex
+objective: >-
+  Identify this week's latest Node.js release version number from official
+  nodejs.org sources and summarize 2-3 release-note highlights with citations.
+  Prefer primary sources. Keep tool usage minimal.
+context:
+  required_files: []
+  docs: []
+scope:
+  writable: []
+  forbidden:
+    - "**/.env*"
+    - package.json
+constraints:
+  - Do not edit product code
+  - Prefer official nodejs.org sources
+  - max_tool_calls <= 5 for this spike
+deliverables:
+  - artifacts/report.md
+  - artifacts/activity.json
+acceptance:
+  commands:
+    - run: node -e "process.exit(0)"
+      expect_exit: 0
+  assertions:
+    - "Post-run check: npm run check:research -- .rolekit/runs/<run-id>"
+execution:
+  worktree: isolated
+  max_tool_calls: 5
+  network: allow
+  timeout_minutes: 20
+escalation:
+  on_scope_change: return_blocked
+  on_new_dependency: require_approval
+  on_ambiguous_requirement: return_question

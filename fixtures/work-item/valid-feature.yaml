@@ -1,0 +1,15 @@
+schema: rolekit/work-item@1
+id: WI-20260728-001
+kind: feature
+title: Contract schemas baseline for RoleKit v2
+status: executing
+gate: null
+gate_log: []
+lane: delegated
+lane_reason: Multi-file schema foundation with CLI surface
+lane_overrides: []
+depends_on: []
+runs:
+  - run-20260728-001
+created: "2026-07-28T02:00:00.000Z"
+updated: "2026-07-28T04:00:00.000Z"

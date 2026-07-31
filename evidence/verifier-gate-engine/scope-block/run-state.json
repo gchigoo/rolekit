@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-111408-d2a5",
+  "task_id": "RK-20260728-VG-SCOPE",
+  "attempt": 1,
+  "adapter": "pi-rpc",
+  "verifier_mode": "enhanced",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-BZiKis\\.rolekit\\worktrees\\run-20260728-111408-d2a5",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T11:14:21.306Z",
+  "started_at": "2026-07-28T11:14:08.424Z",
+  "deadline_at": "2026-07-28T11:19:08.424Z",
+  "terminal_status": "failed",
+  "reason": "verification failed"
+}

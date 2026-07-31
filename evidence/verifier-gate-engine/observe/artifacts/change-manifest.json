@@ -1,0 +1,9 @@
+{
+  "schema": "rolekit/change-manifest@1",
+  "entries": [
+    {
+      "status": "A",
+      "path": "src/api/public-note.txt"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-083359-a14d",
+  "task_id": "RK-20260728-DOG-S2",
+  "attempt": 1,
+  "adapter": "pi-rpc",
+  "verifier_mode": "minimal",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-dogfood-live2\\.rolekit\\worktrees\\run-20260728-083359-a14d",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T08:35:01.923Z",
+  "started_at": "2026-07-28T08:33:59.583Z",
+  "deadline_at": "2026-07-28T08:38:59.583Z",
+  "terminal_status": "completed",
+  "reason": null
+}

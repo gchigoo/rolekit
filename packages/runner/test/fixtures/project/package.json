@@ -1,0 +1,8 @@
+{
+  "name": "rolekit-fixture-project",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "accept": "node -e \"const fs=require('fs'); process.exit(fs.existsSync('src/implemented.txt')?0:1)\""
+  }
+}

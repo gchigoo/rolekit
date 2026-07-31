@@ -1,0 +1,12 @@
+{
+  "scenario": "forbidden-write",
+  "ok": true,
+  "run_id": "run-20260728-090628-fc90",
+  "project": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-9RMwQx",
+  "envelope_status": "failed",
+  "scope_violations": [
+    "forbidden:forbidden-out.txt"
+  ],
+  "gate_block": true,
+  "injection": "worktree-forbidden-out.txt-after-prepare-before-start"
+}

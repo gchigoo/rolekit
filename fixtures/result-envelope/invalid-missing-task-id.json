@@ -1,0 +1,14 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "status": "completed",
+  "summary": "Missing required task_id field",
+  "changed_files": [],
+  "verification": [],
+  "scope_violations": [],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [],
+  "risks": [],
+  "unresolved": [],
+  "recommended_next_action": "none"
+}

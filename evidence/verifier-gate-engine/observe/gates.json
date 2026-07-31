@@ -1,0 +1,15 @@
+{
+  "schema": "rolekit/gate-record@1",
+  "records": [
+    {
+      "trigger": "public-api-change",
+      "action": "observe",
+      "decision": "auto-pass",
+      "hit_paths": [
+        "src/api/public-note.txt"
+      ],
+      "evidence": "artifacts/change-manifest.json",
+      "ts": "2026-07-28T11:14:06.531Z"
+    }
+  ]
+}

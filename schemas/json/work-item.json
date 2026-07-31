@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rolekit/work-item@1",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "kind",
+    "title",
+    "status",
+    "gate",
+    "gate_log",
+    "lane",
+    "lane_reason",
+    "lane_overrides",
+    "depends_on",
+    "runs",
+    "created",
+    "updated"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/work-item@1",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "kind": {
+      "anyOf": [
+        {
+          "const": "feature",
+          "type": "string"
+        },
+        {
+          "const": "issue",
+          "type": "string"
+        },
+        {
+          "const": "refactor",
+          "type": "string"
+        },
+        {
+          "const": "research",
+          "type": "string"
+        },
+        {
+          "const": "goal",
+          "type": "string"
+        }
+      ]
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "status": {
+      "anyOf": [
+        {
+          "const": "planned",
+          "type": "string"
+        },
+        {
+          "const": "designing",
+          "type": "string"
+        },
+        {
+          "const": "awaiting-gate",
+          "type": "string"
+        },
+        {
+          "const": "executing",
+          "type": "string"
+        },
+        {
+          "const": "verifying",
+          "type": "string"
+        },
+        {
+          "const": "done",
+          "type": "string"
+        },
+        {
+          "const": "dropped",
+          "type": "string"
+        },
+        {
+          "const": "blocked",
+          "type": "string"
+        }
+      ]
+    },
+    "gate": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "trigger",
+            "origin"
+          ],
+          "properties": {
+            "trigger": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "origin": {
+              "anyOf": [
+                {
+                  "const": "designing",
+                  "type": "string"
+                },
+                {
+                  "const": "executing",
+                  "type": "string"
+                },
+                {
+                  "const": "verifying",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gate_log": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "trigger",
+          "action",
+          "decision",
+          "ts"
+        ],
+        "properties": {
+          "trigger": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "const": "ignore",
+                "type": "string"
+              },
+              {
+                "const": "observe",
+                "type": "string"
+              },
+              {
+                "const": "confirm",
+                "type": "string"
+              },
+              {
+                "const": "block",
+                "type": "string"
+              }
+            ]
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "const": "auto-pass",
+                "type": "string"
+              },
+              {
+                "const": "approved",
+                "type": "string"
+              },
+              {
+                "const": "rejected",
+                "type": "string"
+              },
+              {
+                "const": "blocked",
+                "type": "string"
+              }
+            ]
+          },
+          "ts": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "lane": {
+      "anyOf": [
+        {
+          "const": "direct",
+          "type": "string"
+        },
+        {
+          "const": "delegated",
+          "type": "string"
+        },
+        {
+          "const": "coordinated",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lane_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lane_overrides": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "by",
+          "from",
+          "to",
+          "reason",
+          "ts"
+        ],
+        "properties": {
+          "by": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "from": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "to": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "ts": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "updated": {
+      "minLength": 1,
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+schema: rolekit/executor-profile@1
+name: pi
+adapter: pi-rpc
+settings:
+  offline: false

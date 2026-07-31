@@ -1,0 +1,5 @@
+
+> rolekit@0.0.0 check:delegation
+> node scripts/check-delegated-run.mjs evidence/host-adapter-skills/pi/session.jsonl evidence/host-adapter-skills/pi/run-dir
+
+check:delegation pass skill=rolekit-adapter-pi commands=5 source=pi-jsonl→extract-pi-session

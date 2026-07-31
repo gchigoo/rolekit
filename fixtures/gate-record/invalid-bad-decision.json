@@ -1,0 +1,12 @@
+{
+  "schema": "rolekit/gate-record@1",
+  "records": [
+    {
+      "trigger": "scope-violation",
+      "action": "block",
+      "decision": "auto-pass",
+      "evidence": "verification.json#/scope_violations",
+      "ts": "2026-07-28T10:00:00.000Z"
+    }
+  ]
+}

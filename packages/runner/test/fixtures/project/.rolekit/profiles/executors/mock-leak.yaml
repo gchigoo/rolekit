@@ -1,0 +1,8 @@
+schema: rolekit/executor-profile@1
+name: mock-leak
+adapter: mock
+settings:
+  delay_ms: 30
+  write_file: src/implemented.txt
+  write_content: "leak-attempt\n"
+  write_forbidden: true

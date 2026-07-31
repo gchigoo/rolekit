@@ -1,0 +1,19 @@
+{
+  "run_id": "run-20260728-083504-367e",
+  "task_id": "RK-20260728-DOG-CANCEL",
+  "attempt": 1,
+  "adapter": "pi-rpc",
+  "verifier_mode": "minimal",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-dogfood-live2\\.rolekit\\worktrees\\run-20260728-083504-367e",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T08:35:07.783Z",
+  "started_at": "2026-07-28T08:35:05.079Z",
+  "deadline_at": "2026-07-28T08:45:05.079Z",
+  "termination_intent": {
+    "status": "cancelled",
+    "reason": "user-cancel"
+  },
+  "terminal_status": "cancelled",
+  "reason": "cancelled"
+}

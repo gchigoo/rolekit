@@ -1,0 +1,15 @@
+{
+  "name": "@rolekit/runner",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "rolekit-supervisor": "./bin/supervisor.js"
+  },
+  "dependencies": {
+    "@rolekit/core": "*"
+  }
+}

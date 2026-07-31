@@ -1,0 +1,4 @@
+name: mock-clean
+source: mock
+expectation: clean
+captured: 2026-07-28

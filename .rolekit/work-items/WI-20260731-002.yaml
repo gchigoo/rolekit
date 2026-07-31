@@ -1,0 +1,15 @@
+schema: "rolekit/work-item@1"
+id: "WI-20260731-002"
+kind: "feature"
+title: "契约完整率/写入越界率/Envelope 完整率 fixture，npm run evals 一键回归，种子场景取自垂直链路验收 run 真实产物"
+status: "done"
+gate: null
+gate_log: []
+lane: null
+lane_reason: null
+lane_overrides: []
+depends_on:
+  - "WI-20260731-005"
+runs: []
+created: "2026-07-24T00:00:00.000Z"
+updated: "2026-07-31T01:41:35.535Z"

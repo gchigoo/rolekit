@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rolekit/gate-policy@1",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "schema",
+    "default_action",
+    "triggers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/gate-policy@1",
+      "type": "string"
+    },
+    "default_action": {
+      "anyOf": [
+        {
+          "const": "ignore",
+          "type": "string"
+        },
+        {
+          "const": "observe",
+          "type": "string"
+        }
+      ]
+    },
+    "triggers": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "new-dependency",
+        "migration",
+        "public-api-change",
+        "delete",
+        "scope-violation",
+        "ambiguous-requirement",
+        "design-artifact",
+        "final-acceptance"
+      ],
+      "properties": {
+        "new-dependency": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "migration": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "public-api-change": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "delete": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "scope-violation": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "ambiguous-requirement": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "design-artifact": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        },
+        "final-acceptance": {
+          "anyOf": [
+            {
+              "const": "ignore",
+              "type": "string"
+            },
+            {
+              "const": "observe",
+              "type": "string"
+            },
+            {
+              "const": "confirm",
+              "type": "string"
+            },
+            {
+              "const": "block",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

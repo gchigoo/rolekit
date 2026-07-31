@@ -1,0 +1,15 @@
+schema: "rolekit/work-item@1"
+id: "WI-20260731-008"
+kind: "feature"
+title: "吸收 veritack 判据设计（Run/Context/Check/Gate/Record 五原语、TriggerPolicy 四级语义 ignore/observe/confirm/block、revision 闭合、证据记账）改良为 RoleKit 原生 verifier + gate 引擎（含 GatePolicy trigger->action 引擎），不依赖 veritack 包、不 fork（ADR 006）；design 阶段产出吸收清单（借/不借/改良点，owner 过目）；验收：1 次合规 run 全程 0 人工 gate 且留 observe 审计，1 次注入越界的 run 集成前被 block"
+status: "done"
+gate: null
+gate_log: []
+lane: null
+lane_reason: null
+lane_overrides: []
+depends_on:
+  - "WI-20260731-005"
+runs: []
+created: "2026-07-24T00:00:00.000Z"
+updated: "2026-07-31T01:41:35.535Z"

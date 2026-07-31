@@ -1,0 +1,10 @@
+{
+  "schema": "rolekit/executor-profile@1",
+  "name": "chatgpt-codex",
+  "adapter": "chatgpt-codex",
+  "model": "gpt-5.6-sol",
+  "settings": {
+    "reasoning_effort": "high",
+    "search_context_size": "medium"
+  }
+}

@@ -1,0 +1,5 @@
+
+> rolekit@0.0.0 check:delegation
+> node scripts/check-delegated-run.mjs evidence/host-adapter-skills/cursor/session.raw.json evidence/host-adapter-skills/cursor/run-dir
+
+check:delegation pass skill=rolekit-adapter-cursor commands=5 source=cursor-raw-json

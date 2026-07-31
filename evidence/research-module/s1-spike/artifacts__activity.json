@@ -1,0 +1,92 @@
+{
+  "response_id": "resp_0d693a0e659e42d3016a6978c42b7081999e3ab23241243723",
+  "model": "gpt-5.6-sol",
+  "status": "completed",
+  "tool_calls": [
+    {
+      "id": "ws_0d693a0e659e42d3016a6978c6e0c88199af724a4db9ef1961",
+      "type": "web_search_call",
+      "query": "site:nodejs.org/en/blog/release July 2026 Node.js release July 28 2026",
+      "status": "completed"
+    },
+    {
+      "id": "ws_0d693a0e659e42d3016a6978c9ef60819984d59152f54f8ea9",
+      "type": "web_search_call",
+      "query": "site:nodejs.org/en/blog/release/v26. \"2026-07\"",
+      "status": "completed"
+    },
+    {
+      "id": "ws_0d693a0e659e42d3016a6978ce27c08199bff8d28085a8ecd6",
+      "type": "web_search_call",
+      "status": "completed"
+    },
+    {
+      "id": "ws_0d693a0e659e42d3016a6978d3286c81998d82a9b42c5db48a",
+      "type": "web_search_call",
+      "status": "completed"
+    }
+  ],
+  "annotations": [
+    {
+      "type": "url_citation",
+      "start_index": 302,
+      "end_index": 352,
+      "url": "https://nodejs.org/en/blog/release",
+      "title": "Node.js"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 965,
+      "end_index": 1023,
+      "url": "https://nodejs.org/en/blog/release/v26.5.0",
+      "title": "Node.js — Node.js 26.5.0 (Current)"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 1112,
+      "end_index": 1170,
+      "url": "https://nodejs.org/en/blog/release/v26.5.0",
+      "title": "Node.js — Node.js 26.5.0 (Current)"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 1257,
+      "end_index": 1315,
+      "url": "https://nodejs.org/en/blog/release/v26.5.0",
+      "title": "Node.js — Node.js 26.5.0 (Current)"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 1743,
+      "end_index": 1793,
+      "url": "https://nodejs.org/en/blog/release",
+      "title": "Node.js"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 2013,
+      "end_index": 2063,
+      "url": "https://nodejs.org/dist/index.json",
+      "title": "nodejs.org"
+    },
+    {
+      "type": "url_citation",
+      "start_index": 2343,
+      "end_index": 2401,
+      "url": "https://nodejs.org/en/blog/release/v26.5.0",
+      "title": "Node.js — Node.js 26.5.0 (Current)"
+    }
+  ],
+  "usage": {
+    "input_tokens": 36799,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 3712
+    },
+    "output_tokens": 1777,
+    "output_tokens_details": {
+      "reasoning_tokens": 1033
+    },
+    "total_tokens": 38576
+  }
+}

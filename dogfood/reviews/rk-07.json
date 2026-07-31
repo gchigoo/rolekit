@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "campaign_id": "rk-v2-hd-20260729",
+  "input_manifest_sha256": "5680579ff6ae8571889c724723260021ad77df9bd3e6374016026dfb692be560",
+  "verdict": "pass",
+  "blocking_findings": []
+}

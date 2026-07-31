@@ -1,0 +1,8 @@
+schema: rolekit/role-profile@1
+name: ""
+capabilities:
+  - edit files
+boundaries: []
+deliverables: []
+verification: []
+prompt_fragments: []

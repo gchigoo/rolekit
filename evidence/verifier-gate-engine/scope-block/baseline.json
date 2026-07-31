@@ -1,0 +1,46 @@
+{
+  "head": "687cb5ca104ec24b1cbf3c18e3adac8975b9e54f",
+  "status": [
+    {
+      "code": "??",
+      "path": ".rolekit/policies/detect.yaml",
+      "digest": "adb00f01c3a71e356acb15f57dce23fb919de161444bc5ff9572ef212fc6ccaa",
+      "mode": "100644"
+    },
+    {
+      "code": " M",
+      "path": ".rolekit/policies/gates.yaml",
+      "digest": "181bfe614ff1cec8146ed639292181098cb88c6d625d66b0cb26ff9417a0da7a",
+      "mode": "100644"
+    },
+    {
+      "code": " M",
+      "path": ".rolekit/profiles/executors/pi.yaml",
+      "digest": "811a3c48d22bde443250e5b2ebf58b1f39eaabda2d7b6e0e587e0ceeebca51ee",
+      "mode": "100644"
+    },
+    {
+      "code": "??",
+      "path": ".rolekit/profiles/fragments/injection-write.md",
+      "digest": "6589bbc3caf3e8a32475033d4c9fe8be6094b412e47ef518d5b09a9de12e5621",
+      "mode": "100644"
+    },
+    {
+      "code": "??",
+      "path": ".rolekit/profiles/roles/injection-writer.yaml",
+      "digest": "dbb5b9786369c0bf1e3236f0da97dd9d21593822ddc4a3236741027abdb10110",
+      "mode": "100644"
+    },
+    {
+      "code": " M",
+      "path": ".rolekit/rolekit.yaml",
+      "digest": "359cf3ea1aa20bd3db42642d951896b5cfdcbce974f90c252ddb0d132a7a70e8",
+      "mode": "100644"
+    },
+    {
+      "code": "??",
+      "path": "tasks/"
+    }
+  ],
+  "captured_at": "2026-07-28T11:14:08.375Z"
+}

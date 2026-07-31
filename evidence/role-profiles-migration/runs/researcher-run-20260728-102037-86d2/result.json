@@ -1,0 +1,26 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "task_id": "RK-PROF-RES-20260728101913",
+  "status": "completed",
+  "summary": "{\n  \"schema\": \"rolekit/executor-report@1\",\n  \"status\": \"completed\",\n  \"summary\": \"Researched src/seed.txt and documented its contents and recommended downstream treatment.\",\n  \"changed_files\": [\n    \"docs/research-notes.md\"\n  ],\n  \"decisions\": [\n    \"Treat the seed as an inert fixture marker.\",\n    \"Preserve its exact text and trailing LF when compatibility matters.\"\n  ],\n  \"assumptions\": [\n    \"No untracked or external consumer establishes additional semantics.\"\n  ],\n  \"evidence\": [\n    \"The fi",
+  "changed_files": [
+    "docs/research-notes.md"
+  ],
+  "verification": [
+    {
+      "command": "node -e \"const fs=require('fs');const p='docs/research-notes.md';if(!fs.existsSync(p))process.exit(1);const t=fs.readFileSync(p,'utf8');process.exit(t.trim().length>0?0:1)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": [],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "events.jsonl",
+    "verification.json",
+    "result.json"
+  ],
+  "risks": [],
+  "unresolved": [],
+  "recommended_next_action": "done"
+}

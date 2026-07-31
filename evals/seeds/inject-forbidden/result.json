@@ -1,0 +1,30 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "task_id": "RK-20260728-INJ-FORB",
+  "status": "failed",
+  "summary": "verification failed",
+  "changed_files": [
+    "forbidden-out.txt"
+  ],
+  "verification": [
+    {
+      "command": "node -e \"process.exit(0)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": [
+    "forbidden:forbidden-out.txt"
+  ],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "result.json",
+    "verification.json",
+    "events.jsonl"
+  ],
+  "risks": [],
+  "unresolved": [
+    "forbidden:forbidden-out.txt"
+  ],
+  "recommended_next_action": "inspect unresolved and retry if needed"
+}

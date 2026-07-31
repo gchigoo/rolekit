@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-100244-8cb3",
+  "task_id": "RK-ADAPTER-CURSOR",
+  "attempt": 1,
+  "adapter": "mock",
+  "verifier_mode": "minimal",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-1TMHov\\.rolekit\\worktrees\\run-20260728-100244-8cb3",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T10:02:45.599Z",
+  "started_at": "2026-07-28T10:02:44.486Z",
+  "deadline_at": "2026-07-28T10:07:44.486Z",
+  "terminal_status": "completed",
+  "reason": null
+}

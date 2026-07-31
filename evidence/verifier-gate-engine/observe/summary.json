@@ -1,0 +1,13 @@
+{
+  "scenario": "compliant-observe",
+  "ok": true,
+  "run_id": "run-20260728-111344-ac3a",
+  "project": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-2Wcwpt",
+  "adapter": "pi-rpc",
+  "envelope_status": "completed",
+  "human_gates": 0,
+  "observe_events": 1,
+  "gate_records": 1,
+  "scope_violations": [],
+  "integrated": true
+}

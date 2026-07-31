@@ -1,0 +1,4 @@
+schema: rolekit/executor-profile@1
+name: broken-adapter
+adapter: ""
+model: gpt-5

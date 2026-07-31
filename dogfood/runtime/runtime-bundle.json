@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "project": "ctxline",
+      "source": "dogfood/runtime/ctxline/policies/detect.yaml",
+      "target": ".rolekit/policies/detect.yaml",
+      "source_sha256": "8705630283fc3acd619e33d8df516f90290d930d1402ac8b9312ea61dce32663"
+    },
+    {
+      "project": "ctxline",
+      "source": "dogfood/runtime/ctxline/policies/gates.yaml",
+      "target": ".rolekit/policies/gates.yaml",
+      "source_sha256": "181bfe614ff1cec8146ed639292181098cb88c6d625d66b0cb26ff9417a0da7a"
+    },
+    {
+      "project": "ctxline",
+      "source": "packages/runner/test/fixtures/project/.rolekit/profiles/executors/pi.yaml",
+      "target": ".rolekit/profiles/executors/pi.yaml",
+      "source_sha256": "e0ba1de752643b89b309198c9a88ef1c768063307c6a8d5fa5500ab207735321"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/implementer/backend.md",
+      "target": ".rolekit/profiles/fragments/implementer/backend.md",
+      "source_sha256": "4dace8cf73b2e21e175b5b1c97dc3a0efc5b44990be17d3c4981aad4513387ce"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/implementer/core.md",
+      "target": ".rolekit/profiles/fragments/implementer/core.md",
+      "source_sha256": "832492cc45c6bfc5178355c2b014bfcbbb082e65bed759183dbb3134e4742ac3"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/implementer/frontend.md",
+      "target": ".rolekit/profiles/fragments/implementer/frontend.md",
+      "source_sha256": "8265aa9b7cc5261477e7e528c229a0856f5994a88aac87a874162803f2aeb078"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/qa/core.md",
+      "target": ".rolekit/profiles/fragments/qa/core.md",
+      "source_sha256": "056fedbb2317711279a54c3d42d4dfd299b5218c68b3a85229e1c195a4abfa85"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/researcher/core.md",
+      "target": ".rolekit/profiles/fragments/researcher/core.md",
+      "source_sha256": "2f67575fa8facaa8f0ff7882541a3e65a6921e10d792e34e489f26581e062ffe"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/fragments/reviewer/core.md",
+      "target": ".rolekit/profiles/fragments/reviewer/core.md",
+      "source_sha256": "478d48b7dbdcfd0238a5819a49e151ee6ab2f525067a779907543edf3fdd7498"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/roles/implementer.yaml",
+      "target": ".rolekit/profiles/roles/implementer.yaml",
+      "source_sha256": "bc701b15b00413482b891cfc4fd8993a8e72a4236e96d927a1e4c78b6e5e53af"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/roles/qa.yaml",
+      "target": ".rolekit/profiles/roles/qa.yaml",
+      "source_sha256": "1033a670e6095dd2dffba798d890c313e38fdec2a3c79cc9446ccb70c3a5e6f6"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/roles/researcher.yaml",
+      "target": ".rolekit/profiles/roles/researcher.yaml",
+      "source_sha256": "b7f2ab68c54cef079af5532a270c0e74c584182f12a999a6618b504a2e2b7b6a"
+    },
+    {
+      "project": "ctxline",
+      "source": "profiles/roles/reviewer.yaml",
+      "target": ".rolekit/profiles/roles/reviewer.yaml",
+      "source_sha256": "fdd4a6faae4f81c03ffe31185e06640a0c81f1575c383495b062072eef3c3a0f"
+    },
+    {
+      "project": "ctxline",
+      "source": "dogfood/runtime/ctxline/rolekit.yaml",
+      "target": ".rolekit/rolekit.yaml",
+      "source_sha256": "1f5f272a8479da49003b78799a2ac79e1c5209f29b7219d80a07b6ddbbd79bce"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "dogfood/runtime/rolekit-self/policies/detect.yaml",
+      "target": ".rolekit/policies/detect.yaml",
+      "source_sha256": "51ee6e53ae91dc494b009fceda0c48f5e86020b31f3e9554088e186f28979faf"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "dogfood/runtime/rolekit-self/policies/gates.yaml",
+      "target": ".rolekit/policies/gates.yaml",
+      "source_sha256": "181bfe614ff1cec8146ed639292181098cb88c6d625d66b0cb26ff9417a0da7a"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/executors/chatgpt-codex.yaml",
+      "target": ".rolekit/profiles/executors/chatgpt-codex.yaml",
+      "source_sha256": "aa5654009dba0a27a35151d0cdbe0dd827c042036a4498af6d48b123d97406d1"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/executors/openai-responses.yaml",
+      "target": ".rolekit/profiles/executors/openai-responses.yaml",
+      "source_sha256": "5e0f5b8d1c76ec88cb36b504173bfe5423f89257b9922410047622107fdaef42"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "packages/runner/test/fixtures/project/.rolekit/profiles/executors/pi.yaml",
+      "target": ".rolekit/profiles/executors/pi.yaml",
+      "source_sha256": "e0ba1de752643b89b309198c9a88ef1c768063307c6a8d5fa5500ab207735321"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/implementer/backend.md",
+      "target": ".rolekit/profiles/fragments/implementer/backend.md",
+      "source_sha256": "4dace8cf73b2e21e175b5b1c97dc3a0efc5b44990be17d3c4981aad4513387ce"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/implementer/core.md",
+      "target": ".rolekit/profiles/fragments/implementer/core.md",
+      "source_sha256": "832492cc45c6bfc5178355c2b014bfcbbb082e65bed759183dbb3134e4742ac3"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/implementer/frontend.md",
+      "target": ".rolekit/profiles/fragments/implementer/frontend.md",
+      "source_sha256": "8265aa9b7cc5261477e7e528c229a0856f5994a88aac87a874162803f2aeb078"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/qa/core.md",
+      "target": ".rolekit/profiles/fragments/qa/core.md",
+      "source_sha256": "056fedbb2317711279a54c3d42d4dfd299b5218c68b3a85229e1c195a4abfa85"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/researcher/core.md",
+      "target": ".rolekit/profiles/fragments/researcher/core.md",
+      "source_sha256": "2f67575fa8facaa8f0ff7882541a3e65a6921e10d792e34e489f26581e062ffe"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/fragments/reviewer/core.md",
+      "target": ".rolekit/profiles/fragments/reviewer/core.md",
+      "source_sha256": "478d48b7dbdcfd0238a5819a49e151ee6ab2f525067a779907543edf3fdd7498"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/roles/implementer.yaml",
+      "target": ".rolekit/profiles/roles/implementer.yaml",
+      "source_sha256": "bc701b15b00413482b891cfc4fd8993a8e72a4236e96d927a1e4c78b6e5e53af"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/roles/qa.yaml",
+      "target": ".rolekit/profiles/roles/qa.yaml",
+      "source_sha256": "1033a670e6095dd2dffba798d890c313e38fdec2a3c79cc9446ccb70c3a5e6f6"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/roles/researcher.yaml",
+      "target": ".rolekit/profiles/roles/researcher.yaml",
+      "source_sha256": "b7f2ab68c54cef079af5532a270c0e74c584182f12a999a6618b504a2e2b7b6a"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "profiles/roles/reviewer.yaml",
+      "target": ".rolekit/profiles/roles/reviewer.yaml",
+      "source_sha256": "fdd4a6faae4f81c03ffe31185e06640a0c81f1575c383495b062072eef3c3a0f"
+    },
+    {
+      "project": "rolekit-self",
+      "source": "dogfood/runtime/rolekit-self/rolekit.yaml",
+      "target": ".rolekit/rolekit.yaml",
+      "source_sha256": "90f1311ca3f0a9da65c00373bc6818f256d271b311492d1a3d5ffc85b0d5d06e"
+    }
+  ]
+}

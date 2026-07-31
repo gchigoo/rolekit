@@ -1,0 +1,7 @@
+schema: rolekit/role-profile@2
+name: implementer
+capabilities: []
+boundaries: []
+deliverables: []
+verification: []
+prompt_fragments: []

@@ -1,0 +1,31 @@
+{
+  "profile": {
+    "schema": "rolekit/role-profile@1",
+    "name": "minimal-implementer",
+    "capabilities": [
+      "edit source files within scope",
+      "run acceptance commands"
+    ],
+    "boundaries": [
+      "never modify forbidden paths",
+      "never claim verification passed"
+    ],
+    "deliverables": [
+      "code changes"
+    ],
+    "verification": [
+      "acceptance commands exit 0",
+      "no scope violations"
+    ],
+    "prompt_fragments": [
+      "fragments/minimal-safety.md"
+    ]
+  },
+  "resolved_fragments": [
+    {
+      "path": "fragments/minimal-safety.md",
+      "content_sha256": "fd2fb6019db0c0333122df4e9989314b9ef7e39e84ffb602a25203a3981593d2",
+      "content": "Stay inside writable scope. Do not touch forbidden paths.\r\n"
+    }
+  ]
+}

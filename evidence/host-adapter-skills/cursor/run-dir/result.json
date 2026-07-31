@@ -1,0 +1,26 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "task_id": "RK-ADAPTER-CURSOR",
+  "status": "completed",
+  "summary": "mock completed",
+  "changed_files": [
+    "src/adapter-cursor.txt"
+  ],
+  "verification": [
+    {
+      "command": "node -e \"const fs=require('fs');process.exit(fs.existsSync('src/adapter-cursor.txt')?0:1)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": [],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "events.jsonl",
+    "verification.json",
+    "result.json"
+  ],
+  "risks": [],
+  "unresolved": [],
+  "recommended_next_action": "done"
+}

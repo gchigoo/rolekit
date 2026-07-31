@@ -1,0 +1,11 @@
+schema: rolekit/gate-policy@1
+default_action: confirm
+triggers:
+  new-dependency: confirm
+  migration: block
+  public-api-change: confirm
+  delete: confirm
+  scope-violation: block
+  ambiguous-requirement: confirm
+  design-artifact: confirm
+  final-acceptance: confirm

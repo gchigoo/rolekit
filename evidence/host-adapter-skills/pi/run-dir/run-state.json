@@ -1,0 +1,15 @@
+{
+  "run_id": "run-20260728-095152-9f89",
+  "task_id": "RK-ADAPTER-PI",
+  "attempt": 1,
+  "adapter": "mock",
+  "verifier_mode": "minimal",
+  "worktree_path": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-I2LfGT\\.rolekit\\worktrees\\run-20260728-095152-9f89",
+  "state": "finished",
+  "phase": "terminal",
+  "updated_at": "2026-07-28T09:51:53.465Z",
+  "started_at": "2026-07-28T09:51:52.386Z",
+  "deadline_at": "2026-07-28T09:56:52.386Z",
+  "terminal_status": "completed",
+  "reason": null
+}

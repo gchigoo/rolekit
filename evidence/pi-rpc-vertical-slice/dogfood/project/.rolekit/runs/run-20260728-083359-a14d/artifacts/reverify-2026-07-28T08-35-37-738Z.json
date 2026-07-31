@@ -1,0 +1,18 @@
+{
+  "run_id": "run-20260728-083359-a14d",
+  "source_patch_sha256": "3a0807b7fb0611a1b39c2ff6545309f38efa8d4385769d4d39605beffd76bfaf",
+  "verification": {
+    "passed": false,
+    "results": [
+      {
+        "command": "node -e \"const fs=require('fs');const t=fs.readFileSync('src/dogfood-2.txt','utf8').trim();process.exit(t==='dogfood-ok-2'?0:1)\"",
+        "exit_code": 0
+      }
+    ],
+    "scope_violations": [
+      "concurrent-change: HEAD moved 24a5aaffb6e8221d7ff4f7a2983fb8e5c7339d42 -> 484e71e07359bd74ad5af12dfd4cb132b5df2034",
+      "concurrent-change: added tasks/RK-20260728-DOG-CANCEL.yaml",
+      "concurrent-change: removed tasks/RK-20260728-DOG-S2.yaml"
+    ]
+  }
+}

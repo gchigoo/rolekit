@@ -1,0 +1,11 @@
+schema: rolekit/executor-report@1
+task_id: RK-20260728-001
+status: success
+summary: Unknown status enum value
+changed_files: []
+decisions: []
+assumptions: []
+evidence: []
+risks: []
+unresolved: []
+recommended_next_action: none

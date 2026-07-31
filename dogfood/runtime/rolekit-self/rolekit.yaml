@@ -1,0 +1,8 @@
+verifier_mode: enhanced
+executors:
+  pi:
+    compat_range: ">=0.80 <0.90"
+  chatgpt-codex:
+    compat_range: ">=1.0.0"
+  openai-responses:
+    compat_range: ">=1.0.0"

@@ -1,0 +1,18 @@
+{
+  "dependency_files": [
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "requirements.txt",
+    "pyproject.toml",
+    "go.mod",
+    "Cargo.toml"
+  ],
+  "migration_paths": [
+    "**/migrations/**",
+    "**/migrate/**"
+  ],
+  "api_paths": [
+    "src/api/**"
+  ]
+}

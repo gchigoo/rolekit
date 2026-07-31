@@ -1,0 +1,14 @@
+{
+  "run_id": "run-20260728-083359-a14d",
+  "source_patch_sha256": "3a0807b7fb0611a1b39c2ff6545309f38efa8d4385769d4d39605beffd76bfaf",
+  "verification": {
+    "passed": true,
+    "results": [
+      {
+        "command": "node -e \"const fs=require('fs');const t=fs.readFileSync('src/dogfood-2.txt','utf8').trim();process.exit(t==='dogfood-ok-2'?0:1)\"",
+        "exit_code": 0
+      }
+    ],
+    "scope_violations": []
+  }
+}

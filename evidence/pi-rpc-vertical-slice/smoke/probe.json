@@ -1,0 +1,10 @@
+{
+  "adapter": "pi-rpc",
+  "protocol_version": "1",
+  "capabilities": [
+    "start",
+    "status",
+    "cancel",
+    "collect"
+  ]
+}

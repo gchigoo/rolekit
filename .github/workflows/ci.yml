@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.18"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run evals
+      - run: npx tsc --noEmit
+      - run: npx biome check .
+      - run: npm run lint:adapters
+      - run: npm run lint:profile-fragments
+      - run: npm run validate:profiles
+      - run: node --test "test/e2e/**/*.test.ts"

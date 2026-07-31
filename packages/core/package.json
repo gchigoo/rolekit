@@ -1,0 +1,13 @@
+{
+  "name": "@rolekit/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.37",
+    "yaml": "^2.8.0"
+  }
+}

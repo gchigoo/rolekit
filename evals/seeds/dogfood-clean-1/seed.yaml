@@ -1,0 +1,4 @@
+name: dogfood-clean-1
+source: pi-rpc-vertical-slice:run-20260728-083328-7678
+expectation: clean
+captured: 2026-07-28

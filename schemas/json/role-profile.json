@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rolekit/role-profile@1",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "schema",
+    "name",
+    "capabilities",
+    "boundaries",
+    "deliverables",
+    "verification",
+    "prompt_fragments"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/role-profile@1",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "prompt_fragments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

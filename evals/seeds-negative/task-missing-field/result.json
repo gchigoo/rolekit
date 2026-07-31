@@ -1,0 +1,26 @@
+{
+  "schema": "rolekit/result-envelope@1",
+  "task_id": "RK-EVAL-1",
+  "status": "completed",
+  "summary": "ok",
+  "changed_files": [
+    "src/out.txt"
+  ],
+  "verification": [
+    {
+      "command": "node -e \"process.exit(0)\"",
+      "exit_code": 0
+    }
+  ],
+  "scope_violations": [],
+  "decisions": [],
+  "assumptions": [],
+  "evidence": [
+    "events.jsonl",
+    "verification.json",
+    "result.json"
+  ],
+  "risks": [],
+  "unresolved": [],
+  "recommended_next_action": "done"
+}

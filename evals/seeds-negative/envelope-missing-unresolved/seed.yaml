@@ -1,0 +1,4 @@
+name: envelope-missing-unresolved
+source: negative
+expectation: clean
+captured: 2026-07-28

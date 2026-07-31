@@ -1,0 +1,4 @@
+verifier_mode: minimal
+executors:
+  pi:
+    compat_range: ">=0.80 <0.90"

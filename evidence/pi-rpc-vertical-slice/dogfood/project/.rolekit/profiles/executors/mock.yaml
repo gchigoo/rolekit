@@ -1,0 +1,7 @@
+schema: rolekit/executor-profile@1
+name: mock
+adapter: mock
+settings:
+  delay_ms: 30
+  write_file: src/implemented.txt
+  write_content: "implemented-by-mock\n"

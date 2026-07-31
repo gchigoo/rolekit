@@ -1,0 +1,38 @@
+{
+  "name": "rolekit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "node scripts/run-tests.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "validate:migrations": "node scripts/validate-migrations.ts",
+    "evals": "node packages/evals/bin/evals.js",
+    "evals:capture": "node packages/evals/bin/capture.js",
+    "export:schemas": "node scripts/export-schemas.ts",
+    "build:adapters": "node adapters/build.mjs",
+    "lint:adapters": "node scripts/lint-adapters.mjs",
+    "lint:profile-fragments": "node scripts/lint-profile-fragments.mjs",
+    "validate:profiles": "node scripts/validate-profiles.mjs",
+    "validate:profile-runs": "node scripts/validate-profile-runs.mjs",
+    "check:delegation": "node scripts/check-delegated-run.mjs",
+    "check:research": "node scripts/check-research.ts",
+    "audit:dogfood": "node scripts/campaign-command.ts audit",
+    "check:switch": "node scripts/campaign-command.ts switch",
+    "install-skill:pi": "node scripts/install-skill.mjs pi",
+    "install-skill:cursor": "node scripts/install-skill.mjs cursor",
+    "install-skill:codex": "node scripts/install-skill.mjs codex"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  }
+}

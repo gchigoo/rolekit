@@ -1,0 +1,7 @@
+diff --git a/src/adapter-cursor.txt b/src/adapter-cursor.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..74a3c634950dc63043703992e1e95e6edf43b196
+--- /dev/null
++++ b/src/adapter-cursor.txt
+@@ -0,0 +1 @@
++adapter-cursor-ok

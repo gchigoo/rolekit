@@ -1,0 +1,56 @@
+{
+  "host": "cursor",
+  "format": "cursor-agent-session-export/v1",
+  "skill": "rolekit-adapter-cursor",
+  "installed_via": "npm run install-skill:cursor",
+  "project": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-1TMHov",
+  "task": "C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-1TMHov\\tasks\\adapter-cursor.yaml",
+  "run_id": "run-20260728-100244-8cb3",
+  "exported_at": "2026-07-28T10:02:47.410Z",
+  "agent": "cursor-subagent",
+  "note": "Raw structured export of Cursor-agent delegated run: skill load + exact rolekit CLI invocations with exit codes and stdout.",
+  "events": [
+    {
+      "type": "skill_load",
+      "name": "rolekit-adapter-cursor",
+      "path": "D:/Personal/rolekit/.cursor/skills/rolekit-adapter-cursor/SKILL.md",
+      "ts": "2026-07-28T10:02:47.410Z",
+      "evidence": "read_file after npm run install-skill:cursor"
+    },
+    {
+      "type": "command",
+      "command": "rolekit task compile C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-1TMHov\\tasks\\adapter-cursor.yaml --json",
+      "exit_code": 0,
+      "stdout": "{\"schema\":\"rolekit/task-contract@1\",\"id\":\"RK-ADAPTER-CURSOR\",\"kind\":\"implementation\",\"role\":\"minimal-implementer\",\"executor\":\"mock\",\"objective\":\"Write src/adapter-cursor.txt via mock executor\",\"context\":{\"required_files\":[\"src/seed.txt\"],\"docs\":[]},\"scope\":{\"writable\":[\"src/**\"],\"forbidden\":[\"forbidden/**\",\"**/.env*\"]},\"constraints\":[\"Keep change minimal\"],\"deliverables\":[\"src/adapter-cursor.txt\"],\"acceptance\":{\"commands\":[{\"run\":\"node -e \\\"const fs=require('fs');process.exit(fs.existsSync('src/adapter-cursor.txt')?0:1)\\\"\",\"expect_exit\":0}],\"assertions\":[\"implemented.txt exists\"]},\"execution\":{\"worktree\":\"isolated\",\"max_tool_calls\":20,\"network\":\"deny\",\"timeout_minutes\":5},\"escalation\":{\"on_scope_change\":\"return_blocked\",\"on_new_dependency\":\"require_approval\",\"on_ambiguous_requirement\":\"return_question\"}}",
+      "ts": "2026-07-28T10:02:47.410Z"
+    },
+    {
+      "type": "command",
+      "command": "rolekit run start C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-1TMHov\\tasks\\adapter-cursor.yaml --json",
+      "exit_code": 0,
+      "stdout": "{\"id\":\"run-20260728-100244-8cb3\",\"state\":\"finished\",\"phase\":\"terminal\"}",
+      "ts": "2026-07-28T10:02:47.410Z"
+    },
+    {
+      "type": "command",
+      "command": "rolekit run status run-20260728-100244-8cb3 --json",
+      "exit_code": 0,
+      "stdout": "{\"id\":\"run-20260728-100244-8cb3\",\"state\":\"finished\",\"phase\":\"terminal\",\"last_event_ts\":\"2026-07-28T10:02:45.598Z\",\"terminal_status\":\"completed\"}",
+      "ts": "2026-07-28T10:02:47.410Z"
+    },
+    {
+      "type": "command",
+      "command": "rolekit run collect run-20260728-100244-8cb3 --json",
+      "exit_code": 0,
+      "stdout": "{\"id\":\"run-20260728-100244-8cb3\",\"state\":\"finished\",\"result\":{\"schema\":\"rolekit/result-envelope@1\",\"task_id\":\"RK-ADAPTER-CURSOR\",\"status\":\"completed\",\"summary\":\"mock completed\",\"changed_files\":[\"src/adapter-cursor.txt\"],\"verification\":[{\"command\":\"node -e \\\"const fs=require('fs');process.exit(fs.existsSync('src/adapter-cursor.txt')?0:1)\\\"\",\"exit_code\":0}],\"scope_violations\":[],\"decisions\":[],\"assumptions\":[],\"evidence\":[\"events.jsonl\",\"verification.json\",\"result.json\"],\"risks\":[],\"unresolved\":[],\"recommended_next_action\":\"done\"}}",
+      "ts": "2026-07-28T10:02:47.410Z"
+    },
+    {
+      "type": "command",
+      "command": "rolekit verify run-20260728-100244-8cb3 --json",
+      "exit_code": 0,
+      "stdout": "{\"id\":\"run-20260728-100244-8cb3\",\"reverify\":\"C:\\\\Users\\\\steven.guo\\\\AppData\\\\Local\\\\Temp\\\\rolekit-proj-1TMHov\\\\.rolekit\\\\runs\\\\run-20260728-100244-8cb3\\\\artifacts\\\\reverify-2026-07-28T10-02-46-738Z.json\"}",
+      "ts": "2026-07-28T10:02:47.410Z"
+    }
+  ]
+}

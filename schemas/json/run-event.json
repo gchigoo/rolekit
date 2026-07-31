@@ -1,0 +1,430 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rolekit/run-event@1",
+  "anyOf": [
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "started",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "task_id",
+            "adapter",
+            "worktree"
+          ],
+          "properties": {
+            "task_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "adapter": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "worktree": {
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_call",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "name",
+            "args_digest"
+          ],
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "args_digest": {
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "message",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "role",
+            "text"
+          ],
+          "properties": {
+            "role": {
+              "anyOf": [
+                {
+                  "const": "worker",
+                  "type": "string"
+                },
+                {
+                  "const": "system",
+                  "type": "string"
+                }
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "gate",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "gate",
+            "action",
+            "decision",
+            "evidence"
+          ],
+          "properties": {
+            "gate": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "action": {
+              "anyOf": [
+                {
+                  "const": "ignore",
+                  "type": "string"
+                },
+                {
+                  "const": "observe",
+                  "type": "string"
+                },
+                {
+                  "const": "confirm",
+                  "type": "string"
+                },
+                {
+                  "const": "block",
+                  "type": "string"
+                }
+              ]
+            },
+            "decision": {
+              "anyOf": [
+                {
+                  "const": "auto-pass",
+                  "type": "string"
+                },
+                {
+                  "const": "human-required",
+                  "type": "string"
+                },
+                {
+                  "const": "blocked",
+                  "type": "string"
+                }
+              ]
+            },
+            "evidence": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "verification",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "command",
+            "exit_code"
+          ],
+          "properties": {
+            "command": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "exit_code": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "escalation",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "rule",
+            "action",
+            "detail"
+          ],
+          "properties": {
+            "rule": {
+              "anyOf": [
+                {
+                  "const": "on_scope_change",
+                  "type": "string"
+                },
+                {
+                  "const": "on_new_dependency",
+                  "type": "string"
+                },
+                {
+                  "const": "on_ambiguous_requirement",
+                  "type": "string"
+                }
+              ]
+            },
+            "action": {
+              "anyOf": [
+                {
+                  "const": "return_blocked",
+                  "type": "string"
+                },
+                {
+                  "const": "require_approval",
+                  "type": "string"
+                },
+                {
+                  "const": "return_question",
+                  "type": "string"
+                }
+              ]
+            },
+            "detail": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "ts",
+        "run_id",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-event@1",
+          "type": "string"
+        },
+        "ts": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "finished",
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "status",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "anyOf": [
+                {
+                  "const": "completed",
+                  "type": "string"
+                },
+                {
+                  "const": "blocked",
+                  "type": "string"
+                },
+                {
+                  "const": "question",
+                  "type": "string"
+                },
+                {
+                  "const": "failed",
+                  "type": "string"
+                },
+                {
+                  "const": "cancelled",
+                  "type": "string"
+                }
+              ]
+            },
+            "reason": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+schema: "rolekit/work-item@1"
+id: "WI-20260731-004"
+kind: "feature"
+title: "按 roadmap 4.10 冻结格式实现 KnowledgeEntry 四类（rule/adr/learning/note）读写与检索；rule 注入编译 prompt 断言过、四类条目各 1 正例 + 1 负例过 rolekit validate（adr 四节标题断言、rule 单段断言）、检索按 type/tags/status 过滤正确"
+status: "done"
+gate: null
+gate_log: []
+lane: null
+lane_reason: null
+lane_overrides: []
+depends_on:
+  - "WI-20260731-009"
+runs: []
+created: "2026-07-24T00:00:00.000Z"
+updated: "2026-07-31T01:41:35.535Z"

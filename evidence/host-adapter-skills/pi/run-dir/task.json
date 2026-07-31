@@ -1,0 +1,51 @@
+{
+  "schema": "rolekit/task-contract@1",
+  "id": "RK-ADAPTER-PI",
+  "kind": "implementation",
+  "role": "minimal-implementer",
+  "executor": "mock",
+  "objective": "Write src/adapter-pi.txt via mock executor",
+  "context": {
+    "required_files": [
+      "src/seed.txt"
+    ],
+    "docs": []
+  },
+  "scope": {
+    "writable": [
+      "src/**"
+    ],
+    "forbidden": [
+      "forbidden/**",
+      "**/.env*"
+    ]
+  },
+  "constraints": [
+    "Keep change minimal"
+  ],
+  "deliverables": [
+    "src/adapter-pi.txt"
+  ],
+  "acceptance": {
+    "commands": [
+      {
+        "run": "node -e \"const fs=require('fs');process.exit(fs.existsSync('src/adapter-pi.txt')?0:1)\"",
+        "expect_exit": 0
+      }
+    ],
+    "assertions": [
+      "implemented.txt exists"
+    ]
+  },
+  "execution": {
+    "worktree": "isolated",
+    "max_tool_calls": 20,
+    "network": "deny",
+    "timeout_minutes": 5
+  },
+  "escalation": {
+    "on_scope_change": "return_blocked",
+    "on_new_dependency": "require_approval",
+    "on_ambiguous_requirement": "return_question"
+  }
+}

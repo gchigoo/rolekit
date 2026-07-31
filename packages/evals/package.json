@@ -1,0 +1,17 @@
+{
+  "name": "@rolekit/evals",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "rolekit-evals": "./bin/evals.js",
+    "rolekit-evals-capture": "./bin/capture.js"
+  },
+  "dependencies": {
+    "@rolekit/core": "*",
+    "yaml": "^2.8.0"
+  }
+}

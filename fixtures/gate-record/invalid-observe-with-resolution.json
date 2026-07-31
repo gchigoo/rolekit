@@ -1,0 +1,16 @@
+{
+  "schema": "rolekit/gate-record@1",
+  "records": [
+    {
+      "trigger": "public-api-change",
+      "action": "observe",
+      "decision": "auto-pass",
+      "resolution": {
+        "result": "approved",
+        "by": "owner",
+        "ts": "2026-07-28T10:00:00.000Z"
+      },
+      "ts": "2026-07-28T10:00:00.000Z"
+    }
+  ]
+}

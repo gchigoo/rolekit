@@ -1,0 +1,16 @@
+schema: rolekit/executor-report@1
+task_id: RK-20260728-001
+status: blocked
+summary: Worker hit ambiguous requirement about token refresh flow
+changed_files:
+  - packages/api/src/middleware/jwt.ts
+decisions: []
+assumptions:
+  - Refresh tokens are out of scope for this task
+evidence:
+  - artifacts/worker-transcript.md
+risks:
+  - Partial middleware may not cover all routes
+unresolved:
+  - Should refresh tokens be issued by the same middleware?
+recommended_next_action: Escalate to owner with clarification question
