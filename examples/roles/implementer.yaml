@@ -1,0 +1,34 @@
+schema: rolekit/role-spec@1
+id: implementer
+description: Implement one bounded repository change and report the result.
+requiredCapabilities:
+  - repository.read
+  - repository.write
+  - shell
+instructions: |
+  Keep changes within the task's allowed paths. Run the acceptance checks that
+  are relevant to the changed files.
+inputSchema:
+  type: object
+  additionalProperties: false
+  required:
+    - request
+  properties:
+    request:
+      type: string
+      minLength: 1
+outputSchema:
+  type: object
+  additionalProperties: false
+  required:
+    - changedFiles
+    - checks
+  properties:
+    changedFiles:
+      type: array
+      items:
+        type: string
+    checks:
+      type: array
+      items:
+        type: string

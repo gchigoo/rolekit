@@ -1,8 +1,0 @@
-schema: rolekit/executor-profile@1
-name: chatgpt-codex
-adapter: chatgpt-codex
-model: gpt-5.6-sol
-settings:
-  # ChatGPT Codex 端点不接受 max_tool_calls；控费靠 run timeout + prompt
-  reasoning_effort: high
-  search_context_size: medium

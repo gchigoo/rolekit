@@ -1,23 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
   "files": {
-    "includes": [
-      "**",
-      "!**/node_modules",
-      "!**/schemas/json",
-      "!**/.codestable",
-      "!**/fixtures",
-      "!**/evidence",
-      "!**/.tmp-evidence",
-      "!**/evals/seeds",
-      "!**/evals/seeds-negative",
-      "!**/packages/evals/test/fixtures",
-      "!**/packages/runner/test/fixtures",
-      "!**/.rolekit",
-      "!**/.rolekit.pre-cutover-backup",
-      "!**/dogfood",
-      "!**/archive"
-    ]
+    "includes": ["**", "!**/node_modules", "!**/dist", "!**/schemas", "!**/test/fixtures"]
   },
   "formatter": {
     "enabled": true,
@@ -29,7 +13,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "error"
+      }
     }
   },
   "javascript": {

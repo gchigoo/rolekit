@@ -1,4 +1,0 @@
-name: inject-forbidden
-source: pi-rpc-vertical-slice:run-20260728-090628-fc90
-expectation: violation
-captured: 2026-07-28

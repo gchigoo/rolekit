@@ -1,57 +1,28 @@
-/**
- * Discover *.test.ts files and run them with node --test (Windows-safe).
- */
-
 import { spawnSync } from 'node:child_process'
-import { readdirSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { readdir } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-
-/**
- * Recursively collects files ending with .test.ts.
- */
-function collectTests(dir: string, acc: string[] = []): string[] {
-  let entries: string[]
-  try {
-    entries = readdirSync(dir)
-  } catch {
-    return acc
-  }
-  for (const name of entries) {
-    const full = join(dir, name)
-    const stat = statSync(full)
-    if (stat.isDirectory()) {
-      collectTests(full, acc)
-    } else if (name.endsWith('.test.ts')) {
-      acc.push(full)
+async function collectTests(directory: string): Promise<readonly string[]> {
+  const entries = await readdir(directory, { withFileTypes: true })
+  const files: string[] = []
+  for (const entry of entries) {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...(await collectTests(path)))
+    } else if (entry.isFile() && entry.name.endsWith('.test.ts')) {
+      files.push(path)
     }
   }
-  return acc
+  return files.sort()
 }
 
-const roots = [
-  join(root, 'packages/core/test'),
-  join(root, 'packages/cli/test'),
-  join(root, 'packages/runner/test'),
-  join(root, 'packages/evals/test'),
-  join(root, 'packages/migrate/test'),
-  join(root, 'test/e2e'),
-  join(root, 'test/adapters'),
-]
-
-const files = roots.flatMap((dir) => collectTests(dir)).sort()
-if (files.length === 0) {
-  process.stderr.write('No test files found\n')
-  process.exit(1)
-}
-
-// Serial execution avoids Windows supervisor-ack races under parallel mocks.
-const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...files], {
-  cwd: root,
+const tests = await collectTests(resolve('test'))
+const result = spawnSync(process.execPath, ['--test', ...tests], {
+  cwd: process.cwd(),
+  encoding: 'utf8',
   stdio: 'inherit',
-  env: process.env,
 })
-
-process.exit(result.status ?? 1)
+if (result.error !== undefined) {
+  throw result.error
+}
+process.exitCode = result.status ?? 1

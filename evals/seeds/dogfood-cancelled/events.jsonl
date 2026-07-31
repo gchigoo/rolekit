@@ -1,2 +1,0 @@
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T08:35:05.588Z","run_id":"run-20260728-083504-367e","type":"started","payload":{"task_id":"RK-20260728-DOG-CANCEL","adapter":"pi-rpc","worktree":"<redacted-abs-path>\Users\\<redacted-user>\\AppData\\Local\\Temp\\rolekit-dogfood-live2\\.rolekit\\worktrees\\run-20260728-083504-367e"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T08:35:07.775Z","run_id":"run-20260728-083504-367e","type":"finished","payload":{"status":"cancelled","reason":"cancelled"}}

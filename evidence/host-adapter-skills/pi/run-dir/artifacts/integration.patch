@@ -1,7 +1,0 @@
-diff --git a/src/adapter-pi.txt b/src/adapter-pi.txt
-new file mode 100644
-index 0000000000000000000000000000000000000000..9c27ac63e20d15d09f04691547980224c55adadb
---- /dev/null
-+++ b/src/adapter-pi.txt
-@@ -0,0 +1 @@
-+adapter-pi-ok

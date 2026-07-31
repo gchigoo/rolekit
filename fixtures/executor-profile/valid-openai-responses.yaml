@@ -1,7 +1,0 @@
-schema: rolekit/executor-profile@1
-name: research-openai
-adapter: openai-responses
-model: gpt-5
-settings:
-  background: true
-  max_output_tokens: 16000

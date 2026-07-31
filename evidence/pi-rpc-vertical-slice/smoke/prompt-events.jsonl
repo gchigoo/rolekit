@@ -1,3 +1,0 @@
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T08:22:20.708Z","run_id":"run-20260728-082220-37f8","type":"started","payload":{"task_id":"RK-20260728-PI-PROMPT","adapter":"pi-rpc","worktree":"C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-RHWU9q\\.rolekit\\worktrees\\run-20260728-082220-37f8"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T08:22:32.293Z","run_id":"run-20260728-082220-37f8","type":"message","payload":{"role":"worker","text":"pong"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T08:22:34.152Z","run_id":"run-20260728-082220-37f8","type":"finished","payload":{"status":"failed","reason":"error: No valid patches in input (allow with \"--allow-empty\")\n"}}

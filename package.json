@@ -1,38 +1,69 @@
 {
-  "name": "rolekit",
-  "version": "0.0.0",
+  "name": "@gchigoo/rolekit",
+  "version": "0.1.0",
   "private": true,
+  "description": "Portable role and task contracts for invoking coding agents across hosts.",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "engines": {
     "node": ">=22.18.0"
   },
-  "workspaces": [
-    "packages/*"
+  "files": [
+    "bin",
+    "dist",
+    "schemas",
+    "docs",
+    "examples",
+    "README.md",
+    "README.zh-CN.md"
   ],
+  "bin": {
+    "rolekit": "./bin/rolekit.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./pi": {
+      "types": "./dist/adapters/pi/index.d.ts",
+      "import": "./dist/adapters/pi/index.js"
+    },
+    "./cursor": {
+      "types": "./dist/adapters/cursor/index.d.ts",
+      "import": "./dist/adapters/cursor/index.js"
+    },
+    "./codex": {
+      "types": "./dist/adapters/codex/index.d.ts",
+      "import": "./dist/adapters/codex/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    }
+  },
   "scripts": {
-    "test": "node scripts/run-tests.ts",
+    "build": "node scripts/build.ts",
+    "export:schemas": "node scripts/export-schemas.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "validate:migrations": "node scripts/validate-migrations.ts",
-    "evals": "node packages/evals/bin/evals.js",
-    "evals:capture": "node packages/evals/bin/capture.js",
-    "export:schemas": "node scripts/export-schemas.ts",
-    "build:adapters": "node adapters/build.mjs",
-    "lint:adapters": "node scripts/lint-adapters.mjs",
-    "lint:profile-fragments": "node scripts/lint-profile-fragments.mjs",
-    "validate:profiles": "node scripts/validate-profiles.mjs",
-    "validate:profile-runs": "node scripts/validate-profile-runs.mjs",
-    "check:delegation": "node scripts/check-delegated-run.mjs",
-    "check:research": "node scripts/check-research.ts",
-    "audit:dogfood": "node scripts/campaign-command.ts audit",
-    "check:switch": "node scripts/campaign-command.ts switch",
-    "install-skill:pi": "node scripts/install-skill.mjs pi",
-    "install-skill:cursor": "node scripts/install-skill.mjs cursor",
-    "install-skill:codex": "node scripts/install-skill.mjs codex"
+    "test": "node scripts/run-tests.ts",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.37",
+    "ajv": "^8.20.0",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "^2.5.5",
     "@types/node": "^24.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "5.8.3"
   }
 }

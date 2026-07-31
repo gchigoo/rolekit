@@ -1,0 +1,21 @@
+schema: rolekit/task-packet@1
+taskId: example-implement-feature
+roleId: implementer
+objective: Add the requested bounded feature.
+input:
+  request: Add a health endpoint.
+context:
+  - id: api-entry
+    type: file
+    value: src/main.ts
+constraints:
+  - Do not add production dependencies.
+acceptanceCriteria:
+  - The health endpoint returns a typed response.
+  - Relevant tests pass.
+allowedPaths:
+  - src/**
+  - test/**
+expectedArtifacts:
+  - name: implementation-summary
+    kind: text

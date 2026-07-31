@@ -1,4 +1,0 @@
-name: inject-concurrent
-source: pi-rpc-vertical-slice:run-20260728-090655-aadd
-expectation: violation
-captured: 2026-07-28

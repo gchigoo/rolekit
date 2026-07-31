@@ -1,8 +1,0 @@
-diff --git a/src/dogfood-1.txt b/src/dogfood-1.txt
-new file mode 100644
-index 0000000000000000000000000000000000000000..8565267d738dc91f4a7c4957c39528841f7de24d
---- /dev/null
-+++ b/src/dogfood-1.txt
-@@ -0,0 +1 @@
-+dogfood-ok-1
-\ No newline at end of file

@@ -2,25 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  windows:
-    runs-on: windows-latest
-    env:
-      ROLEKIT_SUPERVISOR_ACK_MS: "60000"
+  check:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22.18"
+          node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
-      - run: npm run evals
-      - run: npx tsc --noEmit
-      - run: npx biome check .
-      - run: npm run lint:adapters
-      - run: npm run lint:profile-fragments
-      - run: npm run validate:profiles
+      - run: npm run check

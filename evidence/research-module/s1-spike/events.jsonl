@@ -1,9 +1,0 @@
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:27.371Z","run_id":"run-20260729-035120-8813","type":"started","payload":{"task_id":"RK-20260729-S1B","adapter":"chatgpt-codex","worktree":"D:\\Personal\\rolekit\\.rolekit\\worktrees\\run-20260729-035120-8813"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:27.433Z","run_id":"run-20260729-035120-8813","type":"message","payload":{"role":"system","text":"chatgpt-codex status: queued"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:32.488Z","run_id":"run-20260729-035120-8813","type":"message","payload":{"role":"system","text":"chatgpt-codex status: in_progress"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:35.002Z","run_id":"run-20260729-035120-8813","type":"tool_call","payload":{"name":"web_search_call","args_digest":"ws_0d693a0e659e42d3016a6978c6e0c88199af724a4db9ef1961"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:38.070Z","run_id":"run-20260729-035120-8813","type":"tool_call","payload":{"name":"web_search_call","args_digest":"ws_0d693a0e659e42d3016a6978c9ef60819984d59152f54f8ea9"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:42.281Z","run_id":"run-20260729-035120-8813","type":"tool_call","payload":{"name":"web_search_call","args_digest":"ws_0d693a0e659e42d3016a6978ce27c08199bff8d28085a8ecd6"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:51:47.320Z","run_id":"run-20260729-035120-8813","type":"tool_call","payload":{"name":"web_search_call","args_digest":"ws_0d693a0e659e42d3016a6978d3286c81998d82a9b42c5db48a"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:52:11.331Z","run_id":"run-20260729-035120-8813","type":"message","payload":{"role":"system","text":"chatgpt-codex status: completed"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-29T03:52:11.344Z","run_id":"run-20260729-035120-8813","type":"finished","payload":{"status":"completed","reason":null}}

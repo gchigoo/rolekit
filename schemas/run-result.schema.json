@@ -1,0 +1,263 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/run-result.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "runId",
+    "taskId",
+    "roleId",
+    "status",
+    "executor",
+    "summary",
+    "artifacts",
+    "evidence",
+    "usage",
+    "createdAt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/run-result@1",
+      "type": "string"
+    },
+    "runId": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "taskId": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "roleId": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "status": {
+      "anyOf": [
+        {
+          "const": "completed",
+          "type": "string"
+        },
+        {
+          "const": "failed",
+          "type": "string"
+        },
+        {
+          "const": "blocked",
+          "type": "string"
+        },
+        {
+          "const": "cancelled",
+          "type": "string"
+        }
+      ]
+    },
+    "executor": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "transport"
+      ],
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "transport": {
+          "anyOf": [
+            {
+              "const": "cli",
+              "type": "string"
+            },
+            {
+              "const": "in-process",
+              "type": "string"
+            },
+            {
+              "const": "remote",
+              "type": "string"
+            }
+          ]
+        },
+        "model": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "output": {},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "provenance"
+        ],
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+            "type": "string"
+          },
+          "kind": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "uri": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "content": {},
+          "mediaType": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "patternProperties": {
+              "^(.*)$": {}
+            }
+          },
+          "provenance": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "runId",
+              "executorId"
+            ],
+            "properties": {
+              "runId": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "executorId": {
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "value"
+        ],
+        "properties": {
+          "kind": {
+            "anyOf": [
+              {
+                "const": "command",
+                "type": "string"
+              },
+              {
+                "const": "file",
+                "type": "string"
+              },
+              {
+                "const": "url",
+                "type": "string"
+              },
+              {
+                "const": "note",
+                "type": "string"
+              }
+            ]
+          },
+          "value": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "usage": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "inputTokens": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "outputTokens": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "totalTokens": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "cachedInputTokens": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "durationMs": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "costUsd": {
+          "minimum": 0,
+          "type": "number"
+        }
+      }
+    },
+    "error": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "object",
+          "patternProperties": {
+            "^(.*)$": {}
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "format": "date-time",
+      "type": "string"
+    }
+  }
+}

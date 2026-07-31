@@ -1,3 +1,0 @@
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T09:51:52.624Z","run_id":"run-20260728-095152-9f89","type":"started","payload":{"task_id":"RK-ADAPTER-PI","adapter":"mock","worktree":"C:\\Users\\steven.guo\\AppData\\Local\\Temp\\rolekit-proj-I2LfGT\\.rolekit\\worktrees\\run-20260728-095152-9f89"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T09:51:52.647Z","run_id":"run-20260728-095152-9f89","type":"message","payload":{"role":"worker","text":"mock completed work"}}
-{"schema":"rolekit/run-event@1","ts":"2026-07-28T09:51:53.464Z","run_id":"run-20260728-095152-9f89","type":"finished","payload":{"status":"completed","reason":null}}

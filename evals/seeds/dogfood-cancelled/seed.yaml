@@ -1,4 +1,0 @@
-name: dogfood-cancelled
-source: pi-rpc-vertical-slice:run-20260728-083504-367e
-expectation: cancelled
-captured: 2026-07-28

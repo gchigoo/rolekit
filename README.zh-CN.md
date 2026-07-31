@@ -1,90 +1,77 @@
 # RoleKit
 
-宿主无关的编码 Agent 开发控制系统：以生命周期 WorkItem 与机读任务契约为中心，经可替换执行器完成受约束任务，产物落盘在 `.rolekit/`。
+RoleKit 提供可跨宿主使用的角色与任务契约，用来调用编码 Agent；它不拥有 Agent loop，也不管理项目工作流。
 
-[English](./README.md)
+仓库只保留一个宿主无关的最小 core，以及彼此独立的 Pi、Cursor、Codex CLI adapter。应用负责显式注册角色与
+adapter、为每次运行选择唯一 executor，并消费标准化的 `RunResult`。
 
-## 能做什么
+## 设计原则
 
-- **WorkItem** — feature / issue / refactor / research / goal，命令驱动状态机
-- **Task Contract** — 目标、scope、约束、交付物与验收（不是自由文本 prompt）
-- **Run** — 隔离执行；支持 status / steer（Pi）/ cancel / collect / verify
-- **Gate** — 机械证据放行 + 少量人工确认白名单
-- **Knowledge** — rule / adr / learning / note；active rule 注入下一次 compile
-- **Profile** — Role + Executor YAML（Pi、ChatGPT Codex、OpenAI Responses 等）
-- **Migrate** — 从 CodeStable / Superpowers 迁入全新 `.rolekit` 根
+- **可移植契约**：只定义 `RoleSpec`、`TaskPacket`、`ExecutorDescriptor`、`RunResult`。
+- **显式路由**：每次运行必须指定 executor；core 不自动回退。
+- **能力准入**：executor 缺少必需能力时直接返回 `blocked`，且不会调用 adapter。
+- **运行时类型校验**：角色输入、输出均按 JSON Schema 校验。
+- **真实来源**：结果记录实际 executor/model，artifact 记录 run 与 executor provenance。
+- **adapter 独立**：Pi、Cursor、Codex 以及第三方 adapter 都在 core 之外。
 
-宿主 Skill（Pi / Cursor / Codex）保持薄：只教 CLI 意图、读密封产物。恢复与 gate 决策不放进 Skill。
+RoleKit 不再包含工作项生命周期、gate、重试策略、持久化、worktree 管理、迁移框架、评测 campaign 或
+“项目是否完成”的判断。
 
 ## 环境要求
 
-- Node.js `>= 22.18`
-- npm（仓库根 workspace）或兼容包管理器
-- 可选执行器：Pi（`>=0.80 <0.90`）；研究路径可用 Codex / Responses
+- Node.js 22.18+
+- 至少一个支持的编码 Agent CLI，或应用自行提供的 adapter
 
-## 安装
-
-```bash
-git clone https://github.com/gchigoo/rolekit.git
-cd rolekit
-npm install
-npm link ./packages/cli   # 将 rolekit 挂到 PATH
+```powershell
+npm.cmd install
+npm.cmd run check
 ```
 
-安装宿主 Skill（可选）：
+在许可证与发布动作被明确批准前，package 保持 `private`。
 
-```bash
-npm run install-skill:cursor
-npm run install-skill:pi
-npm run install-skill:codex
+## CLI
+
+```powershell
+node .\bin\rolekit.js validate role .\examples\roles\implementer.yaml
+node .\bin\rolekit.js validate task .\examples\tasks\implement-feature.yaml
+node .\bin\rolekit.js run `
+  --role .\examples\roles\implementer.yaml `
+  --task .\examples\tasks\implement-feature.yaml `
+  --executor cursor `
+  --options .\examples\options\cursor.json `
+  --json
 ```
 
-## 快速开始
+Cursor adapter 使用 `cursor-agent` 无头 CLI：只读任务进入 plan mode，需要写入或 shell 的任务使用强制
+非交互模式。prompt 通过标准输入传递，adapter 解析 stream JSON 后交给 core 标准化。
 
-```bash
-rolekit workitem list --json
-rolekit task compile path/to/task.yaml --json
-rolekit run start path/to/task.yaml --json
-rolekit run status <run-id> --json
-rolekit run collect <run-id> --json
-```
+Pi 与 Codex 同样通过 CLI 调用。command、environment、model、timeout 和扩展能力都属于 adapter 的不透明
+配置，不进入公共任务契约。
 
-优先加 `--json` 以便机读。完整意图表见 [`adapters/shared/command-map.md`](./adapters/shared/command-map.md)。
+## 公共能力与状态
 
-## 目录结构
+能力只有：
 
-| 路径 | 作用 |
-| --- | --- |
-| `packages/cli` | `rolekit` 命令行 |
-| `packages/core` | schema、compile、knowledge |
-| `packages/runner` | run 管理、执行器、verifier |
-| `packages/migrate` | 迁入 `.rolekit` 的遗产导入 |
-| `packages/evals` | 离线 evaluateRun fixture |
-| `profiles/` | 角色 / 执行器 / 片段源 |
-| `adapters/` | 薄宿主 Skill + 共享 command-map |
-| `.rolekit/` | **唯一**生命周期根（work-items / knowledge / runs / migrations） |
+- `repository.read`
+- `repository.write`
+- `shell`
+- `web`
+- `vision`
 
-## 运维注意
+终态只有：
 
-- `run steer` 返回 **accepted** 只表示 durable control 已受理，不表示 worker 已执行完
-- owner/executor **lost** 会关闭当前 run；重试必须是新 attempt / 新 run id
-- 勿提交密钥、`auth.json`、原始 campaign dump
-- cutover 回执：[`docs/cutover-receipt.md`](./docs/cutover-receipt.md)
+- `completed`
+- `failed`
+- `blocked`
+- `cancelled`
 
-## 开发
+## 扩展 executor
 
-```bash
-npm test
-npx tsc --noEmit
-npm run evals
-npm run lint:adapters
-npm run validate:profiles
-```
+实现 `ExecutorAdapter` 并在构造 `Rolekit` 时注册即可。core 没有按宿主分支的 switch，也不会因为增加第四个
+adapter 而修改。
 
-## 状态
+## 边界文档
 
-RoleKit v2 goal 已完成。唯一生命周期真相根为 `.rolekit/`。
-
-## 许可
-
-`package.json` 标记为 `private: true`。对外分发前请先明确许可证。
+- [架构](docs/architecture.md)
+- [Veritack 集成边界](docs/veritack.md)
+- [English README](README.md)

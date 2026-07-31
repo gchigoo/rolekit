@@ -1,27 +1,10 @@
 node_modules/
 dist/
+coverage/
+.cursor/
+/review.md
+*.log
 *.tsbuildinfo
-.DS_Store
-nul
-
-# Runtime artifacts if dogfood uses repo root
-.rolekit/runs/
-.rolekit/worktrees/
-.rolekit/integration.lock
-.rolekit.pre-cutover-backup/
-.rolekit-migration-audits/
-.tmp-migrate-cutover.json
-
-# Pre-existing discussion notes (out of feature scope)
-讨论.md
-deepsearch讨论.md
-nul
-
-# Evidence: keep sealed receipts; ignore nested repos / temp worktrees
-evidence/**/project/.git/
-evidence/**/project/.rolekit/worktrees/
-evidence/**/.rolekit/worktrees/
-
-.tmp-evidence/
-.cursor/skills/rolekit-adapter-*/
-evidence/host-adapter-skills/**/_raw_capture/
+.env
+.env.*
+!.env.example

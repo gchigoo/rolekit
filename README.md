@@ -1,90 +1,145 @@
 # RoleKit
 
-Host-agnostic development control for coding agents: lifecycle work items, machine-readable task contracts, replaceable executors, and durable run artifacts under `.rolekit/`.
+RoleKit provides portable role and task contracts for invoking coding agents across hosts. It
+does not own the agent loop or project workflow.
 
-[中文](./README.zh-CN.md)
+The package has one small host-independent core and separate CLI adapters for Pi, Cursor, and
+Codex. Applications explicitly register roles and adapters, select one executor for each run,
+and receive a normalized `RunResult`.
 
-## What it does
+## Design
 
-- **Work items** — feature / issue / refactor / research / goal with a command-driven state machine
-- **Task contracts** — scoped goals, constraints, deliverables, and verification (not free-form prompts)
-- **Runs** — isolated execution with status, steer (Pi), cancel, collect, and verify
-- **Gates** — mechanical evidence gates plus a small human-confirm whitelist
-- **Knowledge** — rule / adr / learning / note entries; active rules inject into the next compile
-- **Profiles** — Role + Executor YAML (Pi, ChatGPT Codex, OpenAI Responses, …)
-- **Migrate** — import from CodeStable or Superpowers into a fresh `.rolekit` root
+- **Portable contracts**: `RoleSpec`, `TaskPacket`, `ExecutorDescriptor`, and `RunResult`.
+- **Explicit routing**: every run names one executor; core performs no fallback.
+- **Capability admission**: an adapter is never invoked when it lacks a required capability.
+- **Typed output**: role input and output are checked against JSON Schema at runtime.
+- **Provenance**: normalized artifacts record the run and actual executor that produced them.
+- **Independent adapters**: Pi, Cursor, Codex, and third-party adapters live outside core.
 
-Host Skills (Pi / Cursor / Codex) stay thin: they teach CLI intents and read sealed artifacts. Recovery and gate decisions stay in RoleKit / the operator, not in the Skill.
+RoleKit deliberately has no work-item lifecycle, gate engine, retry policy, persistence layer,
+worktree manager, migration framework, evaluation campaign, or project-completion decision.
 
 ## Requirements
 
-- Node.js `>= 22.18`
-- npm (workspace root) or a compatible package manager
-- Optional executors: Pi (`>=0.80 <0.90`), Codex / Responses for research paths
+- Node.js 22.18 or newer
+- One supported coding-agent CLI, or an application-provided adapter
 
-## Install
+## Install from this repository
 
 ```bash
-git clone https://github.com/gchigoo/rolekit.git
-cd rolekit
 npm install
-npm link ./packages/cli   # puts `rolekit` on PATH
+npm run check
 ```
 
-Install a host Skill (optional):
+The package remains private until licensing and publication are explicitly approved.
 
-```bash
-npm run install-skill:cursor
-npm run install-skill:pi
-npm run install-skill:codex
+## Contracts
+
+```ts
+import { Type, type Static } from '@sinclair/typebox'
+import {
+  Rolekit,
+  type RoleSpec,
+  type TaskPacket,
+} from '@gchigoo/rolekit/core'
+import { CursorCliAdapter } from '@gchigoo/rolekit/cursor'
+
+const InputSchema = Type.Object({
+  request: Type.String({ minLength: 1 }),
+})
+const OutputSchema = Type.Object({
+  changedFiles: Type.Array(Type.String()),
+})
+
+type Input = Static<typeof InputSchema>
+type Output = Static<typeof OutputSchema>
+
+const role: RoleSpec<Input, Output> = {
+  schema: 'rolekit/role-spec@1',
+  id: 'implementer',
+  description: 'Implement one bounded repository change.',
+  requiredCapabilities: ['repository.read', 'repository.write', 'shell'],
+  inputSchema: InputSchema,
+  outputSchema: OutputSchema,
+}
+
+const task: TaskPacket<Input> = {
+  schema: 'rolekit/task-packet@1',
+  taskId: 'change-health-endpoint',
+  roleId: role.id,
+  objective: 'Add a typed health endpoint.',
+  input: { request: 'Add GET /health.' },
+  context: [],
+  constraints: ['Do not add production dependencies.'],
+  acceptanceCriteria: ['Relevant tests pass.'],
+  allowedPaths: ['src/**', 'test/**'],
+  expectedArtifacts: [{ name: 'implementation-summary', kind: 'text' }],
+}
+
+const rolekit = new Rolekit({
+  roles: [role],
+  adapters: [new CursorCliAdapter()],
+})
+
+const result = await rolekit.run<Input, Output>(task, {
+  executorId: 'cursor',
+  cwd: process.cwd(),
+  adapterOptions: {
+    model: 'auto',
+    timeoutMs: 600_000,
+  },
+})
 ```
 
-## Quick start
+Core recognizes only these portable capabilities:
 
-```bash
-rolekit workitem list --json
-rolekit task compile path/to/task.yaml --json
-rolekit run start path/to/task.yaml --json
-rolekit run status <run-id> --json
-rolekit run collect <run-id> --json
+- `repository.read`
+- `repository.write`
+- `shell`
+- `web`
+- `vision`
+
+Run statuses are terminal and intentionally small: `completed`, `failed`, `blocked`, and
+`cancelled`.
+
+## CLI
+
+```text
+rolekit validate role examples/roles/implementer.yaml
+rolekit validate task examples/tasks/implement-feature.yaml
+rolekit run \
+  --role examples/roles/implementer.yaml \
+  --task examples/tasks/implement-feature.yaml \
+  --executor cursor \
+  --options examples/options/cursor.json \
+  --json
 ```
 
-Prefer `--json` for machine-readable stdout. Full intent table: [`adapters/shared/command-map.md`](./adapters/shared/command-map.md).
+The Cursor adapter invokes `cursor-agent` in headless CLI mode. Read-only tasks use plan mode;
+tasks requiring writes or shell execution use forced non-interactive mode. Prompts are delivered
+through standard input and stream JSON is parsed into the normalized result.
 
-## Project layout
+Pi and Codex are also CLI adapters. The application can override the command, environment,
+model, timeout, and declared capabilities through opaque adapter options.
 
-| Path | Role |
-| --- | --- |
-| `packages/cli` | `rolekit` binary |
-| `packages/core` | schemas, compile, knowledge catalog |
-| `packages/runner` | run manager, executors, verifier |
-| `packages/migrate` | legacy import into `.rolekit` |
-| `packages/evals` | offline run evaluation fixtures |
-| `profiles/` | canonical role / executor / fragment sources |
-| `adapters/` | thin host Skills + shared command map |
-| `.rolekit/` | **sole** lifecycle root (work items, knowledge, runs, migrations) |
+## Add another executor
 
-## Operator notes
+Implement `ExecutorAdapter`, then register it:
 
-- `run steer` **accepted** means the durable control was accepted, not that the worker finished the message
-- owner/executor **lost** closes the run; retry is a new attempt / new run id
-- do not commit secrets, `auth.json`, or raw campaign dumps
-- cutover receipt: [`docs/cutover-receipt.md`](./docs/cutover-receipt.md)
-
-## Development
-
-```bash
-npm test
-npx tsc --noEmit
-npm run evals
-npm run lint:adapters
-npm run validate:profiles
+```ts
+const rolekit = new Rolekit({
+  roles: [role],
+  adapters: [
+    new CursorCliAdapter(),
+    myAdapter,
+  ],
+})
 ```
 
-## Status
+Adding an adapter requires no core switch statement and does not change the contracts.
 
-RoleKit v2 goal is complete. Lifecycle truth is `.rolekit/` only.
+## Architecture and integration
 
-## License
-
-Private / unpublished package metadata (`private: true`). Clarify license before public redistribution.
+- [Architecture](docs/architecture.md)
+- [Veritack integration boundary](docs/veritack.md)
+- [Chinese README](README.zh-CN.md)

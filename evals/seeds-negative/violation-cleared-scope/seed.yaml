@@ -1,4 +1,0 @@
-name: violation-cleared-scope
-source: negative
-expectation: violation
-captured: 2026-07-28
