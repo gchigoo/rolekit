@@ -119,8 +119,17 @@ The Cursor adapter invokes `cursor-agent` in headless CLI mode. Read-only tasks 
 tasks requiring writes or shell execution use forced non-interactive mode. Prompts are delivered
 through standard input and stream JSON is parsed into the normalized result.
 
-Pi and Codex are also CLI adapters. The application can override the command, environment,
-model, timeout, and declared capabilities through opaque adapter options.
+Pi and Codex are also CLI adapters. The Codex adapter preserves the CLI's native per-model
+instructions and sends the final response schema through `--output-schema`, so that schema is not
+duplicated in the user prompt. Pi uses the neutral RoleKit prompt by default. When the effective
+model names `grok-4.5` explicitly (including provider-qualified names), the Pi adapter wraps the
+contract in a `<user_query>` envelope, appends a small execution instruction through
+`--append-system-prompt`, and defaults to `--thinking high`. A thinking suffix on the effective
+model or a valid `--thinking <level>` pair in `commandArgs`/`extraArgs` takes precedence.
+
+The application can override the command, environment, model, timeout, and declared capabilities
+through opaque adapter options. Prompt-profile selection remains entirely inside adapters and does
+not add model-specific concepts to the core task contract.
 
 ## Add another executor
 

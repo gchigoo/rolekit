@@ -16,7 +16,12 @@ import {
   readUsage,
   textFromContent,
 } from '../cli/parse.ts'
-import { buildExecutionPrompt } from '../cli/prompt.ts'
+import {
+  buildPiExecutionPrompt,
+  buildPiProfileArguments,
+  resolvePiEffectiveModel,
+  resolvePiPromptProfile,
+} from './prompt.ts'
 
 interface PiFinalMessage {
   readonly text: string
@@ -112,6 +117,8 @@ export class PiCliAdapter extends CliAdapterBase {
     options: CliAdapterOptions,
     signal: AbortSignal,
   ): Promise<ExecutorResponse> {
+    const promptProfile = resolvePiPromptProfile(options)
+    const configuredModel = resolvePiEffectiveModel(options)
     const args = [
       '--mode',
       'json',
@@ -125,13 +132,14 @@ export class PiCliAdapter extends CliAdapterBase {
       toolAllowlist(role, task),
       ...(options.provider === undefined ? [] : ['--provider', options.provider]),
       ...(options.model === undefined ? [] : ['--model', options.model]),
+      ...buildPiProfileArguments(promptProfile, options),
       ...(options.extraArgs ?? []),
     ]
     const processResult = await this.run(
       context,
       options,
       args,
-      buildExecutionPrompt(role, task),
+      buildPiExecutionPrompt(role, task, promptProfile),
       signal,
     )
     if (processResult.exitCode !== 0) {
@@ -142,7 +150,7 @@ export class PiCliAdapter extends CliAdapterBase {
 
     const parsed = parsePiStream(processResult.stdout)
     const response = parseExecutorPayload(parsed.text)
-    const model = parsed.model ?? options.model
+    const model = parsed.model ?? configuredModel
     return {
       ...response,
       evidence: [

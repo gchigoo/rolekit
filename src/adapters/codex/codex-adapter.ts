@@ -20,7 +20,7 @@ import {
   parseJsonLines,
   readUsage,
 } from '../cli/parse.ts'
-import { buildExecutionPrompt } from '../cli/prompt.ts'
+import { buildCodexExecutionPrompt } from './prompt.ts'
 
 interface CodexEventData {
   readonly model?: string
@@ -102,13 +102,12 @@ export class CodexCliAdapter extends CliAdapterBase {
         outputPath,
         ...(options.model === undefined ? [] : ['--model', options.model]),
         ...(options.extraArgs ?? []),
-        '-',
       ]
       const processResult = await this.run(
         context,
         options,
         args,
-        buildExecutionPrompt(role, task),
+        buildCodexExecutionPrompt(role, task),
         signal,
       )
       if (processResult.exitCode !== 0) {

@@ -11,4 +11,3 @@ export {
   resolveExecutable,
   runCliProcess,
 } from './process.ts'
-export { buildExecutionPrompt } from './prompt.ts'

@@ -1,0 +1,121 @@
+import type { RoleSpec, TaskPacket } from '../../core/types.ts'
+import type { CliAdapterOptions } from '../cli/options.ts'
+import {
+  buildNeutralExecutionPrompt,
+  createExecutionPromptContract,
+  stringifyPromptJson,
+} from '../cli/prompt.ts'
+
+export type PiPromptProfile = 'neutral' | 'grok-4.5'
+
+const THINKING_LEVELS = new Set(['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
+const THINKING_SUFFIX_PATTERN = /:(?:off|minimal|low|medium|high|xhigh|max)$/u
+
+export const GROK_45_SYSTEM_PROMPT_APPEND = [
+  '<rolekit_execution>',
+  'Complete exactly one RoleKit task from the contract inside the user_query envelope.',
+  'Use only enabled tools and obey every declared constraint and allowed path.',
+  'Return exactly one JSON object matching the output contract, without Markdown fences.',
+  '</rolekit_execution>',
+].join('\n')
+
+function lastOptionValue(
+  args: readonly string[] | undefined,
+  option: string,
+  initialValue?: string,
+): string | undefined {
+  let value = initialValue
+  for (let index = 0; index < (args?.length ?? 0); index += 1) {
+    if (args?.[index] === option && args[index + 1] !== undefined) {
+      value = args[index + 1]
+      index += 1
+    }
+  }
+  return value
+}
+
+function containsThinkingArgument(args: readonly string[] | undefined): boolean {
+  for (let index = 0; index < (args?.length ?? 0); index += 1) {
+    if (args?.[index] === '--thinking' && THINKING_LEVELS.has(args[index + 1] ?? '')) {
+      return true
+    }
+  }
+  return false
+}
+
+export function resolvePiEffectiveModel(options: CliAdapterOptions): string | undefined {
+  const commandModel = lastOptionValue(options.commandArgs, '--model')
+  const configuredModel = options.model ?? commandModel
+  return lastOptionValue(options.extraArgs, '--model', configuredModel)
+}
+
+export function hasExplicitPiThinking(options: CliAdapterOptions): boolean {
+  const effectiveModel = resolvePiEffectiveModel(options)
+  return (
+    (effectiveModel !== undefined && THINKING_SUFFIX_PATTERN.test(effectiveModel.trim())) ||
+    containsThinkingArgument(options.commandArgs) ||
+    containsThinkingArgument(options.extraArgs)
+  )
+}
+
+export function resolvePiPromptProfile(options: CliAdapterOptions): PiPromptProfile {
+  const model = resolvePiEffectiveModel(options)?.trim()
+  if (model === undefined || model.length === 0) {
+    return 'neutral'
+  }
+  const normalizedModel = model.replace(THINKING_SUFFIX_PATTERN, '')
+  const finalSegment = normalizedModel.split('/').at(-1)
+  return finalSegment === 'grok-4.5' ? 'grok-4.5' : 'neutral'
+}
+
+export function buildPiProfileArguments(
+  profile: PiPromptProfile,
+  options: CliAdapterOptions,
+): readonly string[] {
+  if (profile === 'neutral') {
+    return []
+  }
+  return [
+    '--append-system-prompt',
+    GROK_45_SYSTEM_PROMPT_APPEND,
+    ...(hasExplicitPiThinking(options) ? [] : ['--thinking', 'high']),
+  ]
+}
+
+export function buildPiExecutionPrompt(
+  role: RoleSpec,
+  task: TaskPacket,
+  profile: PiPromptProfile,
+): string {
+  if (profile === 'neutral') {
+    return buildNeutralExecutionPrompt(role, task)
+  }
+  const contract = createExecutionPromptContract(role, task)
+  return [
+    '<user_query>',
+    '<rolekit_execution_contract>',
+    '<role>',
+    stringifyPromptJson(contract.role),
+    '</role>',
+    '<required_capabilities>',
+    stringifyPromptJson(contract.requiredCapabilities),
+    '</required_capabilities>',
+    '<task>',
+    stringifyPromptJson(contract.task),
+    '</task>',
+    '<output_contract>',
+    '<role_output_schema>',
+    stringifyPromptJson(contract.outputContract.roleOutputSchema),
+    '</role_output_schema>',
+    '<final_response_schema>',
+    stringifyPromptJson(contract.outputContract.finalResponseSchema),
+    '</final_response_schema>',
+    '<final_response_rules>',
+    stringifyPromptJson(contract.outputContract.finalResponseRules),
+    '</final_response_rules>',
+    '</output_contract>',
+    '</rolekit_execution_contract>',
+    '</user_query>',
+    '',
+  ].join('\n')
+}

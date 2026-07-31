@@ -45,8 +45,15 @@ node .\bin\rolekit.js run `
 Cursor adapter 使用 `cursor-agent` 无头 CLI：只读任务进入 plan mode，需要写入或 shell 的任务使用强制
 非交互模式。prompt 通过标准输入传递，adapter 解析 stream JSON 后交给 core 标准化。
 
-Pi 与 Codex 同样通过 CLI 调用。command、environment、model、timeout 和扩展能力都属于 adapter 的不透明
-配置，不进入公共任务契约。
+Pi 与 Codex 同样通过 CLI 调用。Codex adapter 保留 CLI 自带的模型提示词，并通过
+`--output-schema` 传递最终响应 schema，不再在用户 prompt 中重复该 schema。Pi 默认使用中立的
+RoleKit prompt；当最终生效的 model 显式指定 `grok-4.5`（包括带 provider 的完整名称）时，Pi
+adapter 会用 `<user_query>` 包裹执行合同，通过 `--append-system-prompt` 追加一小段执行约束，并
+默认增加 `--thinking high`。如果最终 model 已带 thinking 后缀，或 `commandArgs`/`extraArgs`
+已提供合法的 `--thinking <level>` 参数对，则以显式配置为准。
+
+command、environment、model、timeout 和扩展能力都属于 adapter 的不透明配置。prompt profile
+选择完全位于 adapter 内部，不向 core 公共任务契约引入任何模型专属概念。
 
 ## 公共能力与状态
 

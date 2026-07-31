@@ -15,7 +15,7 @@ import {
   parseJsonLines,
   readUsage,
 } from '../cli/parse.ts'
-import { buildExecutionPrompt } from '../cli/prompt.ts'
+import { buildNeutralExecutionPrompt } from '../cli/prompt.ts'
 
 interface CursorStreamResult {
   readonly finalText: string
@@ -102,7 +102,7 @@ export class CursorCliAdapter extends CliAdapterBase {
       context,
       options,
       args,
-      buildExecutionPrompt(role, task),
+      buildNeutralExecutionPrompt(role, task),
       signal,
     )
     if (processResult.exitCode !== 0) {
