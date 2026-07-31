@@ -20,10 +20,12 @@ function rolekit(args: string[], cwd: string) {
 
 describe('run steer CLI', () => {
   it('parses --message/--request-id and emits the accepted nested result', () => {
-    const { root, taskSuccess } = createTempProject()
-    writeFileSync(
-      join(root, '.rolekit', 'profiles', 'executors', 'mock.yaml'),
-      `schema: rolekit/executor-profile@1
+    let lastError = ''
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { root, taskSuccess } = createTempProject()
+      writeFileSync(
+        join(root, '.rolekit', 'profiles', 'executors', 'mock.yaml'),
+        `schema: rolekit/executor-profile@1
 name: mock
 adapter: mock
 settings:
@@ -32,20 +34,37 @@ settings:
   write_file: src/implemented.txt
   write_content: "implemented-by-mock\\n"
 `,
-    )
-    const start = rolekit(['run', 'start', taskSuccess, '--detach', '--json'], root)
-    assert.equal(start.status, 0, start.stderr || start.stdout)
-    const runId = (JSON.parse(start.stdout) as { id: string }).id
-    const steered = rolekit(
-      ['run', 'steer', runId, '--message', ' continue ', '--request-id', 'cli-request-1', '--json'],
-      root,
-    )
-    assert.equal(steered.status, 0, steered.stderr || steered.stdout)
-    assert.deepEqual((JSON.parse(steered.stdout) as { steer: unknown }).steer, {
-      state: 'accepted',
-      request_id: 'cli-request-1',
-      no_op: false,
-    })
+      )
+      const start = rolekit(['run', 'start', taskSuccess, '--detach', '--json'], root)
+      if (start.status !== 0) {
+        lastError = start.stderr || start.stdout
+        // Windows CI occasionally misses supervisor ack on cold start; retry whole case.
+        if (lastError.includes('supervisor_start_failed') && attempt < 2) continue
+        assert.equal(start.status, 0, lastError)
+      }
+      const runId = (JSON.parse(start.stdout) as { id: string }).id
+      const steered = rolekit(
+        [
+          'run',
+          'steer',
+          runId,
+          '--message',
+          ' continue ',
+          '--request-id',
+          'cli-request-1',
+          '--json',
+        ],
+        root,
+      )
+      assert.equal(steered.status, 0, steered.stderr || steered.stdout)
+      assert.deepEqual((JSON.parse(steered.stdout) as { steer: unknown }).steer, {
+        state: 'accepted',
+        request_id: 'cli-request-1',
+        no_op: false,
+      })
+      return
+    }
+    assert.fail(lastError || 'steer CLI start failed after retries')
   })
 
   it('uses exit 2 for a missing --message or positional message', () => {

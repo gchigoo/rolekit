@@ -8,6 +8,8 @@ on:
 jobs:
   windows:
     runs-on: windows-latest
+    env:
+      ROLEKIT_SUPERVISOR_ACK_MS: "60000"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

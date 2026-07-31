@@ -60,9 +60,13 @@ export async function spawnSupervisor(
       return { ok: false, error: 'supervisor spawn produced no pid' }
     }
 
-    // wait for ack
+    // wait for ack (CI Windows hosts can exceed the old 10s cold-start window)
+    const ackTimeoutMs = Math.max(
+      10_000,
+      Number(process.env.ROLEKIT_SUPERVISOR_ACK_MS ?? 30_000) || 30_000,
+    )
     const start = Date.now()
-    while (Date.now() - start < 10_000) {
+    while (Date.now() - start < ackTimeoutMs) {
       const ack = await readJsonIfExists<Partial<ProcessIdentity> & { run_id?: string }>(
         join(dir, 'artifacts', 'supervisor.json'),
       )
