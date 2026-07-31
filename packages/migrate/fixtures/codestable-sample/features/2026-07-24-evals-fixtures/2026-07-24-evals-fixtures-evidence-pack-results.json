@@ -1,0 +1,24 @@
+{
+  "gate_id": "evidence-pack",
+  "stage": "implementation.before_review",
+  "status": "blocked",
+  "blocking": [
+    "missing input: .codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-design.md",
+    "missing input: .codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-checklist.yaml"
+  ],
+  "warnings": [],
+  "evidence": [],
+  "providers": {},
+  "feature": "2026-07-24-evals-fixtures",
+  "inputs": {
+    "design": ".codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-design.md",
+    "checklist": ".codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-checklist.yaml",
+    "out": ".codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-evidence-pack.md",
+    "dod_results": ".codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-dod-results.json",
+    "gate_results": ".codestable/features/2026-07-24-evals-fixtures/2026-07-24-evals-fixtures-gate-results.json"
+  },
+  "input_digests": {
+    "dod_results": "c75cc9c63d5fb74d20d20982caadd14fe3d7448504e8c729a47be9dc1ef1cce1",
+    "gate_results": "7df130b73b2a565434fdbe7bac3cdd326795fe54db2d19e1cd753815780d492e"
+  }
+}

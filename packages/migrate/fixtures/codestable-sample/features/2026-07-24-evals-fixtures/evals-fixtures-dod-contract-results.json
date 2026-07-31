@@ -1,0 +1,35 @@
+{
+  "gate_id": "dod-contract-gate",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [],
+  "evidence": [
+    {
+      "design": "D:\\Personal\\rolekit\\.codestable\\features\\2026-07-24-evals-fixtures\\evals-fixtures-design.md",
+      "checked_block": "DoD Contract",
+      "structure_checks": {
+        "validation command id": [
+          "CMD-"
+        ],
+        "command core marker": [
+          "core",
+          "核心性"
+        ],
+        "failure handling marker": [
+          "failure_handling",
+          "失败处理"
+        ]
+      },
+      "strength": "minimal DoD Contract section check"
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-24-evals-fixtures",
+  "inputs": {
+    "design": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-design.md"
+  },
+  "input_digests": {
+    "design": "d096281c3605b94ccdfe672bdf8ddf8a9608d4be0188d89f742b6e8ee0a1efc3"
+  }
+}

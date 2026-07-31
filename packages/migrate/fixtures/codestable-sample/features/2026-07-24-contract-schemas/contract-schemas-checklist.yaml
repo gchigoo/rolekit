@@ -1,0 +1,94 @@
+feature: 2026-07-24-contract-schemas
+created: 2026-07-24
+
+steps:
+  - action: "仓库基线：npm workspaces + erasable tsconfig + Biome + node:test 空测试 + CI 命令矩阵骨架（含空 e2e harness）"
+    exit_signal: "npm test / tsc --noEmit / biome check 三命令在 Windows 本机绿，空 e2e harness 可执行"
+    status: done
+  - action: "最难 schema spike：RunEvent（7 变体 discriminated union）与 WorkItem（gate 条件约束）TypeBox 定义"
+    exit_signal: "两 schema 正/负例单测通过；表达力不足则停并回 roadmap update"
+    status: done
+  - action: "其余 7 类 schema TypeBox 定义 + roadmap 4.1-4.10 逐字段对照自查表"
+    exit_signal: "9 类结构校验单测全过，自查表落盘于 feature 目录"
+    status: done
+  - action: "语义规则层：design D7 清单逐条实现 semanticRules；Knowledge `.md` 经 core `parseKnowledgeMarkdown`（CRLF/CR→LF）得到 `{frontmatter,body}` 后再 validateArtifact，semanticRules 只消费已切分 body（Context/Decision/Consequences/Alternatives Considered 四节与 rule 单段）而不做切分；保留 codec LF/切分正负例证据"
+    exit_signal: "每条语义规则至少 1 正例 + 1 负例单测通过"
+    status: done
+  - action: "JSON Schema 导出脚本：9 类 schema 导出 schemas/json/*.json"
+    exit_signal: "9 份 json 生成且重跑导出 git diff 为零"
+    status: done
+  - action: "compileTask(yaml)->TaskContract 与 rolekit validate CLI（--json、exit 0/1/2）"
+    exit_signal: "compileTask 单测过（正例深等、错例字段级 issues）；CLI e2e 过（正例 exit 0、负例 exit 1、用法错误 exit 2、--json 结构断言、parse_error/validation_error/unknown_schema 区分）"
+    status: done
+  - action: "fixture 套件收口：每类 schema >=1 正例 + 2 负例（负例按 design D8 分层策略），e2e 套件 spawn 真实 rolekit validate 遍历判定"
+    exit_signal: "真实 CLI 遍历全部 fixture 判定正确且 npm test 一键全绿（roadmap 验收字面路径）"
+    status: done
+
+checks:
+  - item: "validateArtifact 返回 ValidationResult，issues 含 layer(structural|semantic) 与字段级 path"
+    source: 名词契约
+    status: passed
+  - item: "compileTask 正例返回冻结 TaskContract，错例抛 SchemaValidationError 含字段级 issues"
+    source: 名词契约
+    status: passed
+  - item: "ExecutorProfile.adapter 为非空 string（结构约束 minLength:1）且 schema 不做枚举；正例含未内置 adapter 名判定 valid，空串为结构负例"
+    source: 名词契约
+    status: passed
+  - item: "除 compileTask seam 外，通用非 md YAML/JSON 解析与文件 I/O 归 CLI/loader；Knowledge 纯切分/序列化归 core codec；validateArtifact 只收已解析对象；KnowledgeEntry 载荷为 { frontmatter, body }"
+    source: 名词契约
+    status: passed
+  - item: "WorkItem.kind 含 goal（以 roadmap 4.9 为准；CONTEXT.md 由 acceptance 回写）"
+    source: 名词契约
+    status: passed
+  - item: "结构校验失败短路，不执行语义规则层；缺 schema 字段/未知 kind 返回稳定 code unknown_schema"
+    source: 编排骨架
+    status: passed
+  - item: "Knowledge `.md` 经 core codec 得到 `{frontmatter,body}`：frontmatter 走结构层，body 走 Context/Decision/Consequences/Alternatives Considered 四节与 rule 单段 type 断言，semanticRules 不切分"
+    source: 编排骨架
+    status: passed
+  - item: "CLI 是 core 薄壳：validate 子命令内无校验逻辑；exit 约定 0/1/2 对齐 roadmap 4.5，--json 时 stdout 只有 JSON"
+    source: 流程级约束
+    status: passed
+  - item: "JSON Schema 导出脚本幂等：重跑产物零 diff"
+    source: 流程级约束
+    status: passed
+  - item: "根 package.json workspaces、cli bin.rolekit、CI workflow、schemas/json 目录、items.yaml 回写五个挂载点齐全"
+    source: 挂载点
+    status: passed
+  - item: "依赖中不出现 ajv/zod/joi/eslint/prettier；packages/ 下无 runner/migrate/adapters/profiles/evals"
+    source: 范围守护
+    status: passed
+  - item: "CLI 无 validate 以外子命令；无 npm publish 生效配置"
+    source: 范围守护
+    status: passed
+  - item: "9 类正例经真实 CLI exit 0、结构负例 exit 1 带 structural issue、4 类语义负例 exit 1 带 semantic issue（D8 策略）"
+    source: 验收场景
+    status: passed
+  - item: "用法错误（缺参/未知 flag）exit 2"
+    source: 验收场景
+    status: passed
+  - item: "空文件与 UTF-8 BOM 输入返回 parse_error 不崩溃"
+    source: 验收场景
+    status: passed
+
+dod:
+  commands:
+    - id: CMD-001
+      command: "npm test"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-002
+      command: "npx tsc --noEmit"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-003
+      command: "npx biome check ."
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-004
+      command: "node --test test/e2e/"
+      core: true
+      failure_handling: fix-or-block
+  evidence_required: [command_output, diff_summary]
+  cleanliness:
+    debug_output: forbidden

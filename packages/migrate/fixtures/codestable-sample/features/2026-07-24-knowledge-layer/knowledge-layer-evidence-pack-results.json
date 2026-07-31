@@ -1,0 +1,40 @@
+{
+  "gate_id": "evidence-pack",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [],
+  "evidence": [
+    {
+      "out": "D:\\Personal\\rolekit\\.codestable\\features\\2026-07-24-knowledge-layer\\knowledge-layer-evidence-pack.md",
+      "providers": {
+        "archguard": {
+          "status": "unavailable",
+          "reason": "archguard binary not found on PATH",
+          "warnings": []
+        },
+        "meta_cc": {
+          "status": "unavailable",
+          "reason": "meta-cc summary not found; realtime session collection is out of scope",
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-24-knowledge-layer",
+  "inputs": {
+    "design": ".codestable/features/2026-07-24-knowledge-layer/knowledge-layer-design.md",
+    "checklist": ".codestable/features/2026-07-24-knowledge-layer/knowledge-layer-checklist.yaml",
+    "out": ".codestable/features/2026-07-24-knowledge-layer/knowledge-layer-evidence-pack.md",
+    "dod_results": ".codestable/features/2026-07-24-knowledge-layer/knowledge-layer-dod-results.json",
+    "gate_results": ".codestable/features/2026-07-24-knowledge-layer/knowledge-layer-gate-results.json"
+  },
+  "input_digests": {
+    "design": "4ce9b527c4dd28d00864188f0f96330eb92f5f98f689e57ab8cf345c9339f9d5",
+    "checklist": "ed975a68a75fe8ac958132267ee91b2091ac06bfb91535ce2a5dfc7473905c8c",
+    "dod_results": "ae08d1fdb542785efc05fd91df0afde783be1a0aebde62228e5fb4e344610edf",
+    "gate_results": "f185a8a09da8291a57a70bd22a4b491954a69e95f114f356986d7a10e1737982",
+    "out": "014b371ec4588a2024e9258c3fb363b66a49c25e3fa4bb7fc974d295f03e0f77"
+  }
+}

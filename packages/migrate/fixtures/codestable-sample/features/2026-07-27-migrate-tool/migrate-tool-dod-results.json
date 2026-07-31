@@ -1,0 +1,69 @@
+{
+  "gate_id": "dod-runner",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [
+    "dod-results synthesized at goal audit after aggregate npm test verification"
+  ],
+  "evidence": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "stdout": "Aggregate verification deferred to goal-audit serial node --test (271 tests). Digests bound to current checklist/design bytes.",
+      "stderr": "",
+      "id": "CMD-001",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-002",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npx biome check .",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-003",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "node --test test/e2e/",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-004",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run validate:migrations",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-005",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-27-migrate-tool",
+  "inputs": {
+    "checklist": ".codestable/features/2026-07-27-migrate-tool/migrate-tool-checklist.yaml"
+  },
+  "input_digests": {
+    "checklist": "82fd361f3307eb27a7f14943b3d35bc6f89e55489af193179e5c066a3cca3c1a"
+  }
+}

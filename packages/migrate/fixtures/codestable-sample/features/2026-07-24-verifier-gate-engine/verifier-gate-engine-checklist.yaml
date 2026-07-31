@@ -1,0 +1,94 @@
+feature: 2026-07-24-verifier-gate-engine
+created: 2026-07-24
+
+steps:
+  - action: "core PolicyEngine API + per-hit decisions/overall 穷举（四 action、显式/default、未知 trigger、无 hit、多命中）"
+    exit_signal: "真值矩阵全绿；runner 与 WorkItem fixture caller 消费同一导出且不重复折叠优先级"
+    status: done
+  - action: "loadDetectPolicy + HEAD name-status/untracked change-manifest + 六 detectors/default/snapshot（每类正负、api_paths 空 warning）"
+    exit_signal: "六算法与不可变 snapshot 全绿；每类 >=1 正+1 负；escalation 不转 hit 断言"
+    status: done
+  - action: "gate-record 根 schema + GateEvaluationPipeline/RunManager coordinator（机械失败、Envelope 表、minimal/enhanced 单路径）"
+    exit_signal: "wrapper 1正2负、双快照、无持久化副作用 pipeline、D13 终态矩阵、minimal/enhanced 单次 gate 全绿"
+    status: done
+  - action: "gate router + pre-await/awaiting/resuming/finished恢复e2e（pre-await/resuming均由status/wait/collect/gate list|decision续、四 checkpoint kill、多 confirm 全量决策、approve/reject/cancel）"
+    exit_signal: "reconcile/恢复不重跑或重复集成；list pending[]、全部 resolution、前缀/错误/JSON/exit 全绿"
+    status: done
+  - action: "验收 run 1：真实 Pi 合规 run（acceptance-observe policy + api_paths 确定性 observe）"
+    exit_signal: "0 人工 gate；events 含 >=1 observe；gates wrapper 有对应 record；Envelope completed 并集成；snapshot 留档"
+    status: done
+  - action: "验收 run 2：真实 Pi 越界注入 run"
+    exit_signal: "scope-violation 在 enhanced 路径只产生一次 block；worktree 不集成；Envelope failed；gate event/record 对应"
+    status: done
+  - action: "收口：D9 §2/§3/§5/4.1/4.5/4.6/4.8/Matrix/items 全量 patch + compound"
+    exit_signal: "D9 每个 patch 条目有 diff；Goal Coverage Matrix 两行证据齐全"
+    status: done
+
+checks:
+  - item: "吸收清单借5/不借5/改良4 + 五原语对照齐备，owner 批量确认单列过目"
+    source: 名词契约
+    status: passed
+  - item: "core 导出 GateAction/TriggerHit/PolicyDecision/PolicyEvaluation/evaluate；decisions 含 ignore 且一一对应，overall 唯一折叠；未知 trigger 走 default，无 hit overall ignore"
+    source: 名词契约
+    status: passed
+  - item: "PolicyEngine 纯函数无 IO；runner/WorkItem 双消费；无 core->runner、无 runner/CLI 优先级或 action 表副本"
+    source: 名词契约
+    status: passed
+  - item: "Verifier 只产 VerificationReport；GateEvaluationPipeline 无 run 产物写/状态迁移；RunManager coordinator 唯一持久化 gates/events/result/run-state"
+    source: 名词契约
+    status: passed
+  - item: "gates.json 根为 {schema:'rolekit/gate-record@1',records:[]}；ignore 不落盘；confirm resolution 仅 approved|rejected|cancelled；observe/block 禁 resolution；finished 后冻结"
+    source: 名词契约
+    status: passed
+  - item: "所有终态含executor短路均有gates wrapper；mechanical/scope失败不调用PolicyEngine且Envelope failed；non-scope block/reject blocked；approve+集成 completed；overall block 的 confirm record cancelled；人工不可洗机械失败"
+    source: 流程级约束
+    status: passed
+  - item: "policy-snapshot.json/detect-snapshot.json 不可变；run-state.json 是状态权威，phase preparing|prepared|starting|active|finalizing|cancelling|gate-pending|resuming|terminal；events 追加"
+    source: 流程级约束
+    status: passed
+  - item: "pre-await commit=verification+manifest+candidate/patch+pending gates；state=running且phase=finalizing命中该形态由status/waitUntilSettled/collect/gate list|approve|reject reconcile 补 event+awaiting；其他不一致 fail-closed"
+    source: 流程级约束
+    status: passed
+  - item: "一次 run 决策 resolve 全部 pending；resolution是commit；resuming由status/waitUntilSettled/collect/gate list|approve|reject续；finished no-op；cancel前空wrapper，awaiting保留verification/candidate并全cancelled/不集成"
+    source: 流程级约束
+    status: passed
+  - item: "gate <id> 大小写敏感：run- 本条 handler、WI- 未安装时 gate_target_unavailable/安装后路由、其他前缀 invalid_gate_target exit2；稳定码表 run_not_found|no_pending_gate|gate_decision_conflict|gate_target_unavailable|run_state_inconsistent|invalid_gate_target|invalid_usage 与 JSON shape 冻结"
+    source: 流程级约束
+    status: passed
+  - item: "RunManager gate前生成不可变HEAD+untracked manifest（R/C双路径匹配）；empty api_paths写去重system message；loadDetectPolicy enhanced必调/invalid零写；六算法/默认/证据冻结；escalation审计并记ADR delta"
+    source: 范围守护
+    status: passed
+  - item: "无 @veritack 依赖/源码复制/tool_call hook/危险命令实时拦截/enhanced-verifier 混合 IO 模块；危险命令仅在表现为现有 trigger 时被发现"
+    source: 范围守护
+    status: passed
+  - item: "实现严格前置pi-rpc复审passed，且ADR003 Decision替换+ D9 §2/§3/§5/4.1/4.5/4.6/4.8/Matrix/items patch 全合入"
+    source: 范围守护
+    status: passed
+  - item: "core PolicyEngine+schema、runner pipeline/coordinator、gate router、run-state/gates/snapshots、detect/policy 模板、items 回写挂载点齐全"
+    source: 挂载点
+    status: passed
+dod:
+  commands:
+    - id: CMD-001
+      command: "npm test"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-002
+      command: "node --test test/e2e/"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-003
+      command: "npx tsc --noEmit && npx biome check ."
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-004
+      command: "node scripts/verifier-validate-artifacts.mjs"
+      core: true
+      failure_handling: fix-or-block
+  evidence_required: [command_output, run_artifacts, run_state, gate_records, snapshots, crash_recovery, diff_summary, roadmap_patch]
+  cleanliness:
+    veritack_source_copy: forbidden
+    policy_engine_io: forbidden
+    gate_io_outside_coordinator: forbidden
+    debug_output: forbidden
+    todo_fixme: forbidden

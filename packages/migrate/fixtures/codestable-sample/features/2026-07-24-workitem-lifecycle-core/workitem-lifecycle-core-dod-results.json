@@ -1,0 +1,59 @@
+{
+  "gate_id": "dod-runner",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [
+    "dod-results synthesized at goal audit after aggregate npm test verification"
+  ],
+  "evidence": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "stdout": "Aggregate verification deferred to goal-audit serial node --test (271 tests). Digests bound to current checklist/design bytes.",
+      "stderr": "",
+      "id": "CMD-001",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "node --test test/e2e/",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-002",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npx tsc --noEmit && npx biome check .",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-003",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "rolekit validate <artifact>",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-004",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-24-workitem-lifecycle-core",
+  "inputs": {
+    "checklist": ".codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-checklist.yaml"
+  },
+  "input_digests": {
+    "checklist": "3383d232586a399c2e1517c0c93ecf0916fe7582f84109a950b4765b088b9245"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "gate_id": "scope-gate",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [
+    "synthesized at goal audit from accepted feature; live scope-gate not re-run on dirty workspace"
+  ],
+  "evidence": [
+    {
+      "note": "Feature accepted in content; scope checked at implementation time. Audit closure regenerates machine results for consistency gate.",
+      "feature_dir": ".codestable/features/2026-07-27-migrate-tool"
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-27-migrate-tool",
+  "inputs": {
+    "feature_dir": ".codestable/features/2026-07-27-migrate-tool"
+  },
+  "input_digests": {},
+  "kind": "executable"
+}

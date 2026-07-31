@@ -1,0 +1,114 @@
+roadmap: rolekit-v2
+status: completed
+baseline_ref: no-git
+driver_kind: host-agent
+driver_id: "rk-v2-goal-driver-20260729-hardening"
+execution_confirmation_id: "rk-v2-goal-exec-20260728-a1"
+acceptance_authorization: approved
+acceptance_authorization_ref: "approval-report.md#goal-acceptance"
+commit_authorization: approved
+commit_authorization_ref: "approval-report.md#goal-commits"
+handoff_reason: ""
+handoff_next: ""
+current_feature_index: 11
+# note: SwitchDecision=go (36be17fc…); hardening accepted; cutover authorized+executed 2026-07-31
+features:
+  - slug: contract-schemas
+    roadmap_item: contract-schemas
+    feature_dir: .codestable/features/2026-07-24-contract-schemas
+    design: .codestable/features/2026-07-24-contract-schemas/contract-schemas-design.md
+    checklist: .codestable/features/2026-07-24-contract-schemas/contract-schemas-checklist.yaml
+    review: .codestable/features/2026-07-24-contract-schemas/contract-schemas-review.md
+    qa: .codestable/features/2026-07-24-contract-schemas/contract-schemas-qa.md
+    acceptance: .codestable/features/2026-07-24-contract-schemas/contract-schemas-acceptance.md
+    status: accepted
+  - slug: pi-rpc-vertical-slice
+    roadmap_item: pi-rpc-vertical-slice
+    feature_dir: .codestable/features/2026-07-24-pi-rpc-vertical-slice
+    design: .codestable/features/2026-07-24-pi-rpc-vertical-slice/pi-rpc-vertical-slice-design.md
+    checklist: .codestable/features/2026-07-24-pi-rpc-vertical-slice/pi-rpc-vertical-slice-checklist.yaml
+    review: .codestable/features/2026-07-24-pi-rpc-vertical-slice/pi-rpc-vertical-slice-review.md
+    qa: .codestable/features/2026-07-24-pi-rpc-vertical-slice/pi-rpc-vertical-slice-qa.md
+    acceptance: .codestable/features/2026-07-24-pi-rpc-vertical-slice/pi-rpc-vertical-slice-acceptance.md
+    status: accepted
+  - slug: host-adapter-skills
+    roadmap_item: host-adapter-skills
+    feature_dir: .codestable/features/2026-07-24-host-adapter-skills
+    design: .codestable/features/2026-07-24-host-adapter-skills/host-adapter-skills-design.md
+    checklist: .codestable/features/2026-07-24-host-adapter-skills/host-adapter-skills-checklist.yaml
+    review: .codestable/features/2026-07-24-host-adapter-skills/host-adapter-skills-review.md
+    qa: .codestable/features/2026-07-24-host-adapter-skills/host-adapter-skills-qa.md
+    acceptance: .codestable/features/2026-07-24-host-adapter-skills/host-adapter-skills-acceptance.md
+    status: accepted
+  - slug: role-profiles-migration
+    roadmap_item: role-profiles-migration
+    feature_dir: .codestable/features/2026-07-24-role-profiles-migration
+    design: .codestable/features/2026-07-24-role-profiles-migration/role-profiles-migration-design.md
+    checklist: .codestable/features/2026-07-24-role-profiles-migration/role-profiles-migration-checklist.yaml
+    review: .codestable/features/2026-07-24-role-profiles-migration/role-profiles-migration-review.md
+    qa: .codestable/features/2026-07-24-role-profiles-migration/role-profiles-migration-qa.md
+    acceptance: .codestable/features/2026-07-24-role-profiles-migration/role-profiles-migration-acceptance.md
+    status: accepted
+  - slug: verifier-gate-engine
+    roadmap_item: verifier-gate-engine
+    feature_dir: .codestable/features/2026-07-24-verifier-gate-engine
+    design: .codestable/features/2026-07-24-verifier-gate-engine/verifier-gate-engine-design.md
+    checklist: .codestable/features/2026-07-24-verifier-gate-engine/verifier-gate-engine-checklist.yaml
+    review: .codestable/features/2026-07-24-verifier-gate-engine/verifier-gate-engine-review.md
+    qa: .codestable/features/2026-07-24-verifier-gate-engine/verifier-gate-engine-qa.md
+    acceptance: .codestable/features/2026-07-24-verifier-gate-engine/verifier-gate-engine-acceptance.md
+    status: accepted
+  - slug: evals-fixtures
+    roadmap_item: evals-fixtures
+    feature_dir: .codestable/features/2026-07-24-evals-fixtures
+    design: .codestable/features/2026-07-24-evals-fixtures/evals-fixtures-design.md
+    checklist: .codestable/features/2026-07-24-evals-fixtures/evals-fixtures-checklist.yaml
+    review: .codestable/features/2026-07-24-evals-fixtures/evals-fixtures-review.md
+    qa: .codestable/features/2026-07-24-evals-fixtures/evals-fixtures-qa.md
+    acceptance: .codestable/features/2026-07-24-evals-fixtures/evals-fixtures-acceptance.md
+    status: accepted
+  - slug: research-module
+    roadmap_item: research-module
+    feature_dir: .codestable/features/2026-07-24-research-module
+    design: .codestable/features/2026-07-24-research-module/research-module-design.md
+    checklist: .codestable/features/2026-07-24-research-module/research-module-checklist.yaml
+    review: .codestable/features/2026-07-24-research-module/research-module-review.md
+    qa: .codestable/features/2026-07-24-research-module/research-module-qa.md
+    acceptance: .codestable/features/2026-07-24-research-module/research-module-acceptance.md
+    status: accepted
+  - slug: workitem-lifecycle-core
+    roadmap_item: workitem-lifecycle-core
+    feature_dir: .codestable/features/2026-07-24-workitem-lifecycle-core
+    design: .codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-design.md
+    checklist: .codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-checklist.yaml
+    review: .codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-review.md
+    qa: .codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-qa.md
+    acceptance: .codestable/features/2026-07-24-workitem-lifecycle-core/workitem-lifecycle-core-acceptance.md
+    status: accepted
+  - slug: knowledge-layer
+    roadmap_item: knowledge-layer
+    feature_dir: .codestable/features/2026-07-24-knowledge-layer
+    design: .codestable/features/2026-07-24-knowledge-layer/knowledge-layer-design.md
+    checklist: .codestable/features/2026-07-24-knowledge-layer/knowledge-layer-checklist.yaml
+    review: .codestable/features/2026-07-24-knowledge-layer/knowledge-layer-review.md
+    qa: .codestable/features/2026-07-24-knowledge-layer/knowledge-layer-qa.md
+    acceptance: .codestable/features/2026-07-24-knowledge-layer/knowledge-layer-acceptance.md
+    status: accepted
+  - slug: migrate-tool
+    roadmap_item: migrate-tool
+    feature_dir: .codestable/features/2026-07-27-migrate-tool
+    design: .codestable/features/2026-07-27-migrate-tool/migrate-tool-design.md
+    checklist: .codestable/features/2026-07-27-migrate-tool/migrate-tool-checklist.yaml
+    review: .codestable/features/2026-07-27-migrate-tool/migrate-tool-review.md
+    qa: .codestable/features/2026-07-27-migrate-tool/migrate-tool-qa.md
+    acceptance: .codestable/features/2026-07-27-migrate-tool/migrate-tool-acceptance.md
+    status: accepted
+  - slug: hardening-dogfood-switchover
+    roadmap_item: hardening-dogfood-switchover
+    feature_dir: .codestable/features/2026-07-27-hardening-dogfood-switchover
+    design: .codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-design.md
+    checklist: .codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-checklist.yaml
+    review: .codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-review.md
+    qa: .codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-qa.md
+    acceptance: .codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-acceptance.md
+    status: accepted

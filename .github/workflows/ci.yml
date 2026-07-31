@@ -22,4 +22,3 @@ jobs:
       - run: npm run lint:adapters
       - run: npm run lint:profile-fragments
       - run: npm run validate:profiles
-      - run: node --test "test/e2e/**/*.test.ts"

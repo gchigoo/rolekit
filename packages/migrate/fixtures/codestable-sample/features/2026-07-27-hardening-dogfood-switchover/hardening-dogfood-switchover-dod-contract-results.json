@@ -1,0 +1,35 @@
+{
+  "gate_id": "dod-contract-gate",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [],
+  "evidence": [
+    {
+      "design": "D:\\Personal\\rolekit\\.codestable\\features\\2026-07-27-hardening-dogfood-switchover\\hardening-dogfood-switchover-design.md",
+      "checked_block": "DoD Contract",
+      "structure_checks": {
+        "validation command id": [
+          "CMD-"
+        ],
+        "command core marker": [
+          "core",
+          "核心性"
+        ],
+        "failure handling marker": [
+          "failure_handling",
+          "失败处理"
+        ]
+      },
+      "strength": "minimal DoD Contract section check"
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-27-hardening-dogfood-switchover",
+  "inputs": {
+    "design": ".codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-design.md"
+  },
+  "input_digests": {
+    "design": "4cc381cd2fb55e3f986c9fc66ad48f3dff23c7c70052e4ae6dcfefa8cb2890f9"
+  }
+}

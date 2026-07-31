@@ -1,0 +1,134 @@
+feature: 2026-07-27-migrate-tool
+created: 2026-07-27
+steps:
+- action: source safety/manifest + SourceAdapter contract
+  exit_signal: path/symlink/size/UTF-8/version/license负例与RFC8785 before-manifest golden全绿，源脚本零执行
+  status: done
+- action: CodeStable mapper：必迁entity、精确状态表、ADR/compound/attention
+  exit_signal: 状态与category/key/title/created fixtures过；attention ordinal/重复H2、KN缺字段、unknown/missing/type-missing均失败
+  status: done
+- action: roadmap-feature plan：locator、merge、goal depends、DAG、封闭skip
+  exit_signal: 八步map；decisions；mandatory exact counts/source-digest；depends bound改写；multibind item+feature error；skip/error/DAG全绿
+  status: done
+- action: Superpowers 5.1.3 adapter：14技能静态映射、8 heading/templates、资产台账、MIT
+  exit_signal: 8 profile canonical YAML/raw sha+fragment attribution；6 note tags/body/说明；discarded单落点；14双射、禁词/license全绿
+  status: done
+- action: fresh-target staging promoter：全量validate、source-after、directory rename与receipt
+  exit_signal: bundle envelope/counts/raw sha全绿；no-op五identity+三digest，tamper拒绝；error plan不取锁；故障零target
+  status: done
+- action: migrate CLI/report：audit-only/apply、flags、JSON/exit、稳定码
+  exit_signal: report/target三态；plan-error omit|audit、后期失败staging指针；issues两hash链/message_code稳定；usage/business e2e全绿
+  status: done
+- action: roadmap两条主验收：本仓库CodeStable self-migration + Superpowers sample
+  exit_signal: 两源fresh apply全target validate、deterministic semantic diff、source checksum通过
+  status: done
+- action: harden/收口：Windows crash/source-change/security矩阵 + D14 dry-run patch
+  exit_signal: fault矩阵与全命令绿；roadmap/upstream/host/items补丁逐项有diff且旧契约零丢失
+  status: done
+checks:
+- item: SourceEntity是semantic aggregate；.gitkeep只进discarded、semantic empty才skip；evidence/support只进provenance；evidence/discarded counts精确；manifest无absolute/mtime
+  source: 名词契约
+  status: passed
+- item: cli->migrate->core；migrate不依赖CLI store、不复制semanticRules、不执行source脚本
+  source: 名词契约
+  status: passed
+- item: migrate flags/default/exit与report{base,path}/target三态冻结；dependency_invalid专属图、validation_failed专属目标；compound闭表；superpowers显式source
+  source: 名词契约
+  status: passed
+- item: CodeStable mandatory九行始终输出；self discovered exact 11/0/0/0/1/11/6/0/1，全仓10个gitkeep只discarded；非skip/error实体唯一target/merge
+  source: 名词契约
+  status: passed
+- item: WorkItem状态精确；roadmap只读frontmatter.status且active->executing；aggregate无阶段=missing、无intent-only；unknown/missing fail
+  source: 流程级约束
+  status: passed
+- item: category/source_key闭表；WI/KN/RP key前缀+percent公式，bound merge_into全等；assignIds分组UTF8排序/1..999；fingerprint含plan/adapter/full sha+empty decisions；collision失败
+  source: 流程级约束
+  status: passed
+- item: 全bundle封闭；assertions sha仅semantic、errors sha仅error-details且均可重算；mandatory/source_digest/RFC/no-op/roadmap-item真值表
+  source: 名词契约
+  status: passed
+- item: depends slug同roadmap解析、bound改feature key、skip/error/missing/self/cycle码冻结；multibind items+feature均error且两category failed计数；goal deps唯一
+  source: 流程级约束
+  status: passed
+- item: ADR/compound title+created严格源字段；compound/attention status=active；attention title/1-based/tags/重复H2/project_epoch冻结且本仓1 rule；禁mtime/now
+  source: 流程级约束
+  status: passed
+- item: 八步map；decisions canonical ref零/多match失败；引用target禁任何skip且不重定向；multibind items=error entries；error-plan audit写/apply锁前fail
+  source: 流程级约束
+  status: passed
+- item: fresh only；迁移WI与Superpowers Profile各有固定canonical YAML writer/roundtrip/raw sha；updated=applyInstant；全validate后单次rename
+  source: 流程级约束
+  status: passed
+- item: versioned fingerprint；orphan同fingerprint恢复；no-op=五identity+三重算digest，tamper拒绝；证据digests不进fingerprint
+  source: 流程级约束
+  status: passed
+- item: audit-only不建staging/.rolekit；report-dir/source/staging/final互不落入source root；source before-after byte-equal
+  source: 流程级约束
+  status: passed
+- item: Superpowers adapter仅支持codex plugin 5.1.3与冻结14 slugs/MIT；未知版本/license/layout apply失败
+  source: 流程级约束
+  status: passed
+- item: 14 bundles一对一8+6；fragment首行attribution、note tags/body固定；code-reviewer等未选只discarded，贡献源才provenance；reason/assets闭合
+  source: 验收场景
+  status: passed
+- item: 8 profile用CommonMark AST只索引code/HTML外ATX heading；路径/level/text+固定四字段+golden锁定，writing fence伪Overview不计，缺/重/空fail
+  source: 验收场景
+  status: passed
+- item: semantic assertions全量；sample固定覆盖每非空mandatory类别首尾+全部merge/skip/error，非声明diff硬失败
+  source: 验收场景
+  status: passed
+- item: 无runs/live或双源同target merge/source mutation/schema delta/旧生命周期根/active编排profile/absolute path或secret
+  source: 范围守护
+  status: passed
+- item: 实现前D14全量合入；item10(1)/(4)先替换且14-27/4.10/Matrix/items覆盖pipeline/noop/bundle/keys/metadata/writers；host保留其他命令
+  source: 范围守护
+  status: passed
+- item: 挂载点仅migrate CLI/package、fresh .rolekit target、fixtures/evidence与D14 patch，删除后feature可消失
+  source: 挂载点
+  status: passed
+- item: design场景1-18与Acceptance Matrix逐项有step/命令/证据；两源apply、zero-target与source manifest为core
+  source: 验收场景
+  status: passed
+dod:
+  commands:
+  - id: CMD-001
+    command: npm test
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-002
+    command: npx tsc --noEmit
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-003
+    command: npx biome check .
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-004
+    command: node --test test/e2e/
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-005
+    command: npm run validate:migrations
+    core: true
+    failure_handling: fix-or-block
+  evidence_required:
+  - command_output
+  - migration_reports
+  - source_manifest
+  - target_manifest
+  - mapping
+  - semantic_diff
+  - receipt
+  - zero_target_diff
+  - windows_crash
+  - superpowers_matrix
+  - license_attribution
+  - roadmap_patch
+  cleanliness:
+    source_scripts_executed: forbidden
+    absolute_paths_in_receipt: forbidden
+    debug_output: forbidden
+    todo_fixme: forbidden
+    commented_code: forbidden
+    unused_imports: forbidden
+    fixtures_in_repo_root: forbidden

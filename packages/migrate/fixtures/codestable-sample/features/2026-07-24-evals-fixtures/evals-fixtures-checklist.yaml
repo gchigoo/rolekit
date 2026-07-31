@@ -1,0 +1,78 @@
+feature: 2026-07-24-evals-fixtures
+created: 2026-07-24
+
+steps:
+  - action: "evaluateRun 三指标纯函数（D1 公式冻结）+ mock 种子（source: mock）+ 单测（每指标 >=1 正例 + 1 负例，含 cancelled seed 正例）"
+    exit_signal: "三指标公式单测全绿；关键假设（五件产物充分性）实证"
+    status: done
+  - action: "evaluateLedger + JSON 报告输出 + exit 语义（0 达标 / 1 未达标或 unknown_expectation / 2 用法错误）"
+    exit_signal: "mock 台账一键回归绿，非法元数据 exit 1，用法错误 exit 2"
+    status: done
+  - action: "evals:capture 采集脚本（复制五件产物 + 脱敏 + seed.yaml 生成 + 入库准入门闩：evaluateRun 达预期否则 seed_rejected exit 1）+ 脱敏自检 grep 断言（key/绝对路径/用户名模式）"
+    exit_signal: "对 mock run 目录采集产出合法 seed 且自检零命中；不达预期产物被拒绝"
+    status: done
+  - action: "seeds-negative >=4 损坏种子（Envelope 缺 unresolved 的 failed / task.json 缺必填 / violation 的 scope_violations 清空 / evidence 引用不存在路径）+ D5 可失败性断言进 npm test"
+    exit_signal: "负目录必产 fail verdict 的断言绿，四类各对应一个指标分项"
+    status: done
+  - action: "真实种子采集（pi-rpc 验收产物 >=5：2 clean + 1 cancelled + 2 violation，经准入门闩）替换 mock 台账；mock 种子迁移至 packages/evals/test/fixtures/seeds-mock/"
+    exit_signal: "npm run evals 对真实种子台账回归绿；2 个 violation seed 的 result.json.unresolved 非空断言过；evals/seeds/ 无 mock 残留"
+    status: done
+  - action: "CI 矩阵追加 evals 行 + 收口：items.yaml 回写"
+    exit_signal: "CI 含 evals 行；Goal Coverage Matrix'npm run evals 一键回归'行证据齐全"
+    status: done
+
+checks:
+  - item: "三指标公式冻结（D1）：契约完整率 = validateArtifact 通过比（阈值 100%）；越界 = 检出率 100% + 误报 0 双子指标（expectation 标签驱动，只读 verification.json）；Envelope 完整率 = validateArtifact(ResultEnvelope 结构+语义) + evidence 路径存在（只读 result.json，语义规则单一实现在 core 不手写第二份），与 roadmap 条目 11 机械定义逐字对齐；两文件不交叉比对（一致性归 runner 组装所有权）"
+    source: 名词契约
+    status: passed
+  - item: "调用面冻结（hardening 条目 11 复用契约）：evaluateRun(runDir, meta?) meta 可选；scope='skipped' 当且仅当无 meta 或 expectation=cancelled，仅 clean/violation 产出 {detected}；envelope.pass 为 validate 与 evidence_paths 合取；RunEvalResult 形状冻结且有形状断言单测"
+    source: 名词契约
+    status: passed
+  - item: "seed 目录契约（D2）：五件产物 + seed.yaml（name/source/expectation/captured）；expectation 封闭三值 clean|violation|cancelled，未知值 exit 1 unknown_expectation"
+    source: 名词契约
+    status: passed
+  - item: "evals 报告非 core schema（评测产物自持）；零新增 core schema"
+    source: 名词契约
+    status: passed
+  - item: "纯离线：零 executor 零网络（packages/evals 无 adapter import 无 fetch，依赖审计）；seed 只读；负例静态维护于 seeds-negative 不做运行时注入"
+    source: 流程级约束
+    status: passed
+  - item: "exit 语义 0/1/2 对齐 roadmap 4.5；采集脚本是种子进仓库唯一通道（review 抽检 captured 与脚本输出一致性）"
+    source: 流程级约束
+    status: passed
+  - item: "首批真实种子来源冻结：pi-rpc 验收 run（2 成功 + 1 cancel + 越界注入 + 主区注入）>=5 个；实现严格前置 pi-rpc done，S1-S4 可先行于 mock 种子"
+    source: 流程级约束
+    status: passed
+  - item: "脱敏规则机械执行：绝对路径改相对、剔除 key/用户名字样，自检 grep 断言进 npm test"
+    source: 范围守护
+    status: passed
+  - item: "不重复包装 check:research（机械门闩：packages/evals 内 grep check:research|check-research|checkResearch 零命中）；无 LLM 评审代码；阈值硬冻结（100%/0），例外走 roadmap update"
+    source: 范围守护
+    status: passed
+  - item: "exit 语义 e2e 挂 npm test（node --test 内 spawn evals CLI）；Goal Matrix Core?=no 为 epic 最小闭环维度标记，与本 design Matrix 的 Core? 维度不同（脚注已声明）"
+    source: 流程级约束
+    status: passed
+  - item: "npm scripts（evals/evals:capture）、CI 矩阵追加、evals/ 进 workspace 检查、items.yaml 回写挂载点齐全"
+    source: 挂载点
+    status: passed
+
+dod:
+  commands:
+    - id: CMD-001
+      command: "npm test"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-002
+      command: "npm run evals"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-003
+      command: "npx tsc --noEmit && npx biome check ."
+      core: true
+      failure_handling: fix-or-block
+  evidence_required: [command_output, run_artifacts, diff_summary]
+  cleanliness:
+    seed_secrets_or_abs_paths: forbidden
+    evaluate_side_effects: forbidden
+    debug_output: forbidden
+    todo_fixme: forbidden

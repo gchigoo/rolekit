@@ -1,5 +1,5 @@
 /**
- * migrate CLI e2e: CodeStable audit + Superpowers audit on fixtures.
+ * migrate CLI e2e: CodeStable sample fixture + Superpowers fixture.
  */
 
 import assert from 'node:assert/strict'
@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url'
 const repoRoot = join(fileURLToPath(new URL('../..', import.meta.url)))
 const rolekit = join(repoRoot, 'packages/cli/bin/rolekit.js')
 const superpowers = join(repoRoot, 'packages/migrate/fixtures/superpowers-5.1.3')
+const codestableSample = join(repoRoot, 'packages/migrate/fixtures/codestable-sample')
 
 /**
  * Runs rolekit migrate with JSON output.
@@ -27,7 +28,7 @@ function runMigrate(args: string[]): { status: number | null; stdout: string; st
 }
 
 describe('migrate e2e', () => {
-  it('audits this repo CodeStable into an external report-dir', async () => {
+  it('audits the CodeStable sample fixture into an external report-dir', async () => {
     const target = await mkdtemp(join(tmpdir(), 'rk-migrate-cs-'))
     const reportDir = join(target, 'audits')
     try {
@@ -35,7 +36,7 @@ describe('migrate e2e', () => {
         '--from',
         'codestable',
         '--source',
-        join(repoRoot, '.codestable'),
+        codestableSample,
         '--target',
         target,
         '--report-dir',
@@ -92,14 +93,14 @@ describe('migrate e2e', () => {
     }
   })
 
-  it('applies this repo CodeStable to a fresh target', async () => {
+  it('applies the CodeStable sample fixture to a fresh target', async () => {
     const target = await mkdtemp(join(tmpdir(), 'rk-migrate-cs-apply-'))
     try {
       const result = runMigrate([
         '--from',
         'codestable',
         '--source',
-        join(repoRoot, '.codestable'),
+        codestableSample,
         '--target',
         target,
       ])

@@ -1,5 +1,5 @@
 /**
- * CodeStable scan/map unit tests against this repository's .codestable.
+ * CodeStable scan/map unit tests against the packaged sample fixture.
  */
 
 import assert from 'node:assert/strict'
@@ -21,23 +21,24 @@ import { emptyDecisions } from '../../src/decisions.ts'
 import { buildCodestableMandatoryCounts } from '../../src/map/pipeline.ts'
 import { buildSourceManifest } from '../../src/safety.ts'
 
-const repoRoot = join(fileURLToPath(new URL('../../../..', import.meta.url)))
-const csRoot = join(repoRoot, '.codestable')
+const fixtureRoot = join(
+  fileURLToPath(new URL('../../fixtures/codestable-sample', import.meta.url)),
+)
 
-describe('codestable self-scan', () => {
+describe('codestable sample-scan', () => {
   it('detects adapter_id codestable@1', async () => {
-    const detected = await detectCodestable(csRoot)
+    const detected = await detectCodestable(fixtureRoot)
     assert.equal(detected.adapter_id, CODESTABLE_ADAPTER_ID)
   })
 
   it('mandatory discovered counts match 11/0/0/0/1/11/6/0/1 and 10 gitkeep discarded', async () => {
-    const { manifest } = await buildSourceManifest(csRoot, CODESTABLE_ADAPTER_ID)
-    const scanned = await scanCodestable(csRoot, manifest)
+    const { manifest } = await buildSourceManifest(fixtureRoot, CODESTABLE_ADAPTER_ID)
+    const scanned = await scanCodestable(fixtureRoot, manifest)
     const plan = mapCodestable(scanned.entities, emptyDecisions(), {
       adapter_id: CODESTABLE_ADAPTER_ID,
       source_manifest_sha256: 'test',
       decisions_sha256: 'test',
-      source_root: csRoot,
+      source_root: fixtureRoot,
       manifest,
       provenance: scanned.provenance,
       discarded: scanned.discarded,
@@ -66,18 +67,19 @@ describe('codestable self-scan', () => {
   })
 
   it('attention.md produces exactly 1 rule', async () => {
-    const text = await readFile(join(csRoot, 'attention.md'), 'utf8')
+    const text = await readFile(join(fixtureRoot, 'attention.md'), 'utf8')
     const { rules } = parseAttentionRules(text, attentionFileDigest(text))
     assert.equal(rules.length, 1)
     assert.equal(rules[0]!.h2, '报告语言')
   })
 
   it('discards 10 .gitkeep files as empty-placeholder only', async () => {
-    const { manifest } = await buildSourceManifest(csRoot, CODESTABLE_ADAPTER_ID)
-    const scanned = await scanCodestable(csRoot, manifest)
+    const { manifest } = await buildSourceManifest(fixtureRoot, CODESTABLE_ADAPTER_ID)
+    const scanned = await scanCodestable(fixtureRoot, manifest)
     const gitkeeps = scanned.discarded.filter(
       (d) => d.reason === 'empty-placeholder' && d.source_path.endsWith('.gitkeep'),
     )
     assert.equal(gitkeeps.length, 10)
+    assert.ok(gitkeeps.every((d) => d.reason === 'empty-placeholder'))
   })
 })

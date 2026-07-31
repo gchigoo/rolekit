@@ -47,7 +47,8 @@ if (files.length === 0) {
   process.exit(1)
 }
 
-const result = spawnSync(process.execPath, ['--test', ...files], {
+// Serial execution avoids Windows supervisor-ack races under parallel mocks.
+const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...files], {
   cwd: root,
   stdio: 'inherit',
   env: process.env,

@@ -1,0 +1,118 @@
+feature: 2026-07-24-workitem-lifecycle-core
+created: 2026-07-24
+steps:
+- action: 状态机核：transition 8x8 + attachRun(first/retry) + adoptRunResult CAS真值表 + gate/goal/D4 reducer
+  exit_signal: 矩阵、无self-loop retry、同run后继态no-op、gate字段/log与非法组合全绿
+  status: done
+- action: selectLane 规则表（migration||cross_module->coordinated；estimated_files<=3&&context_loaded->direct；其余 delegated）+ 三 lane/边界/policy 无关单测
+  exit_signal: 三 lane 各 >=2 例、边界 3/4、reason 字符串及不同 policy 等价断言全绿
+  status: done
+- action: workitem store：create全局锁内分配id + 原子替换 + Windows双进程唯一id/竞争/stale/失败保旧
+  exit_signal: 并发create不撞号；锁/原子写全绿；失败路径旧YAML checksum不变
+  status: done
+- action: 基础 CLI：create/list/next/design + store 接线 + InvalidTransition/no_ready_item/用法错误 e2e
+  exit_signal: 不用手改 YAML 即可造 planned/designing；过滤、依赖排序、dropped warning、exit 0/1/2 全部断言过
+  status: done
+- action: WorkItem gate 与 done：WI- 前缀路由、D5 一次性条件、D4 过桥、final-acceptance 四 action、gate 字段清场 + run- 路由回归 e2e
+  exit_signal: 四 action、approve/reject 幂等、WI-/run- 隔离、其他前缀 exit 2 全绿；run- 既有行为零回归
+  status: done
+- action: start/run：existing phase分派；policy→D5/lane→delegated loader→prepare/link/mirror/start/wait/adopt saga
+  exit_signal: 已有run恢复不依赖profiles；initial=false、retry及同digest crash重放=true/task_id绑定/attachRun无self-loop；link后CAS与done竞态不回退；retry缺task=retry_task_required；loader零写；workitem_changed回收reservation；prepared_abort_failed留abort_requested；两者WI
+    checksum不变；awaiting->reject->再次start采纳blocked；五码/JSON/同attempt/旧run/override镜像（含link后crash补写）全绿
+  status: done
+- action: 真实链：create->next->start delegated->run confirm->run- approve；断言 WI 仍 executing+result completed；done->final confirm->WI- approve->done
+  exit_signal: approve 后中间态与最终态、run/events/gate_log 齐全且过 validate
+  status: done
+- action: 收口：roadmap §3/4.5/4.6/4.8/4.9 完整 patch 核对 + host-adapter-skills 跟进登记 + items.yaml/compound 回写
+  exit_signal: Goal Coverage Matrix 对应证据齐全；补丁、跟进和知识回写均有可追溯 diff
+  status: done
+checks:
+- item: 盘点清单三列齐备（留 6 / 砍 5 / 改 4），owner 批量确认单列过目（ADR 003 设计类 gate，roadmap 4.9 要求）
+  source: 名词契约
+  status: passed
+- item: PolicyEngine 唯一实现位于 packages/core，由 runner GateEvaluationPipeline/WorkItem 双消费；无 core->runner、无 CLI/runner 优先级副本
+  source: 名词契约
+  status: passed
+- item: WorkItem schema 零改动；状态机核/gate reducer/selectLane 为 core 纯函数无 IO；CLI 只编排 IO，不复制状态与裁定规则
+  source: 名词契约
+  status: passed
+- item: confirm 进入 awaiting-gate 原子设置 gate={trigger,origin}；approve/reject/ignore/observe/block 后非 awaiting 状态 gate=null；gate_log decision 只用
+    4.9 枚举
+  source: 名词契约
+  status: passed
+- item: D2命令+JSON：写命令{item,...}、list{items}、next{item,warnings}、错误{error,...}；create依赖校验；共用policy/run loaders失败零写
+  source: 名词契约
+  status: passed
+- item: 顺序固定existing-run无loader；new=policy→D5/lane→delegated loadRunInput；start短锁expected/linkedRevision；first transition+attachRun，retry仅attachRun；start控制错误若run已终态先collect；wait后adopt
+    CAS/后继态no-op；link并发才abort；awaiting|finished返回
+  source: 流程级约束
+  status: passed
+- item: 按 pi-rpc D13：completed->verifying；mechanical/scope/integration failed->run_failed可重试；cancelled/question；executor/non-scope block/reject->WorkItem
+    blocked；lost仅 failed reason
+  source: 流程级约束
+  status: passed
+- item: executing恢复：retry=true仅failed|cancelled|question且修订task.id等最新run，否则retry_task_mismatch；completed采纳后仍done；finished blocked deferred-adopt到WI
+    blocked不建run；任何failed reason/cancelled/question须修订task显式retry；prepared|starting先ensureAuditEvent+startPrepared；active|finalizing|cancelling|resuming
+    wait；awaiting返回；terminal collect；同attempt恢复；blocked->*无恢复
+  source: 流程级约束
+  status: passed
+- item: D2a 每条 4.9 合法转移标注实现或延后；延后边只做 core 单测，不以手改 YAML 造 e2e
+  source: 流程级约束
+  status: passed
+- item: D4 过桥：delegated/coordinated 仅最新 completed 且 runs 均非 running/awaiting；direct 仅首次 runs 空；否则 runs_incomplete
+  source: 流程级约束
+  status: passed
+- item: D5 仅 designing 起点触发；approved|auto-pass 一次性跳过；重新送审 v1 不支持
+  source: 流程级约束
+  status: passed
+- item: gate <id> 大小写敏感路由；WI- list/approve/reject shape 与 workitem_not_found/no_pending_gate/invalid_workitem 冻结；run- 零回归；未知前缀 exit 2；resolved同决策no-op、相反决策gate_decision_conflict
+  source: 流程级约束
+  status: passed
+- item: lane override用RunManager.ensureAuditEvent在start前写，prepared/starting再入按WI id+ts补写去重；direct 无 run/class-(1)机械 gate且不得宣称同等保护；selectLane 与
+    policy 无关
+  source: 流程级约束
+  status: passed
+- item: D6 create在全局锁内扫描/分配/校验/写且双进程id唯一；使用wx锁 + stale 删除后重试一次 + 候选校验 + 同目录原子替换；失败保留旧文件，仍冲突 lock_held exit 1
+  source: 流程级约束
+  status: passed
+- item: v1 只在 WorkItem 层接入 ADR 003 设计/最终验收 gate；question 仅修订 task 重试，reject/run blocked 后须新建 WorkItem；无手改 YAML 恢复、通用 executing gate 或 blocked
+    恢复 CLI
+  source: 范围守护
+  status: passed
+- item: 实现严格前置三上游 done；verifier D9 + pi-rpc D15 4.3/4.5/4.6/4.8 + 本条 4.5/4.9 patch 全合入；当前仅 design admission
+  source: 范围守护
+  status: passed
+- item: workitem 六子命令、gate id 路由、.rolekit/work-items/、core PolicyEngine 复用、items/roadmap 回写与 host-adapter 跟进挂载点齐全
+  source: 挂载点
+  status: passed
+dod:
+  commands:
+  - id: CMD-001
+    command: npm test
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-002
+    command: node --test test/e2e/
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-003
+    command: npx tsc --noEmit && npx biome check .
+    core: true
+    failure_handling: fix-or-block
+  - id: CMD-004
+    command: rolekit validate <artifact>
+    core: true
+    failure_handling: fix-or-block
+  evidence_required:
+  - command_output
+  - run_artifacts
+  - workitem_yaml
+  - events
+  - gate_log
+  - diff_summary
+  - roadmap_patch
+  cleanliness:
+    core_io: forbidden
+    cli_rule_duplication: forbidden
+    debug_output: forbidden
+    todo_fixme: forbidden

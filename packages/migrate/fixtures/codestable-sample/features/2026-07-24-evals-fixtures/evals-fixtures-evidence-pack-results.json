@@ -1,0 +1,40 @@
+{
+  "gate_id": "evidence-pack",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [],
+  "evidence": [
+    {
+      "out": "D:\\Personal\\rolekit\\.codestable\\features\\2026-07-24-evals-fixtures\\evals-fixtures-evidence-pack.md",
+      "providers": {
+        "archguard": {
+          "status": "unavailable",
+          "reason": "archguard binary not found on PATH",
+          "warnings": []
+        },
+        "meta_cc": {
+          "status": "unavailable",
+          "reason": "meta-cc summary not found; realtime session collection is out of scope",
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-24-evals-fixtures",
+  "inputs": {
+    "design": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-design.md",
+    "checklist": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-checklist.yaml",
+    "out": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-evidence-pack.md",
+    "dod_results": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-dod-results.json",
+    "gate_results": ".codestable/features/2026-07-24-evals-fixtures/evals-fixtures-gate-results.json"
+  },
+  "input_digests": {
+    "design": "d096281c3605b94ccdfe672bdf8ddf8a9608d4be0188d89f742b6e8ee0a1efc3",
+    "checklist": "c2772b9cdf5fa9ab23f9d27a65a51e70b5e21e520c8cf6a35cd0dbdbc6e5388b",
+    "dod_results": "a530e7d9624a3622fa3b3e7b93e7b4fd3c08988947641d1ac7d6a6d25efa1d0e",
+    "gate_results": "8d5bd13567471db0ef4b556ffdd92d340a2192f3b4bcd998478fbbf4e28a9cae",
+    "out": "37a90ca6c935cd215aa876bd846b3d8187d253690298f55ff18ede349abf5851"
+  }
+}

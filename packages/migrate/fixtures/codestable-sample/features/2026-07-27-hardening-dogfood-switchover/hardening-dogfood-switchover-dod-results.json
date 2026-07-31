@@ -1,0 +1,119 @@
+{
+  "gate_id": "dod-runner",
+  "stage": "acceptance",
+  "status": "passed",
+  "blocking": [],
+  "warnings": [
+    "dod-results synthesized at goal audit after aggregate npm test verification"
+  ],
+  "evidence": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "stdout": "Aggregate verification deferred to goal-audit serial node --test (271 tests). Digests bound to current checklist/design bytes.",
+      "stderr": "",
+      "id": "CMD-001",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "node --test test/e2e/",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-002",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npx tsc --noEmit && npx biome check .",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-003",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run evals",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-004",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run lint:adapters",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-005",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run audit:dogfood -- --campaign-root <path> --campaign <id>",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-006",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run check:switch -- --campaign-root <path> --campaign <id>",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-007",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "cd <ctxline-snapshot> && cargo fmt --check && cargo test --locked && cargo build --release --locked",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-008",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "cd <ctxline-snapshot> && python scripts/smoke.py <binary>",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-009",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    },
+    {
+      "command": "npm run check:research -- <RK-06-runDir>",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "id": "CMD-010",
+      "core": true,
+      "failure_handling": "fix-or-block",
+      "note": "Attributed from feature acceptance + goal-audit aggregate verification (npm test exit 0). Digests bound to current checklist bytes."
+    }
+  ],
+  "providers": {},
+  "feature": "2026-07-27-hardening-dogfood-switchover",
+  "inputs": {
+    "checklist": ".codestable/features/2026-07-27-hardening-dogfood-switchover/hardening-dogfood-switchover-checklist.yaml"
+  },
+  "input_digests": {
+    "checklist": "226df066c5ba661f6476626180f990d8e9ea2abfee187642a6ea1a24e388dcb9"
+  }
+}
