@@ -1,0 +1,240 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/execution-contract.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "role",
+    "requiredCapabilities",
+    "task",
+    "outputContract"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/execution-contract@1",
+      "type": "string"
+    },
+    "role": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "instructions": {
+          "minLength": 1,
+          "type": "string"
+        }
+      }
+    },
+    "requiredCapabilities": {
+      "uniqueItems": true,
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "const": "repository.read",
+            "type": "string"
+          },
+          {
+            "const": "repository.write",
+            "type": "string"
+          },
+          {
+            "const": "shell",
+            "type": "string"
+          },
+          {
+            "const": "web",
+            "type": "string"
+          },
+          {
+            "const": "vision",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "task": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "taskId",
+        "objective",
+        "input",
+        "context",
+        "constraints",
+        "acceptanceCriteria",
+        "expectedArtifacts"
+      ],
+      "properties": {
+        "taskId": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "parentTaskId": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "objective": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "input": {},
+        "context": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "value"
+            ],
+            "properties": {
+              "id": {
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                "type": "string"
+              },
+              "type": {
+                "anyOf": [
+                  {
+                    "const": "text",
+                    "type": "string"
+                  },
+                  {
+                    "const": "file",
+                    "type": "string"
+                  },
+                  {
+                    "const": "url",
+                    "type": "string"
+                  }
+                ]
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "description": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "acceptanceCriteria": {
+          "type": "array",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "allowedPaths": {
+          "uniqueItems": true,
+          "type": "array",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "expectedArtifacts": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "name",
+              "kind"
+            ],
+            "properties": {
+              "name": {
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                "type": "string"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "description": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "patternProperties": {
+            "^(.*)$": {}
+          }
+        }
+      }
+    },
+    "outputContract": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "roleOutputSchema",
+        "finalResponseRules"
+      ],
+      "properties": {
+        "roleOutputSchema": {
+          "type": "object",
+          "patternProperties": {
+            "^(.*)$": {}
+          }
+        },
+        "finalResponseRules": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": "Return exactly one JSON object as the final response.",
+              "type": "string"
+            },
+            {
+              "const": "Do not wrap the JSON object in Markdown fences.",
+              "type": "string"
+            },
+            {
+              "const": "Use status `completed` only when the task output and every expected artifact are present.",
+              "type": "string"
+            },
+            {
+              "const": "Use `failed`, `blocked`, or `cancelled` with a structured error otherwise.",
+              "type": "string"
+            },
+            {
+              "const": "Artifact names and kinds must exactly match the task contract.",
+              "type": "string"
+            }
+          ],
+          "items": false,
+          "minItems": 5,
+          "maxItems": 5
+        }
+      }
+    }
+  }
+}

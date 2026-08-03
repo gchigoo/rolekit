@@ -1,0 +1,2 @@
+{"type":"message_update","message":{"role":"assistant","content":[]},"assistantMessageEvent":{"type":"error","reason":"error","error":{"message":"fixture terminal failure"}}}
+{"type":"agent_settled"}

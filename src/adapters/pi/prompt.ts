@@ -1,14 +1,14 @@
+import { createExecutorPayloadSchema } from '../../core/schemas.ts'
 import type { RoleSpec, TaskPacket } from '../../core/types.ts'
-import type { CliAdapterOptions } from '../cli/options.ts'
 import {
   buildNeutralExecutionPrompt,
   createExecutionPromptContract,
   stringifyPromptJson,
 } from '../cli/prompt.ts'
+import type { PiCliAdapterOptions } from './options.ts'
 
 export type PiPromptProfile = 'neutral' | 'grok-4.5'
 
-const THINKING_LEVELS = new Set(['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'])
 const THINKING_SUFFIX_PATTERN = /:(?:off|minimal|low|medium|high|xhigh|max)$/u
 
 export const GROK_45_SYSTEM_PROMPT_APPEND = [
@@ -19,46 +19,19 @@ export const GROK_45_SYSTEM_PROMPT_APPEND = [
   '</rolekit_execution>',
 ].join('\n')
 
-function lastOptionValue(
-  args: readonly string[] | undefined,
-  option: string,
-  initialValue?: string,
-): string | undefined {
-  let value = initialValue
-  for (let index = 0; index < (args?.length ?? 0); index += 1) {
-    if (args?.[index] === option && args[index + 1] !== undefined) {
-      value = args[index + 1]
-      index += 1
-    }
-  }
-  return value
+export function resolvePiEffectiveModel(options: PiCliAdapterOptions): string | undefined {
+  return options.model
 }
 
-function containsThinkingArgument(args: readonly string[] | undefined): boolean {
-  for (let index = 0; index < (args?.length ?? 0); index += 1) {
-    if (args?.[index] === '--thinking' && THINKING_LEVELS.has(args[index + 1] ?? '')) {
-      return true
-    }
-  }
-  return false
-}
-
-export function resolvePiEffectiveModel(options: CliAdapterOptions): string | undefined {
-  const commandModel = lastOptionValue(options.commandArgs, '--model')
-  const configuredModel = options.model ?? commandModel
-  return lastOptionValue(options.extraArgs, '--model', configuredModel)
-}
-
-export function hasExplicitPiThinking(options: CliAdapterOptions): boolean {
+export function hasExplicitPiThinking(options: PiCliAdapterOptions): boolean {
   const effectiveModel = resolvePiEffectiveModel(options)
   return (
-    (effectiveModel !== undefined && THINKING_SUFFIX_PATTERN.test(effectiveModel.trim())) ||
-    containsThinkingArgument(options.commandArgs) ||
-    containsThinkingArgument(options.extraArgs)
+    options.thinking !== undefined ||
+    (effectiveModel !== undefined && THINKING_SUFFIX_PATTERN.test(effectiveModel.trim()))
   )
 }
 
-export function resolvePiPromptProfile(options: CliAdapterOptions): PiPromptProfile {
+export function resolvePiPromptProfile(options: PiCliAdapterOptions): PiPromptProfile {
   const model = resolvePiEffectiveModel(options)?.trim()
   if (model === undefined || model.length === 0) {
     return 'neutral'
@@ -70,7 +43,7 @@ export function resolvePiPromptProfile(options: CliAdapterOptions): PiPromptProf
 
 export function buildPiProfileArguments(
   profile: PiPromptProfile,
-  options: CliAdapterOptions,
+  options: PiCliAdapterOptions,
 ): readonly string[] {
   if (profile === 'neutral') {
     return []
@@ -108,7 +81,7 @@ export function buildPiExecutionPrompt(
     stringifyPromptJson(contract.outputContract.roleOutputSchema),
     '</role_output_schema>',
     '<final_response_schema>',
-    stringifyPromptJson(contract.outputContract.finalResponseSchema),
+    stringifyPromptJson(createExecutorPayloadSchema(contract.outputContract.roleOutputSchema)),
     '</final_response_schema>',
     '<final_response_rules>',
     stringifyPromptJson(contract.outputContract.finalResponseRules),

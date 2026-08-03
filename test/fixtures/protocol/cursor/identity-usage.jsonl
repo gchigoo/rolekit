@@ -1,0 +1,2 @@
+{"type":"system","subtype":"init","model":"observed-model"}
+{"type":"result","subtype":"success","model":"observed-model","result":"{\"status\":\"completed\",\"summary\":\"identity complete\",\"output\":{\"message\":\"ok\"},\"artifacts\":[{\"name\":\"report\",\"kind\":\"text\",\"content\":\"ok\"}],\"evidence\":[]}","duration_ms":12,"usage":{"input_tokens":10,"output_tokens":5,"total_tokens":15}}

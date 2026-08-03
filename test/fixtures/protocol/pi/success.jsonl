@@ -1,0 +1,1 @@
+{"type":"message_end","message":{"role":"assistant","content":[{"type":"text","text":"{\"status\":\"completed\",\"summary\":\"fixture complete\",\"output\":{\"message\":\"ok\"},\"artifacts\":[{\"name\":\"report\",\"kind\":\"text\",\"content\":\"ok\"}],\"evidence\":[]}"}]}}

@@ -1,58 +1,17 @@
+import {
+  createExecutionContract,
+  type ExecutionContract,
+  type SnapshotRoleSpec,
+  type SnapshotTaskPacket,
+} from '../../core/index.ts'
 import { createExecutorPayloadSchema } from '../../core/schemas.ts'
-import type {
-  Capability,
-  ContextReference,
-  ExpectedArtifact,
-  JsonObject,
-  JsonSchema,
-  RoleSpec,
-  TaskPacket,
-} from '../../core/types.ts'
+import type { RoleSpec, TaskPacket } from '../../core/types.ts'
 
-interface ExecutionRoleContract {
-  readonly id: string
-  readonly description: string
-  readonly instructions?: string
-}
-
-interface ExecutionTaskContract {
-  readonly taskId: string
-  readonly parentTaskId?: string
-  readonly objective: string
-  readonly input: unknown
-  readonly context: readonly ContextReference[]
-  readonly constraints: readonly string[]
-  readonly acceptanceCriteria: readonly string[]
-  readonly allowedPaths?: readonly string[]
-  readonly expectedArtifacts: readonly ExpectedArtifact[]
-  readonly metadata?: JsonObject
-}
-
-interface ExecutionOutputContract {
-  readonly roleOutputSchema: JsonSchema
-  readonly finalResponseSchema: JsonSchema
-  readonly finalResponseRules: readonly string[]
-}
-
-export interface ExecutionPromptContract {
-  readonly schema: 'rolekit/execution-contract@1'
-  readonly role: ExecutionRoleContract
-  readonly requiredCapabilities: readonly Capability[]
-  readonly task: ExecutionTaskContract
-  readonly outputContract: ExecutionOutputContract
-}
+export type ExecutionPromptContract = ExecutionContract
 
 export interface MarkdownExecutionPromptOptions {
   readonly includeFinalResponseSchema: boolean
 }
-
-const FINAL_RESPONSE_RULES = [
-  'Return exactly one JSON object as the final response.',
-  'Do not wrap the JSON object in Markdown fences.',
-  'Use status `completed` only when the task output and every expected artifact are present.',
-  'Use `failed`, `blocked`, or `cancelled` with a structured error otherwise.',
-  'Artifact names and kinds must exactly match the task contract.',
-] as const
 
 function escapeJsonForPrompt(serialized: string): string {
   return serialized.replace(/[<>&]/gu, (character) => {
@@ -77,38 +36,15 @@ export function stringifyPromptJson(value: unknown): string {
   return escapeJsonForPrompt(serialized)
 }
 
+/** Compatibility alias for the pre-core contract factory name. */
 export function createExecutionPromptContract(
   role: RoleSpec,
   task: TaskPacket,
 ): ExecutionPromptContract {
-  return {
-    schema: 'rolekit/execution-contract@1',
-    role: {
-      id: role.id,
-      description: role.description,
-      ...(role.instructions === undefined ? {} : { instructions: role.instructions }),
-    },
-    requiredCapabilities: [
-      ...new Set([...role.requiredCapabilities, ...(task.requiredCapabilities ?? [])]),
-    ],
-    task: {
-      taskId: task.taskId,
-      ...(task.parentTaskId === undefined ? {} : { parentTaskId: task.parentTaskId }),
-      objective: task.objective,
-      input: task.input,
-      context: task.context,
-      constraints: task.constraints,
-      acceptanceCriteria: task.acceptanceCriteria,
-      ...(task.allowedPaths === undefined ? {} : { allowedPaths: task.allowedPaths }),
-      expectedArtifacts: task.expectedArtifacts,
-      ...(task.metadata === undefined ? {} : { metadata: task.metadata }),
-    },
-    outputContract: {
-      roleOutputSchema: role.outputSchema,
-      finalResponseSchema: createExecutorPayloadSchema(role.outputSchema),
-      finalResponseRules: FINAL_RESPONSE_RULES,
-    },
-  }
+  return createExecutionContract(
+    role as unknown as SnapshotRoleSpec,
+    task as unknown as SnapshotTaskPacket,
+  )
 }
 
 function block(title: string, value: unknown): string {
@@ -127,7 +63,12 @@ export function renderMarkdownExecutionPrompt(
     block('Task', contract.task),
     block('Role output JSON Schema', contract.outputContract.roleOutputSchema),
     ...(options.includeFinalResponseSchema
-      ? [block('Final response JSON Schema', contract.outputContract.finalResponseSchema)]
+      ? [
+          block(
+            'Final response JSON Schema',
+            createExecutorPayloadSchema(contract.outputContract.roleOutputSchema),
+          ),
+        ]
       : []),
     [
       '## Final response rules',

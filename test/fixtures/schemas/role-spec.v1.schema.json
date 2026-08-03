@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/role-spec.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "description",
+    "requiredCapabilities",
+    "inputSchema",
+    "outputSchema"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/role-spec@1",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "description": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "requiredCapabilities": {
+      "uniqueItems": true,
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "const": "repository.read",
+            "type": "string"
+          },
+          {
+            "const": "repository.write",
+            "type": "string"
+          },
+          {
+            "const": "shell",
+            "type": "string"
+          },
+          {
+            "const": "web",
+            "type": "string"
+          },
+          {
+            "const": "vision",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "inputSchema": {
+      "type": "object",
+      "patternProperties": {
+        "^(.*)$": {}
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "patternProperties": {
+        "^(.*)$": {}
+      }
+    },
+    "instructions": {
+      "minLength": 1,
+      "type": "string"
+    }
+  }
+}

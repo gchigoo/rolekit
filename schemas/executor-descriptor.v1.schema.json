@@ -1,0 +1,82 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/executor-descriptor.v1.json",
+  "type": "object",
+  "required": [
+    "id",
+    "displayName",
+    "transport",
+    "capabilities",
+    "available"
+  ],
+  "properties": {
+    "id": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "displayName": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "transport": {
+      "anyOf": [
+        {
+          "const": "cli",
+          "type": "string"
+        },
+        {
+          "const": "in-process",
+          "type": "string"
+        },
+        {
+          "const": "remote",
+          "type": "string"
+        }
+      ]
+    },
+    "capabilities": {
+      "uniqueItems": true,
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "const": "repository.read",
+            "type": "string"
+          },
+          {
+            "const": "repository.write",
+            "type": "string"
+          },
+          {
+            "const": "shell",
+            "type": "string"
+          },
+          {
+            "const": "web",
+            "type": "string"
+          },
+          {
+            "const": "vision",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "model": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "diagnostic": {
+      "minLength": 1,
+      "type": "string"
+    }
+  }
+}

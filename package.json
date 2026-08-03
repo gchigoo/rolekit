@@ -2,6 +2,7 @@
   "name": "@gchigoo/rolekit",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.16.0",
   "description": "Portable role and task contracts for invoking coding agents across hosts.",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,9 +32,21 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js"
+    },
+    "./adapter-cli": {
+      "types": "./dist/adapters/cli/index.d.ts",
+      "import": "./dist/adapters/cli/index.js"
+    },
     "./pi": {
       "types": "./dist/adapters/pi/index.d.ts",
       "import": "./dist/adapters/pi/index.js"
+    },
+    "./pi-rpc": {
+      "types": "./dist/adapters/pi-rpc/index.d.ts",
+      "import": "./dist/adapters/pi-rpc/index.js"
     },
     "./cursor": {
       "types": "./dist/adapters/cursor/index.d.ts",
@@ -46,19 +59,40 @@
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
-    }
+    },
+    "./schemas/role-spec.v1": "./schemas/role-spec.v1.schema.json",
+    "./schemas/task-packet.v1": "./schemas/task-packet.v1.schema.json",
+    "./schemas/executor-descriptor.v1": "./schemas/executor-descriptor.v1.schema.json",
+    "./schemas/executor-descriptor.v2": "./schemas/executor-descriptor.v2.schema.json",
+    "./schemas/config.v1": "./schemas/config.v1.schema.json",
+    "./schemas/execution-contract.v1": "./schemas/execution-contract.v1.schema.json",
+    "./schemas/execution-plan-content.v1": "./schemas/execution-plan-content.v1.schema.json",
+    "./schemas/execution-plan.v1": "./schemas/execution-plan.v1.schema.json",
+    "./schemas/execution-receipt.v1": "./schemas/execution-receipt.v1.schema.json",
+    "./schemas/run-result.v1": "./schemas/run-result.v1.schema.json",
+    "./schemas/run-result.v2": "./schemas/run-result.v2.schema.json",
+    "./schemas/run-result.latest": "./schemas/run-result.latest.schema.json"
   },
   "scripts": {
     "build": "node scripts/build.ts",
     "export:schemas": "node scripts/export-schemas.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
+    "pretest": "npm run build",
     "test": "node scripts/run-tests.ts",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "test:conformance": "node --test test/testing/conformance-suite.test.ts test/adapters/*.test.ts",
+    "test:compatibility": "node --test test/testing/conformance-suite.test.ts",
+    "test:package": "node scripts/test-package.ts",
+    "check:schemas": "node scripts/check-schema-drift.ts",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "prepack": "npm run check && npm run test:package",
+    "smoke:codex": "node scripts/smoke-codex.ts",
+    "smoke:pi": "node scripts/smoke-pi.ts"
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.37",
     "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "yaml": "^2.8.0"
   },
   "devDependencies": {

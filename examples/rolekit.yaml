@@ -1,0 +1,87 @@
+schema: rolekit/config@1
+
+# Configuration compilation is credential-free. The environment references below
+# are resolved only by resolveRunBinding()/run, where the named values are required.
+roles:
+  implementer:
+    spec: roles/implementer.yaml
+    promptFragments:
+      - roles/fragments/implementer-core.md
+    executor: pi-rpc-implementer
+  reviewer:
+    spec: roles/reviewer.yaml
+    executor: pi-rpc-reviewer
+
+executors:
+  pi-rpc-implementer:
+    mode: adapter
+    adapter: pi-rpc
+    options:
+      provider: xai
+      model: grok-code-fast-1
+      thinking: high
+      tools: [read, grep, find, ls, edit, write, bash]
+      environment:
+        XAI_API_KEY:
+          $env: XAI_API_KEY
+
+  pi-rpc-reviewer:
+    mode: adapter
+    adapter: pi-rpc
+    options:
+      provider: xai
+      model: grok-4-1-fast-reasoning
+      thinking: high
+      tools: [read, grep, find, ls]
+      environment:
+        XAI_API_KEY:
+          $env: XAI_API_KEY
+
+  pi-one-shot-implementer:
+    mode: adapter
+    adapter: pi
+    options:
+      provider: xai
+      model: grok-code-fast-1
+      thinking: high
+      tools: [read, grep, find, ls, edit, write, bash]
+      environment:
+        XAI_API_KEY:
+          $env: XAI_API_KEY
+
+  pi-one-shot-reviewer:
+    mode: adapter
+    adapter: pi
+    options:
+      provider: xai
+      model: grok-4-1-fast-reasoning
+      thinking: high
+      tools: [read, grep, find, ls]
+      environment:
+        XAI_API_KEY:
+          $env: XAI_API_KEY
+
+  codex-reviewer:
+    mode: adapter
+    adapter: codex
+    options:
+      model: gpt-5.2-codex
+      reasoningEffort: high
+      environment:
+        OPENAI_API_KEY:
+          $env: OPENAI_API_KEY
+
+  host-reviewer:
+    mode: host
+    executorId: verified-review-host
+    transport: in-process
+    capabilities: [repository.read]
+    requestedProvider: host-provider
+    requestedModel: host-review-model
+    pathEnforcement: host
+    contextIsolation:
+      userConfig: isolated
+      projectInstructions: isolated
+      projectResources: isolated
+      environment: minimal
+      credentials: explicit

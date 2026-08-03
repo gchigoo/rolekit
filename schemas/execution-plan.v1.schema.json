@@ -1,0 +1,972 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/execution-plan.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "runId",
+    "createdAt",
+    "content",
+    "contentDigest"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/execution-plan@1",
+      "type": "string"
+    },
+    "runId": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "createdAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "content": {
+      "additionalProperties": false,
+      "$id": "https://rolekit.dev/schemas/execution-plan-content.v1.json",
+      "type": "object",
+      "required": [
+        "schema",
+        "role",
+        "task",
+        "contract",
+        "contractDigest",
+        "executor",
+        "workspace",
+        "policy"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/execution-plan-content@1",
+          "type": "string"
+        },
+        "role": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "snapshot",
+            "digest"
+          ],
+          "properties": {
+            "snapshot": {
+              "additionalProperties": false,
+              "$id": "https://rolekit.dev/schemas/role-spec.v1.json",
+              "type": "object",
+              "required": [
+                "schema",
+                "id",
+                "description",
+                "requiredCapabilities",
+                "inputSchema",
+                "outputSchema"
+              ],
+              "properties": {
+                "schema": {
+                  "const": "rolekit/role-spec@1",
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "description": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requiredCapabilities": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "const": "repository.read",
+                        "type": "string"
+                      },
+                      {
+                        "const": "repository.write",
+                        "type": "string"
+                      },
+                      {
+                        "const": "shell",
+                        "type": "string"
+                      },
+                      {
+                        "const": "web",
+                        "type": "string"
+                      },
+                      {
+                        "const": "vision",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "inputSchema": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                },
+                "outputSchema": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                },
+                "instructions": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              }
+            },
+            "digest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            }
+          }
+        },
+        "task": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "snapshot",
+            "digest"
+          ],
+          "properties": {
+            "snapshot": {
+              "additionalProperties": false,
+              "$id": "https://rolekit.dev/schemas/task-packet.v1.json",
+              "type": "object",
+              "required": [
+                "schema",
+                "taskId",
+                "roleId",
+                "objective",
+                "input",
+                "context",
+                "constraints",
+                "acceptanceCriteria",
+                "expectedArtifacts"
+              ],
+              "properties": {
+                "schema": {
+                  "const": "rolekit/task-packet@1",
+                  "type": "string"
+                },
+                "taskId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "parentTaskId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "roleId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "objective": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "input": {},
+                "context": {
+                  "type": "array",
+                  "items": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "type",
+                      "value"
+                    ],
+                    "properties": {
+                      "id": {
+                        "minLength": 1,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                        "type": "string"
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "const": "text",
+                            "type": "string"
+                          },
+                          {
+                            "const": "file",
+                            "type": "string"
+                          },
+                          {
+                            "const": "url",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "value": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "description": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "acceptanceCriteria": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "requiredCapabilities": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "const": "repository.read",
+                        "type": "string"
+                      },
+                      {
+                        "const": "repository.write",
+                        "type": "string"
+                      },
+                      {
+                        "const": "shell",
+                        "type": "string"
+                      },
+                      {
+                        "const": "web",
+                        "type": "string"
+                      },
+                      {
+                        "const": "vision",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "allowedPaths": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "expectedArtifacts": {
+                  "type": "array",
+                  "items": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "kind"
+                    ],
+                    "properties": {
+                      "name": {
+                        "minLength": 1,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                        "type": "string"
+                      },
+                      "kind": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "description": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                }
+              }
+            },
+            "digest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            }
+          }
+        },
+        "contract": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "schema",
+            "role",
+            "requiredCapabilities",
+            "task",
+            "outputContract"
+          ],
+          "properties": {
+            "schema": {
+              "const": "rolekit/execution-contract@1",
+              "type": "string"
+            },
+            "role": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "id",
+                "description"
+              ],
+              "properties": {
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "description": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "instructions": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              }
+            },
+            "requiredCapabilities": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "const": "repository.read",
+                    "type": "string"
+                  },
+                  {
+                    "const": "repository.write",
+                    "type": "string"
+                  },
+                  {
+                    "const": "shell",
+                    "type": "string"
+                  },
+                  {
+                    "const": "web",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vision",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "task": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "taskId",
+                "objective",
+                "input",
+                "context",
+                "constraints",
+                "acceptanceCriteria",
+                "expectedArtifacts"
+              ],
+              "properties": {
+                "taskId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "parentTaskId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "objective": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "input": {},
+                "context": {
+                  "type": "array",
+                  "items": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "type",
+                      "value"
+                    ],
+                    "properties": {
+                      "id": {
+                        "minLength": 1,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                        "type": "string"
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "const": "text",
+                            "type": "string"
+                          },
+                          {
+                            "const": "file",
+                            "type": "string"
+                          },
+                          {
+                            "const": "url",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "value": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "description": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "acceptanceCriteria": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "allowedPaths": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "expectedArtifacts": {
+                  "type": "array",
+                  "items": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "kind"
+                    ],
+                    "properties": {
+                      "name": {
+                        "minLength": 1,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                        "type": "string"
+                      },
+                      "kind": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "description": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                }
+              }
+            },
+            "outputContract": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "roleOutputSchema",
+                "finalResponseRules"
+              ],
+              "properties": {
+                "roleOutputSchema": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                },
+                "finalResponseRules": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "const": "Return exactly one JSON object as the final response.",
+                      "type": "string"
+                    },
+                    {
+                      "const": "Do not wrap the JSON object in Markdown fences.",
+                      "type": "string"
+                    },
+                    {
+                      "const": "Use status `completed` only when the task output and every expected artifact are present.",
+                      "type": "string"
+                    },
+                    {
+                      "const": "Use `failed`, `blocked`, or `cancelled` with a structured error otherwise.",
+                      "type": "string"
+                    },
+                    {
+                      "const": "Artifact names and kinds must exactly match the task contract.",
+                      "type": "string"
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 5,
+                  "maxItems": 5
+                }
+              }
+            }
+          }
+        },
+        "contractDigest": {
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "executor": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "target",
+                "capabilitySource",
+                "adapterProtocol",
+                "adapterVersion",
+                "id",
+                "transport",
+                "publicOptions",
+                "optionsDigest",
+                "requiredSecrets"
+              ],
+              "properties": {
+                "target": {
+                  "const": "adapter",
+                  "type": "string"
+                },
+                "capabilitySource": {
+                  "const": "adapter-verified",
+                  "type": "string"
+                },
+                "adapterProtocol": {
+                  "const": "rolekit/executor-adapter@1",
+                  "type": "string"
+                },
+                "adapterVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "publicOptions": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                },
+                "optionsDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "requiredSecrets": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "target",
+                "capabilitySource",
+                "id",
+                "transport",
+                "publicOptions",
+                "optionsDigest",
+                "requiredSecrets"
+              ],
+              "properties": {
+                "target": {
+                  "const": "host",
+                  "type": "string"
+                },
+                "capabilitySource": {
+                  "const": "host-attested",
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "publicOptions": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                },
+                "optionsDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "requiredSecrets": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "workspace": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "root"
+          ],
+          "properties": {
+            "root": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "revision": {
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "admission",
+            "requiredCapabilities",
+            "allowedPaths",
+            "pathEnforcement",
+            "contextIsolation"
+          ],
+          "properties": {
+            "admission": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": true,
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed",
+                    "error"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": false,
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message",
+                        "retryable"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                          "type": "string"
+                        },
+                        "message": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "retryable": {
+                          "type": "boolean"
+                        },
+                        "details": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^(.*)$": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "requiredCapabilities": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "const": "repository.read",
+                    "type": "string"
+                  },
+                  {
+                    "const": "repository.write",
+                    "type": "string"
+                  },
+                  {
+                    "const": "shell",
+                    "type": "string"
+                  },
+                  {
+                    "const": "web",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vision",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "allowedPaths": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "pathEnforcement": {
+              "anyOf": [
+                {
+                  "const": "advisory",
+                  "type": "string"
+                },
+                {
+                  "const": "adapter",
+                  "type": "string"
+                },
+                {
+                  "const": "host",
+                  "type": "string"
+                }
+              ]
+            },
+            "contextIsolation": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "userConfig",
+                "projectInstructions",
+                "projectResources",
+                "environment",
+                "credentials"
+              ],
+              "properties": {
+                "userConfig": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectInstructions": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectResources": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "environment": {
+                  "anyOf": [
+                    {
+                      "const": "minimal",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "credentials": {
+                  "anyOf": [
+                    {
+                      "const": "explicit",
+                      "type": "string"
+                    },
+                    {
+                      "const": "user-store",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "contentDigest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    }
+  }
+}

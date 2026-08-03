@@ -1,0 +1,27 @@
+schema: rolekit/role-spec@1
+id: reviewer
+description: Review one bounded repository change without modifying the workspace.
+requiredCapabilities:
+  - repository.read
+instructions: |
+  Inspect the requested change and return concrete findings. Do not modify files
+  or invoke commands that can mutate the workspace.
+inputSchema:
+  type: object
+  additionalProperties: false
+  required:
+    - request
+  properties:
+    request:
+      type: string
+      minLength: 1
+outputSchema:
+  type: object
+  additionalProperties: false
+  required:
+    - findings
+  properties:
+    findings:
+      type: array
+      items:
+        type: string

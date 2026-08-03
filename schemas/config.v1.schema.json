@@ -1,0 +1,270 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/config.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "roles",
+    "executors"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/config@1",
+      "type": "string"
+    },
+    "extends": {
+      "type": "array",
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "roles": {
+      "additionalProperties": false,
+      "type": "object",
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._/-]*$": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "spec",
+            "executor"
+          ],
+          "properties": {
+            "spec": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "promptFragments": {
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "executor": {
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "executors": {
+      "additionalProperties": false,
+      "type": "object",
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._/-]*$": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "mode",
+                "adapter"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "adapter",
+                  "type": "string"
+                },
+                "adapter": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "options": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^(.*)$": {}
+                  }
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "mode",
+                "executorId",
+                "transport",
+                "capabilities",
+                "pathEnforcement",
+                "contextIsolation"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "host",
+                  "type": "string"
+                },
+                "executorId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "capabilities": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "const": "repository.read",
+                        "type": "string"
+                      },
+                      {
+                        "const": "repository.write",
+                        "type": "string"
+                      },
+                      {
+                        "const": "shell",
+                        "type": "string"
+                      },
+                      {
+                        "const": "web",
+                        "type": "string"
+                      },
+                      {
+                        "const": "vision",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "pathEnforcement": {
+                  "anyOf": [
+                    {
+                      "const": "advisory",
+                      "type": "string"
+                    },
+                    {
+                      "const": "host",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "contextIsolation": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "userConfig",
+                    "projectInstructions",
+                    "projectResources",
+                    "environment",
+                    "credentials"
+                  ],
+                  "properties": {
+                    "userConfig": {
+                      "anyOf": [
+                        {
+                          "const": "isolated",
+                          "type": "string"
+                        },
+                        {
+                          "const": "inherited",
+                          "type": "string"
+                        },
+                        {
+                          "const": "unknown",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "projectInstructions": {
+                      "anyOf": [
+                        {
+                          "const": "isolated",
+                          "type": "string"
+                        },
+                        {
+                          "const": "inherited",
+                          "type": "string"
+                        },
+                        {
+                          "const": "unknown",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "projectResources": {
+                      "anyOf": [
+                        {
+                          "const": "isolated",
+                          "type": "string"
+                        },
+                        {
+                          "const": "inherited",
+                          "type": "string"
+                        },
+                        {
+                          "const": "unknown",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "environment": {
+                      "anyOf": [
+                        {
+                          "const": "minimal",
+                          "type": "string"
+                        },
+                        {
+                          "const": "inherited",
+                          "type": "string"
+                        },
+                        {
+                          "const": "unknown",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "credentials": {
+                      "anyOf": [
+                        {
+                          "const": "explicit",
+                          "type": "string"
+                        },
+                        {
+                          "const": "user-store",
+                          "type": "string"
+                        },
+                        {
+                          "const": "inherited",
+                          "type": "string"
+                        },
+                        {
+                          "const": "unknown",
+                          "type": "string"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -3,18 +3,282 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1'
 
 permissions:
   contents: read
 
 jobs:
   check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [22.18.0]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - if: matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest'
+        run: npm run test:package
+
+  schema-drift:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.18.0
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: npm run check:schemas
+      - run: git diff --exit-code -- schemas
+
+  compatibility-pinned:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: npm
+      - run: npm ci
+      - name: Run credential-free conformance and golden fixtures
+        run: npm run test:compatibility
+      - name: Install pinned public CLIs without changing the lockfile
+        run: npm install --no-save --package-lock=false @mariozechner/pi-coding-agent@0.73.1 @openai/codex@0.146.0
+      - name: Probe pinned CLIs through production adapters
+        run: |
+          node --input-type=module <<'NODE'
+          import { resolve } from 'node:path'
+          import { PiCliAdapter } from './src/adapters/pi/index.ts'
+          import { PiRpcAdapter } from './src/adapters/pi-rpc/index.ts'
+          import { CodexCliAdapter } from './src/adapters/codex/index.ts'
+
+          const piCommand = resolve('node_modules/.bin/pi')
+          const cases = [
+            [new PiCliAdapter(), { command: piCommand, tools: ['read'] }],
+            [new PiRpcAdapter(), { command: piCommand, tools: ['read'] }],
+            [new CodexCliAdapter(), { command: resolve('node_modules/.bin/codex') }],
+          ]
+          for (const [adapter, options] of cases) {
+            const prepared = adapter.prepareOptions(options)
+            const probe = await adapter.probe(prepared, { cwd: process.cwd() })
+            if (!probe.available) {
+              throw new Error(`${adapter.id} pinned compatibility probe failed: ${probe.diagnostic}`)
+            }
+          }
+          NODE
+      - name: Record Cursor compatibility limitation
+        run: |
+          {
+            echo '## Cursor compatibility limitation'
+            echo
+            echo '> [!NOTE]'
+            echo '> The official Cursor `agent` executable has no pinned credential-free npm installer in this project. Cursor remains covered by production-parser golden fixtures and the reusable adapter suite; latest real-binary probing must be enabled by an owner-managed runner with `agent` installed.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  latest-compatibility:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: npm
+      - run: npm ci
+      - name: Check optional smoke credentials and selectors
+        id: credentials
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          ROLEKIT_CODEX_MODEL: ${{ vars.ROLEKIT_CODEX_MODEL }}
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+        run: |
+          codex_configured=false
+          pi_configured=false
+          pi_provider=''
+
+          if [ -n "$OPENAI_API_KEY$CODEX_API_KEY$AZURE_OPENAI_API_KEY" ] && [ -n "$ROLEKIT_CODEX_MODEL" ]; then
+            codex_configured=true
+          elif [ -n "$OPENAI_API_KEY$CODEX_API_KEY$AZURE_OPENAI_API_KEY" ]; then
+            {
+              echo '## Codex compatibility smoke skipped'
+              echo
+              echo '> [!WARNING]'
+              echo '> Codex credentials are configured, but `ROLEKIT_CODEX_MODEL` is not set, so no Codex smoke can run truthfully.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ -z "$ROLEKIT_PI_PROVIDER" ] || [ -z "$ROLEKIT_PI_MODEL" ]; then
+            if [ -n "$ROLEKIT_PI_PROVIDER$ROLEKIT_PI_MODEL$ANTHROPIC_API_KEY$OPENAI_API_KEY$OPENROUTER_API_KEY$XAI_API_KEY$GEMINI_API_KEY$AWS_ACCESS_KEY_ID$AWS_SECRET_ACCESS_KEY$AWS_SESSION_TOKEN" ]; then
+              {
+                echo '## Pi compatibility smoke skipped'
+                echo
+                echo '> [!WARNING]'
+                echo '> Pi smoke requires both `ROLEKIT_PI_PROVIDER` and `ROLEKIT_PI_MODEL`; configured credentials alone do not make a runnable smoke.'
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            pi_provider=$ROLEKIT_PI_PROVIDER
+            case "$ROLEKIT_PI_PROVIDER" in
+              anthropic)
+                [ -n "$ANTHROPIC_API_KEY" ] && pi_configured=true || pi_required='ANTHROPIC_API_KEY'
+                ;;
+              openai)
+                [ -n "$OPENAI_API_KEY" ] && pi_configured=true || pi_required='OPENAI_API_KEY'
+                ;;
+              openrouter)
+                [ -n "$OPENROUTER_API_KEY" ] && pi_configured=true || pi_required='OPENROUTER_API_KEY'
+                ;;
+              xai)
+                [ -n "$XAI_API_KEY" ] && pi_configured=true || pi_required='XAI_API_KEY'
+                ;;
+              google)
+                [ -n "$GEMINI_API_KEY" ] && pi_configured=true || pi_required='GEMINI_API_KEY'
+                ;;
+              amazon-bedrock)
+                if [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
+                  pi_configured=true
+                else
+                  pi_required='AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY'
+                fi
+                ;;
+              *)
+                pi_required='a supported provider (anthropic, openai, openrouter, xai, google, or amazon-bedrock)'
+                ;;
+            esac
+            if [ "$pi_configured" != true ]; then
+              {
+                echo '## Pi compatibility smoke skipped'
+                echo
+                echo '> [!WARNING]'
+                echo "> Selected Pi provider \`$ROLEKIT_PI_PROVIDER\` is unsupported or lacks its matching credential. Required: $pi_required. Unrelated provider credentials are not used."
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
+
+          echo "codex_configured=$codex_configured" >> "$GITHUB_OUTPUT"
+          echo "pi_configured=$pi_configured" >> "$GITHUB_OUTPUT"
+          echo "pi_provider=$pi_provider" >> "$GITHUB_OUTPUT"
+          if [ "$codex_configured" = true ] || [ "$pi_configured" = true ]; then
+            echo 'configured=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            {
+              echo '## Latest compatibility smoke skipped'
+              echo
+              echo '> [!WARNING]'
+              echo '> No executor has a runnable matching credential/selector configuration. Latest install/probe diagnostics are nonfatal for this no-smoke run, so the optional scheduled job succeeds.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo '## Cursor latest-probe limitation'
+            echo
+            echo '> [!NOTE]'
+            echo '> Cursor credentials do not mark this job configured because this repository has no owner-managed runner or supported unattended installer for the official `agent` binary. No Cursor authenticated smoke step is claimed.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Install latest public CLIs
+        continue-on-error: ${{ steps.credentials.outputs.configured != 'true' }}
+        run: npm install --no-save --package-lock=false @mariozechner/pi-coding-agent@latest @openai/codex@latest
+      - name: Probe latest CLIs through production adapters
+        continue-on-error: ${{ steps.credentials.outputs.configured != 'true' }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { resolve } from 'node:path'
+          import { PiCliAdapter } from './src/adapters/pi/index.ts'
+          import { PiRpcAdapter } from './src/adapters/pi-rpc/index.ts'
+          import { CodexCliAdapter } from './src/adapters/codex/index.ts'
+
+          const piCommand = resolve('node_modules/.bin/pi')
+          const cases = [
+            [new PiCliAdapter(), { command: piCommand, tools: ['read'] }],
+            [new PiRpcAdapter(), { command: piCommand, tools: ['read'] }],
+            [new CodexCliAdapter(), { command: resolve('node_modules/.bin/codex') }],
+          ]
+          for (const [adapter, options] of cases) {
+            const prepared = adapter.prepareOptions(options)
+            const probe = await adapter.probe(prepared, { cwd: process.cwd() })
+            if (!probe.available) {
+              throw new Error(`${adapter.id} latest compatibility probe failed: ${probe.diagnostic}`)
+            }
+          }
+          NODE
+      - name: Run credentialed Pi smoke for Anthropic
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'anthropic'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run smoke:pi
+      - name: Run credentialed Pi smoke for OpenAI
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'openai'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npm run smoke:pi
+      - name: Run credentialed Pi smoke for OpenRouter
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'openrouter'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: npm run smoke:pi
+      - name: Run credentialed Pi smoke for xAI
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'xai'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: npm run smoke:pi
+      - name: Run credentialed Pi smoke for Google
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'google'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: npm run smoke:pi
+      - name: Run credentialed Pi smoke for Amazon Bedrock
+        if: steps.credentials.outputs.pi_configured == 'true' && steps.credentials.outputs.pi_provider == 'amazon-bedrock'
+        env:
+          ROLEKIT_PI_SMOKE: '1'
+          ROLEKIT_PI_PROVIDER: ${{ vars.ROLEKIT_PI_PROVIDER }}
+          ROLEKIT_PI_MODEL: ${{ vars.ROLEKIT_PI_MODEL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        run: npm run smoke:pi
+      - name: Run credentialed Codex smoke when configured
+        if: steps.credentials.outputs.codex_configured == 'true'
+        env:
+          ROLEKIT_CODEX_SMOKE: '1'
+          ROLEKIT_CODEX_MODEL: ${{ vars.ROLEKIT_CODEX_MODEL }}
+          ROLEKIT_CODEX_PROFILE: ${{ vars.ROLEKIT_CODEX_PROFILE }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+        run: npm run smoke:codex

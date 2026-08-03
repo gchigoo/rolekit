@@ -37,6 +37,14 @@ export function parseExecutorPayload(text: string): ExecutorResponse {
   return parsed as unknown as ExecutorResponse
 }
 
+export function withoutExecutorIdentity(response: ExecutorResponse): ExecutorResponse {
+  const sanitized: Record<string, unknown> = { ...response }
+  delete sanitized.provider
+  delete sanitized.model
+  delete sanitized.version
+  return sanitized as unknown as ExecutorResponse
+}
+
 export function firstString(
   record: Readonly<Record<string, unknown>>,
   ...keys: readonly string[]

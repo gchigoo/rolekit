@@ -1,0 +1,92 @@
+{
+  "additionalProperties": false,
+  "$id": "https://rolekit.dev/schemas/execution-receipt.v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "planDigest",
+    "runId",
+    "taskId",
+    "roleId",
+    "startedAt",
+    "completedAt",
+    "actualExecutor",
+    "response"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rolekit/execution-receipt@1",
+      "type": "string"
+    },
+    "planDigest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "runId": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "taskId": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "roleId": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "type": "string"
+    },
+    "startedAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "completedAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "actualExecutor": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "transport"
+      ],
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "transport": {
+          "anyOf": [
+            {
+              "const": "cli",
+              "type": "string"
+            },
+            {
+              "const": "in-process",
+              "type": "string"
+            },
+            {
+              "const": "remote",
+              "type": "string"
+            }
+          ]
+        },
+        "executorVersion": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "actualProvider": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "actualModel": {
+          "minLength": 1,
+          "type": "string"
+        }
+      }
+    },
+    "response": {}
+  }
+}
