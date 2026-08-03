@@ -49,7 +49,7 @@ npm install
 npm run check
 ```
 
-The package remains private until licensing and publication are explicitly approved.
+The package is MIT-licensed and remains private until publication is explicitly approved.
 
 ## Contracts
 
@@ -125,8 +125,8 @@ Run statuses are terminal and intentionally small: `completed`, `failed`, `block
 Code is exported from `.`, `core`, `config`, `adapter-cli`, `pi`, `pi-rpc`, `cursor`, `codex`, and
 `testing`. Versioned JSON Schemas are exported under `schemas/role-spec.v1`,
 `schemas/task-packet.v1`, descriptor/config/execution-plan/receipt paths, and RunResult v1/v2 paths.
-The historical `run-result.schema.json` file remains the v1 compatibility alias;
-`schemas/run-result.latest` explicitly resolves to v2.
+The unversioned `run-result.schema.json` alias now points at the current RunResult v2 schema;
+`schemas/run-result.latest` also resolves to v2.
 
 ## CLI
 
@@ -138,7 +138,7 @@ rolekit config validate --config examples/rolekit.yaml
 rolekit compile \
   --config examples/rolekit.yaml \
   --role reviewer \
-  --task examples/tasks/implement-feature.yaml \
+  --task examples/tasks/review-change.yaml \
   --executor host-reviewer \
   --json
 rolekit run \
@@ -150,8 +150,7 @@ rolekit finalize --plan resolved-plan.json --receipt execution-receipt.json --js
 rolekit executors list --config examples/rolekit.yaml --json
 rolekit executors describe \
   --config examples/rolekit.yaml \
-  --executor pi-implementer \
-  --probe \
+  --executor pi-rpc-implementer \
   --json
 ```
 
@@ -180,16 +179,16 @@ remain outside plans and results. Exit codes are: `0` success, `1` execution/fin
 `2` usage error, `3` invalid config or contract, `4` blocked or host execution required, `130`
 SIGINT, and `143` SIGTERM. Envelope shape does not change with the exit code.
 
-The pre-config `run --role <file> --executor ... --options ...` form remains for one deprecation
-cycle. It is selected only when `--config` is absent and reports `legacy_run_deprecated` on stderr in
-text mode or in the JSON envelope's `warnings` array.
+The CLI accepts only the config-driven `run --config <file> --role <role-id> --task <file>` form.
+The pre-config `run --role <file> --executor ... --options ...` entry point has been removed.
 
 The Cursor adapter invokes the current official `agent` executable in headless mode. It enables
 `--sandbox enabled` by default and passes `--trust` only for headless workspace trust. Read-only
 tasks use plan mode. Tasks with `repository.write` use forced mode. A task that requests `shell`
 without `repository.write` is blocked before probing because Cursor cannot guarantee that
-permission distinction. `cursor-agent` is supported only when explicitly configured as `command`
-and produces a deprecation diagnostic; there is no executable fallback.
+permission distinction. The adapter does not discover or special-case the retired `cursor-agent`
+entry point; custom commands are treated as explicit caller-supplied executables and must pass the
+same probes as `agent`.
 
 Pi is isolated by default with no sessions, context files, extension/skill/template discovery, or
 inherited user agent directory. It receives a controlled system prompt and an explicit tool
@@ -200,7 +199,7 @@ Pi's `bash` tool can write, so that permission distinction is not claimed withou
 write isolation. The Grok 4.5 prompt profile remains adapter-owned and uses the typed `thinking`
 option when supplied.
 
-Codex ignores user config and execpolicy rules by default and plans `project_doc_max_bytes=0` to
+Codex ignores user config and execpolicy rules by default and passes `project_doc_max_bytes=0` to
 disable project instructions. `--ignore-rules` isolates execpolicy files, not `AGENTS.md`; project
 instructions are controlled separately. Static inspection reports project instructions as
 `unknown`; runtime admission upgrades them to `isolated` only after the exact typed control passes
@@ -211,32 +210,39 @@ mandatory runtime probe; runtime admission retains it only after `web_search="li
 conditional typed canary, otherwise execution is blocked. Project-scoped resources and MCP
 isolation remain reported as `unknown` until an enforceable disabling mechanism is fixture-backed.
 
-Each adapter exposes its own strict options type. Shared process options are only `command`,
-`timeoutMs`, `maxOutputBytes`, `environment`, and the insecure explicit opt-in
-`inheritAmbientEnvironment`. Safe mode never copies adapter authentication or config-home values
-from `process.env`; credentials must be supplied explicitly under the sensitive `environment`
-option. Public snapshots replace those values with markers, while effective options record the
-credential source set and explicit environment key names. Pi and Cursor use temporary isolated
-user homes in safe execution. Codex also uses an isolated temporary home by default. Pi's
-`inheritUserAgentDirectory: true` and Codex's `inheritUserConfig: true` explicitly permit their
-user credential stores; those opt-ins are reported as `credentials: 'user-store'`, while
-`inheritAmbientEnvironment: true` is reported as `credentials: 'inherited'`. Combining a user-store
-opt-in with explicit credential keys is reported conservatively as `credentials: 'unknown'`, with
-both source categories retained in effective public options. Codex behavior canaries always use a
-separately allocated minimal environment and fresh isolated temporary home/store that version/help
-never uses, with configured credentials, ambient credential/token variables, and inherited user
-stores removed; credential/config/cache state written under version/help-selected homes/stores is not
-available through the canary home/store paths. Actual execution keeps its
-separately selected environment policy.
+There are two adapter option surfaces:
 
-Pi additionally supports provider/model/thinking, validated tool allow/exclude lists, exact
-resource paths, context/user-directory inheritance, project resource discovery, and offline mode.
-Codex supports model, profile, reasoning effort, web search, and its three inheritance controls.
-Cursor supports model, sandbox mode, and MCP approval. Unknown keys, reserved environment keys,
-`commandArgs`, `extraArgs`, arbitrary capability claims, and raw config overrides are rejected
-before probing. Probes tokenize help output into exact option tokens and derive the required token
-set from the prepared execution argument plan, including conditional typed options. Every bundled
-adapter reports task `allowedPaths` as advisory rather than claiming exact filesystem enforcement.
+- **Built-in config profiles** intentionally expose the safe subset accepted by `rolekit.yaml`:
+  shared process options are `command`, `timeoutMs`, `maxOutputBytes`, and sensitive
+  `environment`; Pi/Pi RPC add provider/model/thinking, tool allowlists, exact extension/skill/
+  prompt-template paths, and offline mode; Codex adds model, reasoning effort, and web search;
+  Cursor adds model and sandbox mode.
+- **Direct adapter APIs** expose additional unsafe opt-ins for hosts that deliberately accept that
+  risk, including ambient environment inheritance, user config or agent-directory inheritance,
+  project-resource discovery, Codex profiles/project-instruction/exec-policy inheritance, and
+  Cursor MCP approval. Those direct-only options are rejected from built-in config profiles before
+  any probe or execution.
+
+Safe mode never copies adapter authentication or config-home values from `process.env`;
+credentials must be supplied explicitly under the sensitive `environment` option. Public snapshots
+replace those values with markers, while effective options record the credential source set and
+explicit environment key names. Pi and Cursor use temporary isolated user homes in safe execution.
+Codex also uses an isolated temporary home by default. Direct user-store opt-ins such as Pi's
+`inheritUserAgentDirectory: true` and Codex's `inheritUserConfig: true` report
+`credentials: 'user-store'`, while `inheritAmbientEnvironment: true` reports
+`credentials: 'inherited'`. Combining a user-store opt-in with explicit credential keys is reported
+conservatively as `credentials: 'unknown'`, with both source categories retained in effective public
+options. Codex behavior canaries always use a separately allocated minimal environment and fresh
+isolated temporary home/store that version/help never uses, with configured credentials, ambient
+credential/token variables, and inherited user stores removed; credential/config/cache state written
+under version/help-selected homes/stores is not available through the canary home/store paths.
+Actual execution keeps its separately selected environment policy.
+
+Unknown keys, reserved environment keys, `commandArgs`, `extraArgs`, arbitrary capability claims,
+and raw config overrides are rejected before probing. Probes tokenize help output into exact option
+tokens and derive the required token set from the prepared execution argument plan, including
+conditional typed options. Every bundled adapter reports task `allowedPaths` as advisory rather than
+claiming exact filesystem enforcement.
 
 ## Pre-1.0 adapter protocol migration
 
@@ -283,17 +289,15 @@ Adding an adapter requires no core switch statement and does not change the cont
 
 ## Publication approval gate
 
-The package remains `private: true`. Publication requires an owner to complete every step:
+The package is licensed under MIT and still remains `private: true`. Publication requires an owner
+to complete every step:
 
-1. Approve a license. Apache-2.0 is the recommended default for a reusable adapter ecosystem, but
-   the choice is a product/legal decision.
-2. Add the approved `LICENSE` file and package `license` field.
-3. Run `npm run check`, `npm run test:package`, and the real CLI smoke suite.
-4. Inspect `npm pack --dry-run --json`.
-5. Only then remove `private` and publish.
+1. Confirm the MIT license text and package metadata are still correct for the release.
+2. Run `npm run check`, `npm run test:package`, and the real CLI smoke suite.
+3. Inspect `npm pack --dry-run --json`.
+4. Only remove `private` and publish after explicit owner approval.
 
-No implementation agent may choose the license, remove the private gate, or publish without
-explicit owner approval.
+No implementation agent may remove the private gate or publish without explicit owner approval.
 
 ## Architecture and integration
 

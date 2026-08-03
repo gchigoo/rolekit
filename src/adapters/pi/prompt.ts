@@ -1,10 +1,12 @@
+import { createExecutionContract } from '../../core/execution-contract.ts'
 import { createExecutorPayloadSchema } from '../../core/schemas.ts'
-import type { RoleSpec, TaskPacket } from '../../core/types.ts'
-import {
-  buildNeutralExecutionPrompt,
-  createExecutionPromptContract,
-  stringifyPromptJson,
-} from '../cli/prompt.ts'
+import type {
+  RoleSpec,
+  SnapshotRoleSpec,
+  SnapshotTaskPacket,
+  TaskPacket,
+} from '../../core/types.ts'
+import { buildNeutralExecutionPrompt, stringifyPromptJson } from '../cli/prompt.ts'
 import type { PiCliAdapterOptions } from './options.ts'
 
 export type PiPromptProfile = 'neutral' | 'grok-4.5'
@@ -63,7 +65,10 @@ export function buildPiExecutionPrompt(
   if (profile === 'neutral') {
     return buildNeutralExecutionPrompt(role, task)
   }
-  const contract = createExecutionPromptContract(role, task)
+  const contract = createExecutionContract(
+    role as unknown as SnapshotRoleSpec,
+    task as unknown as SnapshotTaskPacket,
+  )
   return [
     '<user_query>',
     '<rolekit_execution_contract>',

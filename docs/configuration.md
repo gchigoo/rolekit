@@ -49,6 +49,12 @@ executors:
       tools: [read, grep, find, ls]
 ```
 
+The example reviewer profile intentionally keeps only read/search/list tools, while the implementer
+profile includes edit/write/bash tools and should only be bound to roles that require
+`repository.write` or `shell`. These tool policies feed adapter admission; they are not OS or
+workspace sandbox proof. Strong filesystem, process, network, and credential isolation remains the
+host's responsibility.
+
 Selection is exact. A role uses its configured profile unless the caller explicitly names another profile. An unavailable profile blocks; RoleKit never falls back to another profile, adapter, provider, model, or executable. A `mode: host` profile cannot be passed to `run`.
 
 ## Adapter mode
@@ -64,7 +70,9 @@ options:
       $env: XAI_API_KEY
 ```
 
-The plan records the required secret name and public replacement markers, never the resolved value. Child environments are minimal by default. `inheritAmbientEnvironment` is an explicit insecure opt-in; user credential-store inheritance is controlled separately by the relevant adapter option.
+The plan records the required secret name and public replacement markers, never the resolved value. Child environments are minimal by default.
+
+Built-in config profiles intentionally expose a safe subset of each adapter's direct TypeScript options. `rolekit.yaml` accepts shared `command`, `timeoutMs`, `maxOutputBytes`, and sensitive `environment`; Pi/Pi RPC add provider/model/thinking, tool allowlists, exact resource paths, and offline mode; Codex adds model, reasoning effort, and web search; Cursor adds model and sandbox mode. Direct-adapter unsafe opt-ins such as `inheritAmbientEnvironment`, Pi user-directory or project-resource discovery, Codex user-config/project-instruction/exec-policy inheritance, Codex profiles, and Cursor MCP approval are rejected from built-in config profiles before probing or execution. Hosts that need those controls must instantiate the adapter directly and own the extra risk explicitly.
 
 ## Host mode
 
@@ -99,7 +107,7 @@ Changing a role prompt fragment changes the normalized role snapshot and therefo
 
 ```text
 rolekit config validate --config examples/rolekit.yaml
-rolekit compile --config examples/rolekit.yaml --role reviewer --task examples/tasks/implement-feature.yaml --executor host-reviewer --json
+rolekit compile --config examples/rolekit.yaml --role reviewer --task examples/tasks/review-change.yaml --executor host-reviewer --json
 rolekit run --config examples/rolekit.yaml --role implementer --task examples/tasks/implement-feature.yaml --json
 rolekit finalize --plan resolved-plan.json --receipt execution-receipt.json --json
 rolekit executors list --config examples/rolekit.yaml --json

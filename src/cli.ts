@@ -4,12 +4,7 @@ import { extname, resolve } from 'node:path'
 
 import { parse as parseYaml } from 'yaml'
 
-import {
-  createBuiltInAdapter,
-  createBuiltInAdapterRegistry,
-  createConfiguredRun,
-  UnknownBuiltInAdapterError,
-} from './composition.ts'
+import { createBuiltInAdapterRegistry, createConfiguredRun } from './composition.ts'
 import {
   compileRoleBinding,
   compileTaskExecutionTarget,
@@ -27,7 +22,6 @@ import {
   assertValid,
   createExecutionPlan,
   finalizeExecution,
-  Rolekit,
   RolekitError,
   RoleSpecSchema,
   TaskPacketSchema,
@@ -65,16 +59,7 @@ Usage:
   rolekit validate task <file> [--json]
   rolekit validate result <file> [--json]
   rolekit --version
-
-Legacy compatibility: rolekit run --role <file> --task <file> --executor <built-in-id>
-                      [--cwd <path>] [--options <file>] [--json]
 `
-
-const LEGACY_RUN_WARNING = Object.freeze({
-  code: 'legacy_run_deprecated',
-  message:
-    'Legacy run flags are deprecated; use run --config <file> --role <role-id> --task <file>.',
-})
 
 export interface CliWarning {
   readonly code: string
@@ -370,48 +355,7 @@ async function compileCommand(parsed: ParsedArguments): Promise<CommandResult> {
   return { exitCode, data: resolvedPlan, text: prettyJson(resolvedPlan) }
 }
 
-async function legacyRunCommand(
-  parsed: ParsedArguments,
-  context: CommandContext,
-): Promise<CommandResult> {
-  assertAllowedFlags(parsed, ['role', 'task', 'executor', 'cwd', 'options', 'json'])
-  assertPositionalLength(parsed, 1, 'Run accepts flags only.')
-  context.warnings.push(LEGACY_RUN_WARNING)
-  const rolePath = requireStringFlag(parsed, 'role')
-  const taskPath = requireStringFlag(parsed, 'task')
-  const executorId = requireStringFlag(parsed, 'executor')
-  let adapter: ReturnType<typeof createBuiltInAdapter>
-  try {
-    adapter = createBuiltInAdapter(executorId)
-  } catch (error: unknown) {
-    if (error instanceof UnknownBuiltInAdapterError) {
-      throw new CliUsageError(error.message)
-    }
-    throw error
-  }
-  const roleValue = await loadData(rolePath, 'role')
-  const taskValue = await loadData(taskPath, 'task')
-  validateRole(roleValue)
-  validateTask(taskValue)
-  const adapterOptionsPath = stringFlag(parsed, 'options')
-  const adapterOptions =
-    adapterOptionsPath === undefined ? {} : await loadData(adapterOptionsPath, 'adapter options')
-  const rolekit = new Rolekit({ roles: [roleValue], adapters: [adapter] })
-  assertCommandActive(context)
-  const result = await rolekit.run(taskValue, {
-    executorId,
-    cwd: resolve(stringFlag(parsed, 'cwd') ?? process.cwd()),
-    adapterOptions,
-    signal: context.signal,
-  })
-  return {
-    exitCode: resultExitCode(result, context.receivedSignal),
-    data: result,
-    text: `[${result.status}] ${result.runId}: ${result.summary}\n`,
-  }
-}
-
-async function configuredRunCommand(
+async function runCommand(
   parsed: ParsedArguments,
   context: CommandContext,
 ): Promise<CommandResult> {
@@ -441,15 +385,6 @@ async function configuredRunCommand(
     data: result,
     text: `[${result.status}] ${result.runId}: ${result.summary}\n`,
   }
-}
-
-async function runCommand(
-  parsed: ParsedArguments,
-  context: CommandContext,
-): Promise<CommandResult> {
-  return parsed.flags.has('config')
-    ? configuredRunCommand(parsed, context)
-    : legacyRunCommand(parsed, context)
 }
 
 async function loadResolvedPlan(filePath: string): Promise<ResolvedExecutionPlan> {

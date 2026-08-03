@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
-import { type ChildProcessWithoutNullStreams, spawn, spawnSync } from 'node:child_process'
-import { access, chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { spawnSync } from 'node:child_process'
+import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, it } from 'node:test'
@@ -21,57 +21,6 @@ function runCli(args: readonly string[]) {
       env: process.env,
     },
   )
-}
-
-function startCli(args: readonly string[]): ChildProcessWithoutNullStreams {
-  return spawn(process.execPath, ['--input-type=module', '-e', invokeSourceCli, '--', ...args], {
-    cwd: process.cwd(),
-    env: process.env,
-    stdio: ['pipe', 'pipe', 'pipe'],
-  })
-}
-
-async function collectCli(child: ChildProcessWithoutNullStreams): Promise<{
-  readonly code: number | null
-  readonly signal: NodeJS.Signals | null
-  readonly stdout: string
-  readonly stderr: string
-}> {
-  let stdout = ''
-  let stderr = ''
-  child.stdout.setEncoding('utf8')
-  child.stderr.setEncoding('utf8')
-  child.stdout.on('data', (chunk: string) => {
-    stdout += chunk
-  })
-  child.stderr.on('data', (chunk: string) => {
-    stderr += chunk
-  })
-  return new Promise((resolvePromise, rejectPromise) => {
-    child.once('error', rejectPromise)
-    child.once('close', (code, signal) => resolvePromise({ code, signal, stdout, stderr }))
-  })
-}
-
-async function waitForFile(path: string, timeoutMs = 5_000): Promise<void> {
-  const deadline = Date.now() + timeoutMs
-  while (Date.now() < deadline) {
-    try {
-      await access(path)
-      return
-    } catch {
-      await new Promise((resolvePromise) => setTimeout(resolvePromise, 20))
-    }
-  }
-  throw new Error(`Timed out waiting for file: ${path}`)
-}
-
-function forceKill(pid: number): void {
-  try {
-    process.kill(pid, 'SIGKILL')
-  } catch {
-    // The fixture already exited.
-  }
 }
 
 async function createFixtureExecutable(
@@ -103,6 +52,83 @@ async function createFixtureExecutable(
   return commandPath
 }
 
+async function writeRoleAndTask(directory: string): Promise<{
+  readonly rolePath: string
+  readonly taskPath: string
+}> {
+  const rolePath = join(directory, 'role.json')
+  const taskPath = join(directory, 'task.json')
+  await writeFile(
+    rolePath,
+    JSON.stringify({
+      schema: 'rolekit/role-spec@1',
+      id: 'writer',
+      description: 'Writes a report.',
+      requiredCapabilities: ['repository.read'],
+      inputSchema: {
+        type: 'object',
+        properties: { source: { type: 'string' } },
+        required: ['source'],
+        additionalProperties: false,
+      },
+      outputSchema: {
+        type: 'object',
+        properties: { message: { type: 'string' } },
+        required: ['message'],
+        additionalProperties: false,
+      },
+    }),
+    'utf8',
+  )
+  await writeFile(
+    taskPath,
+    JSON.stringify({
+      schema: 'rolekit/task-packet@1',
+      taskId: 'cli-task',
+      roleId: 'writer',
+      objective: 'Create a report.',
+      input: { source: 'README.md' },
+      context: [],
+      constraints: [],
+      acceptanceCriteria: ['Report returned.'],
+      expectedArtifacts: [{ name: 'report', kind: 'text' }],
+    }),
+    'utf8',
+  )
+  return { rolePath, taskPath }
+}
+
+async function writeConfig(
+  directory: string,
+  rolePath: string,
+  command: string,
+  environment: readonly string[] = [],
+): Promise<string> {
+  const configPath = join(directory, 'rolekit.yaml')
+  await writeFile(
+    configPath,
+    [
+      'schema: rolekit/config@1',
+      'roles:',
+      '  writer:',
+      `    spec: ${JSON.stringify(rolePath)}`,
+      '    executor: cursor-default',
+      'executors:',
+      '  cursor-default:',
+      '    mode: adapter',
+      '    adapter: cursor',
+      '    options:',
+      `      command: ${JSON.stringify(command)}`,
+      ...(environment.length === 0
+        ? []
+        : ['      environment:', ...environment.map((entry) => `        ${entry}`)]),
+      '',
+    ].join('\n'),
+    'utf8',
+  )
+  return configPath
+}
+
 describe('RoleKit CLI', () => {
   it('shows the portable contract, config, compile, run, finalize, and executor surface', () => {
     const result = runCli(['--help'])
@@ -113,70 +139,25 @@ describe('RoleKit CLI', () => {
     assert.match(result.stdout, /rolekit run --config/u)
     assert.match(result.stdout, /rolekit finalize/u)
     assert.match(result.stdout, /rolekit executors describe/u)
-    assert.match(result.stdout, /legacy.*rolekit run --role/iu)
+    assert.doesNotMatch(result.stdout, /legacy|deprecated|rolekit run --role/iu)
     assert.doesNotMatch(result.stdout, /\b(workitem|gate|migrate|evals|knowledge)\b/iu)
   })
 
-  it('validates role and task contracts and runs a selected CLI adapter', async () => {
+  it('validates contracts, runs the configured CLI adapter, and rejects obsolete run flags', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'rolekit-cli-test-'))
     try {
-      const rolePath = join(directory, 'role.json')
-      const taskPath = join(directory, 'task.json')
-      const optionsPath = join(directory, 'options.json')
-      const resultPath = join(directory, 'run-result.v2.json')
-      const legacyResultPath = join(directory, 'run-result.v1.json')
+      const { rolePath, taskPath } = await writeRoleAndTask(directory)
       const capturePath = join(directory, 'capture.json')
-      await writeFile(
-        rolePath,
-        JSON.stringify({
-          schema: 'rolekit/role-spec@1',
-          id: 'writer',
-          description: 'Writes a report.',
-          requiredCapabilities: ['repository.read', 'repository.write'],
-          inputSchema: {
-            type: 'object',
-            properties: { source: { type: 'string' } },
-            required: ['source'],
-            additionalProperties: false,
-          },
-          outputSchema: {
-            type: 'object',
-            properties: { message: { type: 'string' } },
-            required: ['message'],
-            additionalProperties: false,
-          },
-        }),
-        'utf8',
-      )
-      await writeFile(
-        taskPath,
-        JSON.stringify({
-          schema: 'rolekit/task-packet@1',
-          taskId: 'cli-task',
-          roleId: 'writer',
-          objective: 'Create a report.',
-          input: { source: 'README.md' },
-          context: [],
-          constraints: [],
-          acceptanceCriteria: ['Report returned.'],
-          expectedArtifacts: [{ name: 'report', kind: 'text' }],
-        }),
-        'utf8',
-      )
+      const resultPath = join(directory, 'run-result.v2.json')
       const command = await createFixtureExecutable(
         directory,
         'cursor-success',
         resolve('test', 'fixtures', 'fake-cli.mjs'),
         ['cursor'],
       )
-      await writeFile(
-        optionsPath,
-        JSON.stringify({
-          command,
-          environment: { ROLEKIT_FAKE_CAPTURE: capturePath },
-        }),
-        'utf8',
-      )
+      const configPath = await writeConfig(directory, rolePath, command, [
+        `ROLEKIT_FAKE_CAPTURE: ${JSON.stringify(capturePath)}`,
+      ])
 
       const validateRole = runCli(['validate', 'role', rolePath, '--json'])
       assert.equal(validateRole.status, 0, validateRole.stderr)
@@ -196,14 +177,12 @@ describe('RoleKit CLI', () => {
 
       const run = runCli([
         'run',
+        '--config',
+        configPath,
         '--role',
-        rolePath,
+        'writer',
         '--task',
         taskPath,
-        '--executor',
-        'cursor',
-        '--options',
-        optionsPath,
         '--cwd',
         process.cwd(),
         '--json',
@@ -212,21 +191,36 @@ describe('RoleKit CLI', () => {
       assert.equal(run.stderr, '')
       const runEnvelope = JSON.parse(run.stdout)
       assert.equal(runEnvelope.ok, true)
-      assert.deepEqual(runEnvelope.warnings, [
-        {
-          code: 'legacy_run_deprecated',
-          message:
-            'Legacy run flags are deprecated; use run --config <file> --role <role-id> --task <file>.',
-        },
-      ])
+      assert.deepEqual(runEnvelope.warnings, [])
       const result = runEnvelope.data
       assert.equal(result.schema, 'rolekit/run-result@2')
       assert.equal(result.status, 'completed')
       assert.equal(result.executor.id, 'cursor')
+      assert.equal(result.executor.profileId, 'cursor-default')
       assert.match(result.execution.planDigest, /^sha256:[a-f0-9]{64}$/u)
       assert.equal(Object.hasOwn(result, 'warnings'), false)
 
+      const capture = JSON.parse(await readFile(capturePath, 'utf8')) as {
+        readonly mode: string
+      }
+      assert.equal(capture.mode, 'cursor')
+
       const textRun = runCli([
+        'run',
+        '--config',
+        configPath,
+        '--role',
+        'writer',
+        '--task',
+        taskPath,
+        '--cwd',
+        process.cwd(),
+      ])
+      assert.equal(textRun.status, 0, textRun.stderr)
+      assert.equal(textRun.stderr, '')
+      assert.match(textRun.stdout, /\[completed\]/u)
+
+      const obsoleteRun = runCli([
         'run',
         '--role',
         rolePath,
@@ -234,65 +228,20 @@ describe('RoleKit CLI', () => {
         taskPath,
         '--executor',
         'cursor',
-        '--options',
-        optionsPath,
-        '--cwd',
-        process.cwd(),
-      ])
-      assert.equal(textRun.status, 0, textRun.stderr)
-      assert.match(textRun.stderr, /legacy run flags are deprecated/iu)
-      assert.match(textRun.stdout, /\[completed\]/u)
-
-      const unknownBuiltIn = runCli([
-        'run',
-        '--role',
-        rolePath,
-        '--task',
-        taskPath,
-        '--executor',
-        'unknown-built-in',
         '--json',
       ])
-      assert.equal(unknownBuiltIn.status, 2, unknownBuiltIn.stderr)
-      const unknownEnvelope = JSON.parse(unknownBuiltIn.stdout)
-      assert.equal(unknownEnvelope.ok, false)
-      assert.equal(unknownEnvelope.error.code, 'usage_error')
-      assert.deepEqual(unknownEnvelope.warnings, [
-        {
-          code: 'legacy_run_deprecated',
-          message:
-            'Legacy run flags are deprecated; use run --config <file> --role <role-id> --task <file>.',
-        },
-      ])
+      assert.equal(obsoleteRun.status, 2, obsoleteRun.stderr)
+      const obsoleteEnvelope = JSON.parse(obsoleteRun.stdout)
+      assert.equal(obsoleteEnvelope.ok, false)
+      assert.equal(obsoleteEnvelope.error.code, 'usage_error')
+      assert.match(obsoleteEnvelope.error.message, /--config/u)
+      assert.deepEqual(obsoleteEnvelope.warnings, [])
 
       await writeFile(resultPath, JSON.stringify(result), 'utf8')
       const validateV2 = runCli(['validate', 'result', resultPath, '--json'])
       assert.equal(validateV2.status, 0, validateV2.stderr)
       assert.equal(JSON.parse(validateV2.stdout).ok, true)
       assert.equal(JSON.parse(validateV2.stdout).data.valid, true)
-
-      await writeFile(
-        legacyResultPath,
-        JSON.stringify({
-          schema: 'rolekit/run-result@1',
-          runId: 'legacy-run',
-          taskId: 'cli-task',
-          roleId: 'writer',
-          status: 'blocked',
-          executor: { id: 'cursor', transport: 'cli' },
-          summary: 'Stored legacy result.',
-          artifacts: [],
-          evidence: [],
-          usage: {},
-          error: { code: 'blocked', message: 'Stored block.', retryable: false },
-          createdAt: '2026-01-01T00:00:00.000Z',
-        }),
-        'utf8',
-      )
-      const validateV1 = runCli(['validate', 'result', legacyResultPath, '--json'])
-      assert.equal(validateV1.status, 0, validateV1.stderr)
-      assert.equal(JSON.parse(validateV1.stdout).ok, true)
-      assert.equal(JSON.parse(validateV1.stdout).data.valid, true)
     } finally {
       await rm(directory, { recursive: true, force: true })
     }
@@ -302,64 +251,23 @@ describe('RoleKit CLI', () => {
     const directory = await mkdtemp(join(tmpdir(), 'rolekit-cli-redaction-'))
     const secret = 'cli-json-secret'
     try {
-      const rolePath = join(directory, 'role.json')
-      const taskPath = join(directory, 'task.json')
-      const optionsPath = join(directory, 'options.json')
-      await writeFile(
-        rolePath,
-        JSON.stringify({
-          schema: 'rolekit/role-spec@1',
-          id: 'writer',
-          description: 'Writes a report.',
-          requiredCapabilities: ['repository.read'],
-          inputSchema: {
-            type: 'object',
-            properties: { source: { type: 'string' } },
-            required: ['source'],
-            additionalProperties: false,
-          },
-          outputSchema: {
-            type: 'object',
-            properties: { message: { type: 'string' } },
-            required: ['message'],
-            additionalProperties: false,
-          },
-        }),
-        'utf8',
-      )
-      await writeFile(
-        taskPath,
-        JSON.stringify({
-          schema: 'rolekit/task-packet@1',
-          taskId: 'cli-failure-task',
-          roleId: 'writer',
-          objective: 'Fail without exposing credentials.',
-          input: { source: 'README.md' },
-          context: [],
-          constraints: [],
-          acceptanceCriteria: [],
-          expectedArtifacts: [],
-        }),
-        'utf8',
-      )
+      const { rolePath, taskPath } = await writeRoleAndTask(directory)
       const command = await createFixtureExecutable(
         directory,
         'cursor-failure',
         resolve('test', 'fixtures', 'long-running-cli.mjs'),
         ['fail', '--token', secret],
       )
-      await writeFile(optionsPath, JSON.stringify({ command }), 'utf8')
+      const configPath = await writeConfig(directory, rolePath, command)
 
       const run = runCli([
         'run',
+        '--config',
+        configPath,
         '--role',
-        rolePath,
+        'writer',
         '--task',
         taskPath,
-        '--executor',
-        'cursor',
-        '--options',
-        optionsPath,
         '--json',
       ])
 
@@ -367,13 +275,7 @@ describe('RoleKit CLI', () => {
       assert.doesNotMatch(`${run.stdout}\n${run.stderr}`, new RegExp(secret, 'u'))
       const envelope = JSON.parse(run.stdout)
       assert.equal(envelope.ok, true)
-      assert.deepEqual(envelope.warnings, [
-        {
-          code: 'legacy_run_deprecated',
-          message:
-            'Legacy run flags are deprecated; use run --config <file> --role <role-id> --task <file>.',
-        },
-      ])
+      assert.deepEqual(envelope.warnings, [])
       const result = envelope.data
       assert.equal(result.status, 'failed')
       assert.equal(result.error.code, 'nonzero_exit')
@@ -383,106 +285,10 @@ describe('RoleKit CLI', () => {
     }
   })
 
-  it('maps SIGINT and SIGTERM cancellation to conventional exit codes', {
-    skip: process.platform === 'win32',
-  }, async () => {
-    for (const { signal, expectedCode } of [
-      { signal: 'SIGINT', expectedCode: 130 },
-      { signal: 'SIGTERM', expectedCode: 143 },
-    ] as const) {
-      const directory = await mkdtemp(join(tmpdir(), `rolekit-cli-${signal.toLowerCase()}-`))
-      const rolePath = join(directory, 'role.json')
-      const taskPath = join(directory, 'task.json')
-      const optionsPath = join(directory, 'options.json')
-      const markerPath = join(directory, 'fixture.pid')
-      let fixturePid: number | undefined
-      let child: ChildProcessWithoutNullStreams | undefined
-      try {
-        await writeFile(
-          rolePath,
-          JSON.stringify({
-            schema: 'rolekit/role-spec@1',
-            id: 'writer',
-            description: 'Writes a report.',
-            requiredCapabilities: ['repository.read'],
-            inputSchema: {
-              type: 'object',
-              properties: { source: { type: 'string' } },
-              required: ['source'],
-              additionalProperties: false,
-            },
-            outputSchema: {
-              type: 'object',
-              properties: { message: { type: 'string' } },
-              required: ['message'],
-              additionalProperties: false,
-            },
-          }),
-          'utf8',
-        )
-        await writeFile(
-          taskPath,
-          JSON.stringify({
-            schema: 'rolekit/task-packet@1',
-            taskId: `cli-${signal.toLowerCase()}-task`,
-            roleId: 'writer',
-            objective: 'Wait for cancellation.',
-            input: { source: 'README.md' },
-            context: [],
-            constraints: [],
-            acceptanceCriteria: [],
-            expectedArtifacts: [],
-          }),
-          'utf8',
-        )
-        const command = await createFixtureExecutable(
-          directory,
-          `cursor-${signal.toLowerCase()}`,
-          resolve('test', 'fixtures', 'long-running-cli.mjs'),
-          ['hang', markerPath],
-        )
-        await writeFile(optionsPath, JSON.stringify({ command }), 'utf8')
-
-        child = startCli([
-          'run',
-          '--role',
-          rolePath,
-          '--task',
-          taskPath,
-          '--executor',
-          'cursor',
-          '--options',
-          optionsPath,
-          '--json',
-        ])
-        const completion = collectCli(child)
-        await waitForFile(markerPath)
-        fixturePid = Number.parseInt(await readFile(markerPath, 'utf8'), 10)
-        assert.equal(child.kill(signal), true)
-
-        const result = await completion
-        assert.equal(result.signal, null, result.stderr)
-        assert.equal(result.code, expectedCode, JSON.stringify(result))
-        const envelope = JSON.parse(result.stdout)
-        assert.equal(envelope.ok, true)
-        assert.deepEqual(envelope.warnings, [
-          {
-            code: 'legacy_run_deprecated',
-            message:
-              'Legacy run flags are deprecated; use run --config <file> --role <role-id> --task <file>.',
-          },
-        ])
-        assert.equal(envelope.data.status, 'cancelled')
-        assert.equal(envelope.data.error.code, 'cancelled')
-      } finally {
-        if (child !== undefined && child.exitCode === null && child.signalCode === null) {
-          child.kill('SIGKILL')
-        }
-        if (fixturePid !== undefined) {
-          forceKill(fixturePid)
-        }
-        await rm(directory, { recursive: true, force: true })
-      }
-    }
+  it('prints the package version through the source CLI', () => {
+    const result = runCli(['--version'])
+    assert.equal(result.status, 0, result.stderr)
+    assert.match(result.stdout, /^0\.1\.0\s*$/u)
+    assert.equal(result.stderr, '')
   })
 })

@@ -68,7 +68,7 @@ describe('architecture boundaries', () => {
     }
   })
 
-  it('keeps hardcoded built-in adapter imports and legacy routing in composition only', async () => {
+  it('keeps hardcoded built-in adapter imports in composition only', async () => {
     const configFiles = await collectFiles(resolve('src', 'config'))
     const configSource = (
       await Promise.all(configFiles.map((file) => readFile(file, 'utf8')))
@@ -79,7 +79,8 @@ describe('architecture boundaries', () => {
     assert.match(composition, /adapters\/pi/u)
     assert.match(composition, /adapters\/cursor/u)
     assert.match(composition, /adapters\/codex/u)
-    assert.match(composition, /UnknownBuiltInAdapterError/u)
+    assert.doesNotMatch(composition, /createBuiltInAdapter\(/u)
+    assert.doesNotMatch(composition, /createBuiltinAdapterRegistry/u)
 
     const cli = await readFile(resolve('src', 'cli.ts'), 'utf8')
     assert.doesNotMatch(cli, /\[['"]pi['"],\s*['"]cursor['"],\s*['"]codex['"]\]/u)
@@ -151,16 +152,18 @@ describe('architecture boundaries', () => {
     assert.match(security, /Strong isolation remains the host's responsibility/u)
   })
 
-  it('keeps publication behind explicit owner approval', async () => {
+  it('keeps publication behind explicit owner approval after the MIT license decision', async () => {
     const packageJson = JSON.parse(await readFile(resolve('package.json'), 'utf8'))
     assert.equal(packageJson.private, true)
     assert.equal(packageJson.packageManager, 'npm@11.16.0')
-    assert.equal(packageJson.license, undefined)
+    assert.equal(packageJson.license, 'MIT')
+
+    const license = await readFile(resolve('LICENSE'), 'utf8')
+    assert.match(license, /MIT License/u)
 
     const readme = await readFile(resolve('README.md'), 'utf8')
-    assert.match(readme, /Apache-2\.0 is the recommended default/u)
-    assert.match(readme, /product\/legal decision/u)
-    assert.match(readme, /Only then remove `private` and publish/u)
+    assert.match(readme, /licensed under MIT/u)
+    assert.match(readme, /Only remove `private` and publish/u)
     assert.match(readme, /explicit owner approval/u)
   })
 })

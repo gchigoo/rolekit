@@ -1,0 +1,23 @@
+schema: rolekit/task-packet@1
+taskId: example-review-change
+roleId: reviewer
+objective: Review the requested repository change without modifying the workspace.
+input:
+  request: Review the bounded feature implementation for correctness and test coverage.
+context:
+  - id: readme
+    type: file
+    value: README.md
+constraints:
+  - Do not modify files.
+  - Report concrete findings only.
+acceptanceCriteria:
+  - Findings identify correctness, safety, or test-coverage issues when present.
+  - The review result is a structured list of findings.
+allowedPaths:
+  - README.md
+  - src/**
+  - test/**
+expectedArtifacts:
+  - name: review-findings
+    kind: text

@@ -469,7 +469,7 @@ export interface RunResultV1<TOutput = unknown> {
   readonly createdAt: string
 }
 
-export type RunResult<TOutput = unknown> = RunResultV1<TOutput>
+export type RunResult<TOutput = unknown> = RunResultV2<TOutput>
 
 interface RunResultExecutorV2Base {
   readonly id: string
@@ -536,7 +536,7 @@ export type RunResultV2<TOutput = unknown> = RunResultV2Base &
 
 export type LatestRunResult<TOutput = unknown> = RunResultV2<TOutput>
 
-export type AnyRunResult<TOutput = unknown> = RunResultV1<TOutput> | RunResultV2<TOutput>
+export type AnyRunResult<TOutput = unknown> = RunResultV2<TOutput>
 
 export interface ExecutionContext<TOptions = unknown> {
   readonly runId: string

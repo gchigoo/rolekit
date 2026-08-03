@@ -29,7 +29,7 @@ Each probe returns a frozen `ExecutorProbe` with normalized `executorVersion` an
 
 ## No silent fallback
 
-RoleKit never substitutes another executor, model, provider, profile, capability set, permission mode, or executable after a failed compatibility check. The Cursor adapter uses the official `agent` executable by default. The legacy `cursor-agent` command remains available only when the caller configures that exact command and produces a deprecation diagnostic; it is never discovered or selected automatically.
+RoleKit never substitutes another executor, model, provider, profile, capability set, permission mode, or executable after a failed compatibility check. The Cursor adapter uses the official `agent` executable by default and does not discover or special-case the retired `cursor-agent` entry point.
 
 Custom command paths are explicit caller choices. They must pass the same production version and feature probes as the official command and do not create a second compatibility oracle.
 
@@ -50,9 +50,9 @@ A breaking change includes removing or changing a required field, changing final
 
 Before npm 1.0, public adapter API breaks require a package minor version and an explicit migration note. After npm 1.0, they require a package major version.
 
-## Deprecation
+## Deprecation before public use
 
-Non-security deprecations remain documented for at least one package minor release and 90 days, whichever is longer, before removal. A deprecation warning must identify the explicit replacement and must not trigger an automatic fallback. Safety or credential-exposure defects may be disabled immediately; the release notes must explain the compatibility impact.
+The package is still private and has not entered public compatibility support. Deprecated pre-release entries are removed instead of being carried as shims. After a public release, any non-security deprecation policy must be documented with the release process; safety or credential-exposure defects may still be disabled immediately with a clear release note.
 
 ## CI policy
 

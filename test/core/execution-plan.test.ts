@@ -676,20 +676,20 @@ describe('versioned RunResult schemas', () => {
     )
   })
 
-  it('still validates stored RunResult v1 documents without repointing compatibility aliases', () => {
+  it('keeps explicit RunResult v1 validation while default aliases point at v2', () => {
     assert.equal(validateValue(RunResultV1Schema as JsonSchema, legacyRunResult).valid, true)
-    assert.equal(validateValue(RunResultSchema as JsonSchema, legacyRunResult).valid, true)
-    assert.equal(RunResultSchema, RunResultV1Schema)
+    assert.equal(validateValue(RunResultSchema as JsonSchema, legacyRunResult).valid, false)
+    assert.equal(RunResultSchema, RunResultV2Schema)
     assert.equal(validateValue(RunResultV2Schema as JsonSchema, legacyRunResult).valid, false)
   })
 
-  it('exports explicit latest and any-version schemas', async () => {
+  it('exports explicit latest and current result schemas', async () => {
     const resolved = await createExecutionPlan(planInput())
     const latest = await finalizeExecution(resolved, completedReceipt(resolved))
     assert.equal(LatestRunResultSchema, RunResultV2Schema)
     assert.equal(validateValue(LatestRunResultSchema as JsonSchema, latest).valid, true)
     assert.equal(validateValue(AnyRunResultSchema as JsonSchema, latest).valid, true)
-    assert.equal(validateValue(AnyRunResultSchema as JsonSchema, legacyRunResult).valid, true)
+    assert.equal(validateValue(AnyRunResultSchema as JsonSchema, legacyRunResult).valid, false)
 
     const artifactWithoutContent = structuredClone(latest)
     if (artifactWithoutContent.artifacts[0] !== undefined) {

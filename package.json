@@ -2,6 +2,7 @@
   "name": "@gchigoo/rolekit",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "packageManager": "npm@11.16.0",
   "description": "Portable role and task contracts for invoking coding agents across hosts.",
   "type": "module",
@@ -17,6 +18,7 @@
     "schemas",
     "docs",
     "examples",
+    "LICENSE",
     "README.md",
     "README.zh-CN.md"
   ],

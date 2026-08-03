@@ -7,8 +7,6 @@ import {
 import { createExecutorPayloadSchema } from '../../core/schemas.ts'
 import type { RoleSpec, TaskPacket } from '../../core/types.ts'
 
-export type ExecutionPromptContract = ExecutionContract
-
 export interface MarkdownExecutionPromptOptions {
   readonly includeFinalResponseSchema: boolean
 }
@@ -36,11 +34,7 @@ export function stringifyPromptJson(value: unknown): string {
   return escapeJsonForPrompt(serialized)
 }
 
-/** Compatibility alias for the pre-core contract factory name. */
-export function createExecutionPromptContract(
-  role: RoleSpec,
-  task: TaskPacket,
-): ExecutionPromptContract {
+function createPromptContract(role: RoleSpec, task: TaskPacket): ExecutionContract {
   return createExecutionContract(
     role as unknown as SnapshotRoleSpec,
     task as unknown as SnapshotTaskPacket,
@@ -52,7 +46,7 @@ function block(title: string, value: unknown): string {
 }
 
 export function renderMarkdownExecutionPrompt(
-  contract: ExecutionPromptContract,
+  contract: ExecutionContract,
   options: MarkdownExecutionPromptOptions,
 ): string {
   const sections = [
@@ -79,7 +73,7 @@ export function renderMarkdownExecutionPrompt(
 }
 
 export function buildNeutralExecutionPrompt(role: RoleSpec, task: TaskPacket): string {
-  return renderMarkdownExecutionPrompt(createExecutionPromptContract(role, task), {
+  return renderMarkdownExecutionPrompt(createPromptContract(role, task), {
     includeFinalResponseSchema: true,
   })
 }

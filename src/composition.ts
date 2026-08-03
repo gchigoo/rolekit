@@ -52,35 +52,6 @@ export function createBuiltInAdapterRegistry(): AdapterRegistry {
   return createAdapterRegistry(BUILT_IN_ADAPTER_REGISTRATIONS)
 }
 
-export class UnknownBuiltInAdapterError extends Error {
-  readonly executorId: string
-
-  constructor(executorId: string) {
-    super(`Unknown built-in executor "${executorId}".`)
-    this.name = 'UnknownBuiltInAdapterError'
-    this.executorId = executorId
-  }
-}
-
-/** @internal Legacy CLI compatibility without implicit discovery or package scanning. */
-export function createBuiltInAdapter(id: string) {
-  switch (id) {
-    case 'pi':
-      return new PiCliAdapter()
-    case 'pi-rpc':
-      return new PiRpcAdapter()
-    case 'cursor':
-      return new CursorCliAdapter()
-    case 'codex':
-      return new CodexCliAdapter()
-    default:
-      throw new UnknownBuiltInAdapterError(id)
-  }
-}
-
-/** @deprecated Use createBuiltInAdapterRegistry(). */
-export const createBuiltinAdapterRegistry = createBuiltInAdapterRegistry
-
 export interface ConfiguredRunInput {
   readonly configPath: string
   readonly roleId: string

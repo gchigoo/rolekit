@@ -42,7 +42,7 @@ const schemaSubpaths = [
   './schemas/run-result.v2',
   './schemas/run-result.latest',
 ] as const
-const legacySchemaFiles = [
+const schemaAliasFiles = [
   'role-spec.schema.json',
   'task-packet.schema.json',
   'executor-descriptor.schema.json',
@@ -219,7 +219,7 @@ if (failures.length > 0) {
     ['role-spec.schema.json', 'role-spec.v1.schema.json'],
     ['task-packet.schema.json', 'task-packet.v1.schema.json'],
     ['executor-descriptor.schema.json', 'executor-descriptor.v2.schema.json'],
-    ['run-result.schema.json', 'run-result.v1.schema.json'],
+    ['run-result.schema.json', 'run-result.v2.schema.json'],
     ['run-result.latest.schema.json', 'run-result.v2.schema.json'],
   ] as const) {
     assert.deepEqual(
@@ -246,6 +246,7 @@ if (failures.length > 0) {
   const packedPaths = new Set(packResult.files.map((file) => file.path))
   for (const requiredPath of [
     'package.json',
+    'LICENSE',
     'bin/rolekit.js',
     'dist/index.js',
     'dist/index.d.ts',
@@ -257,7 +258,7 @@ if (failures.length > 0) {
     'dist/adapters/cursor/index.js',
     'dist/adapters/codex/index.js',
     'dist/testing/index.js',
-    ...legacySchemaFiles.map((name) => `schemas/${name}`),
+    ...schemaAliasFiles.map((name) => `schemas/${name}`),
     ...versionedSchemaFiles.map((name) => `schemas/${name}`),
   ]) {
     assert.ok(packedPaths.has(requiredPath), `tarball is missing ${requiredPath}`)

@@ -12,6 +12,7 @@ const projectPaths = [
   'src',
   'README.md',
   'README.zh-CN.md',
+  'LICENSE',
   'package-lock.json',
   'package.json',
   'tsconfig.build.json',

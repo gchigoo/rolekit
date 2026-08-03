@@ -67,12 +67,12 @@ describe('stable public package exports', () => {
     })
   }
 
-  it('keeps every historical schema alias on its established version', async () => {
+  it('keeps every unversioned schema alias on the current active version', async () => {
     for (const [alias, versioned] of [
       ['role-spec.schema.json', 'role-spec.v1.schema.json'],
       ['task-packet.schema.json', 'task-packet.v1.schema.json'],
       ['executor-descriptor.schema.json', 'executor-descriptor.v2.schema.json'],
-      ['run-result.schema.json', 'run-result.v1.schema.json'],
+      ['run-result.schema.json', 'run-result.v2.schema.json'],
       ['run-result.latest.schema.json', 'run-result.v2.schema.json'],
     ] as const) {
       assert.deepEqual(await loadRepositorySchema(alias), await loadRepositorySchema(versioned))

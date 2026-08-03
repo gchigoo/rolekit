@@ -2207,28 +2207,28 @@ describe('CLI adapters', () => {
     assert.ok(capture.args.includes('--approve-mcps'))
   })
 
-  it('returns a deprecation diagnostic only for an explicitly configured legacy Cursor binary', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'rolekit-legacy-cursor-'))
+  it('does not special-case retired Cursor command names when explicitly configured', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'rolekit-retired-cursor-'))
     const originalPath = process.env.PATH
     try {
-      const generatedCommand = await createFixtureExecutable(directory, 'legacy-cursor')
-      const legacyCommand = join(
+      const generatedCommand = await createFixtureExecutable(directory, 'retired-cursor')
+      const retiredCommand = join(
         directory,
         process.platform === 'win32' ? 'cursor-agent.cmd' : 'cursor-agent',
       )
-      await rename(generatedCommand, legacyCommand)
+      await rename(generatedCommand, retiredCommand)
       process.env.PATH = `${directory}${delimiter}${originalPath ?? ''}`
 
       const adapter = new CursorCliAdapter()
-      const ordinaryPrepared = adapter.prepareOptions({ command: legacyCommand })
+      const ordinaryPrepared = adapter.prepareOptions({ command: retiredCommand })
       const ordinaryProbe = await adapter.probe(ordinaryPrepared, { cwd: directory })
       assert.equal(ordinaryProbe.available, true)
       assert.equal(ordinaryProbe.diagnostic, undefined)
 
-      const legacyPrepared = adapter.prepareOptions({ command: 'cursor-agent' })
-      const legacyProbe = await adapter.probe(legacyPrepared, { cwd: directory })
-      assert.equal(legacyProbe.available, true, legacyProbe.diagnostic)
-      assert.match(legacyProbe.diagnostic ?? '', /deprecated/u)
+      const retiredNamePrepared = adapter.prepareOptions({ command: 'cursor-agent' })
+      const retiredNameProbe = await adapter.probe(retiredNamePrepared, { cwd: directory })
+      assert.equal(retiredNameProbe.available, true, retiredNameProbe.diagnostic)
+      assert.equal(retiredNameProbe.diagnostic, undefined)
     } finally {
       if (originalPath === undefined) {
         delete process.env.PATH

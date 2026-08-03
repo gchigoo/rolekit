@@ -197,16 +197,6 @@ export class CursorCliAdapter extends CliAdapterBase<CursorCliAdapterOptions> {
     ]
   }
 
-  protected override compatibilityFeatureChecks(
-    prepared: PreparedExecutorOptions<CursorCliAdapterOptions>,
-  ): Readonly<Record<string, boolean>> {
-    const command = prepared.executionOptions.command
-    return {
-      'executable:official-agent': command !== 'cursor-agent',
-      'executable:legacy-cursor-agent': command === 'cursor-agent',
-    }
-  }
-
   override admit(
     role: RoleSpec,
     task: TaskPacket,
@@ -299,14 +289,6 @@ export class CursorCliAdapter extends CliAdapterBase<CursorCliAdapterOptions> {
       force: writeMode,
       pathEnforcement: 'advisory',
     }
-  }
-
-  protected override availableProbeDiagnostic(
-    options: Readonly<CursorCliAdapterOptions>,
-  ): string | undefined {
-    return options.command === 'cursor-agent'
-      ? 'The legacy "cursor-agent" executable is deprecated; use the official "agent" command.'
-      : undefined
   }
 
   protected async executeCli(

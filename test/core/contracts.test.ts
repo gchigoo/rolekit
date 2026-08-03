@@ -151,7 +151,7 @@ function hostileReflectionProxy(): unknown {
 }
 
 describe('published and strict contracts', () => {
-  it('keeps the published role, task, and RunResult v1 schema structures unchanged', () => {
+  it('keeps published role/task schemas, explicit RunResult v1, and current RunResult aliases stable', () => {
     assert.deepEqual(JSON.parse(JSON.stringify(core.RoleSpecSchema)), legacyRoleSpecV1SchemaFixture)
     assert.deepEqual(
       JSON.parse(JSON.stringify(core.TaskPacketSchema)),
@@ -161,10 +161,11 @@ describe('published and strict contracts', () => {
       JSON.parse(JSON.stringify(core.RunResultV1Schema)),
       legacyRunResultV1SchemaFixture,
     )
-    assert.equal(core.RunResultSchema, core.RunResultV1Schema)
+    assert.equal(core.RunResultSchema, core.RunResultV2Schema)
+    assert.equal(core.LatestRunResultSchema, core.RunResultV2Schema)
   })
 
-  it('freezes descriptor V1 documents and exports discriminator-bearing V2 artifacts', () => {
+  it('rejects descriptor V1 documents through the active discriminator-bearing V2 schema', () => {
     assert.deepEqual(
       JSON.parse(JSON.stringify(core.ExecutorDescriptorV1Schema)),
       legacyExecutorDescriptorV1SchemaFixture,

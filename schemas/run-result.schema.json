@@ -1,263 +1,1259 @@
 {
-  "additionalProperties": false,
-  "$id": "https://rolekit.dev/schemas/run-result.v1.json",
-  "type": "object",
-  "required": [
-    "schema",
-    "runId",
-    "taskId",
-    "roleId",
-    "status",
-    "executor",
-    "summary",
-    "artifacts",
-    "evidence",
-    "usage",
-    "createdAt"
-  ],
-  "properties": {
-    "schema": {
-      "const": "rolekit/run-result@1",
-      "type": "string"
-    },
-    "runId": {
-      "minLength": 1,
-      "type": "string"
-    },
-    "taskId": {
-      "minLength": 1,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-      "type": "string"
-    },
-    "roleId": {
-      "minLength": 1,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-      "type": "string"
-    },
-    "status": {
-      "anyOf": [
-        {
-          "const": "completed",
-          "type": "string"
-        },
-        {
-          "const": "failed",
-          "type": "string"
-        },
-        {
-          "const": "blocked",
-          "type": "string"
-        },
-        {
-          "const": "cancelled",
-          "type": "string"
-        }
-      ]
-    },
-    "executor": {
+  "$id": "https://rolekit.dev/schemas/run-result.v2.json",
+  "anyOf": [
+    {
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "id",
-        "transport"
+        "schema",
+        "runId",
+        "taskId",
+        "roleId",
+        "execution",
+        "policy",
+        "executor",
+        "summary",
+        "artifacts",
+        "evidence",
+        "usage",
+        "startedAt",
+        "completedAt",
+        "status",
+        "output"
       ],
       "properties": {
-        "id": {
+        "schema": {
+          "const": "rolekit/run-result@2",
+          "type": "string"
+        },
+        "runId": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "taskId": {
           "minLength": 1,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
           "type": "string"
         },
-        "transport": {
+        "roleId": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "execution": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "planDigest",
+            "contentDigest",
+            "roleDigest",
+            "taskDigest",
+            "contractDigest",
+            "optionsDigest"
+          ],
+          "properties": {
+            "planDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "contentDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "roleDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "taskDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "contractDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "optionsDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "admission",
+            "requiredCapabilities",
+            "allowedPaths",
+            "pathEnforcement",
+            "contextIsolation"
+          ],
+          "properties": {
+            "admission": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": true,
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed",
+                    "error"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": false,
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message",
+                        "retryable"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                          "type": "string"
+                        },
+                        "message": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "retryable": {
+                          "type": "boolean"
+                        },
+                        "details": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^(.*)$": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "requiredCapabilities": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "const": "repository.read",
+                    "type": "string"
+                  },
+                  {
+                    "const": "repository.write",
+                    "type": "string"
+                  },
+                  {
+                    "const": "shell",
+                    "type": "string"
+                  },
+                  {
+                    "const": "web",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vision",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "allowedPaths": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "pathEnforcement": {
+              "anyOf": [
+                {
+                  "const": "advisory",
+                  "type": "string"
+                },
+                {
+                  "const": "adapter",
+                  "type": "string"
+                },
+                {
+                  "const": "host",
+                  "type": "string"
+                }
+              ]
+            },
+            "contextIsolation": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "userConfig",
+                "projectInstructions",
+                "projectResources",
+                "environment",
+                "credentials"
+              ],
+              "properties": {
+                "userConfig": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectInstructions": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectResources": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "environment": {
+                  "anyOf": [
+                    {
+                      "const": "minimal",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "credentials": {
+                  "anyOf": [
+                    {
+                      "const": "explicit",
+                      "type": "string"
+                    },
+                    {
+                      "const": "user-store",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "executor": {
           "anyOf": [
             {
-              "const": "cli",
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "capabilitySource",
+                "adapterProtocol",
+                "adapterVersion",
+                "id",
+                "transport"
+              ],
+              "properties": {
+                "capabilitySource": {
+                  "const": "adapter-verified",
+                  "type": "string"
+                },
+                "adapterProtocol": {
+                  "const": "rolekit/executor-adapter@1",
+                  "type": "string"
+                },
+                "adapterVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "executorVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "capabilitySource",
+                "id",
+                "transport"
+              ],
+              "properties": {
+                "capabilitySource": {
+                  "const": "host-attested",
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "executorVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "summary": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "name",
+              "kind",
+              "provenance"
+            ],
+            "properties": {
+              "name": {
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                "type": "string"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "uri": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "content": {},
+              "mediaType": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "patternProperties": {
+                  "^(.*)$": {}
+                }
+              },
+              "provenance": {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "runId",
+                  "executorId",
+                  "planDigest"
+                ],
+                "properties": {
+                  "runId": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "executorId": {
+                    "minLength": 1,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                    "type": "string"
+                  },
+                  "planDigest": {
+                    "pattern": "^sha256:[a-f0-9]{64}$",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "content"
+                ]
+              },
+              {
+                "required": [
+                  "uri"
+                ]
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "kind",
+              "value"
+            ],
+            "properties": {
+              "kind": {
+                "anyOf": [
+                  {
+                    "const": "command",
+                    "type": "string"
+                  },
+                  {
+                    "const": "file",
+                    "type": "string"
+                  },
+                  {
+                    "const": "url",
+                    "type": "string"
+                  },
+                  {
+                    "const": "note",
+                    "type": "string"
+                  }
+                ]
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "description": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "usage": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "inputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "outputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "totalTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "cachedInputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "durationMs": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "costUsd": {
+              "minimum": 0,
+              "type": "number"
+            }
+          }
+        },
+        "startedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "completedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "const": "completed",
+          "type": "string"
+        },
+        "output": {}
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "runId",
+        "taskId",
+        "roleId",
+        "execution",
+        "policy",
+        "executor",
+        "summary",
+        "artifacts",
+        "evidence",
+        "usage",
+        "startedAt",
+        "completedAt",
+        "status",
+        "error"
+      ],
+      "properties": {
+        "schema": {
+          "const": "rolekit/run-result@2",
+          "type": "string"
+        },
+        "runId": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "taskId": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "roleId": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "type": "string"
+        },
+        "execution": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "planDigest",
+            "contentDigest",
+            "roleDigest",
+            "taskDigest",
+            "contractDigest",
+            "optionsDigest"
+          ],
+          "properties": {
+            "planDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "contentDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "roleDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "taskDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "contractDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "optionsDigest": {
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "admission",
+            "requiredCapabilities",
+            "allowedPaths",
+            "pathEnforcement",
+            "contextIsolation"
+          ],
+          "properties": {
+            "admission": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": true,
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "allowed",
+                    "error"
+                  ],
+                  "properties": {
+                    "allowed": {
+                      "const": false,
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "additionalProperties": false,
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "message",
+                        "retryable"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                          "type": "string"
+                        },
+                        "message": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "retryable": {
+                          "type": "boolean"
+                        },
+                        "details": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^(.*)$": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "requiredCapabilities": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "const": "repository.read",
+                    "type": "string"
+                  },
+                  {
+                    "const": "repository.write",
+                    "type": "string"
+                  },
+                  {
+                    "const": "shell",
+                    "type": "string"
+                  },
+                  {
+                    "const": "web",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vision",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            "allowedPaths": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "pathEnforcement": {
+              "anyOf": [
+                {
+                  "const": "advisory",
+                  "type": "string"
+                },
+                {
+                  "const": "adapter",
+                  "type": "string"
+                },
+                {
+                  "const": "host",
+                  "type": "string"
+                }
+              ]
+            },
+            "contextIsolation": {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "userConfig",
+                "projectInstructions",
+                "projectResources",
+                "environment",
+                "credentials"
+              ],
+              "properties": {
+                "userConfig": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectInstructions": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "projectResources": {
+                  "anyOf": [
+                    {
+                      "const": "isolated",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "environment": {
+                  "anyOf": [
+                    {
+                      "const": "minimal",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "credentials": {
+                  "anyOf": [
+                    {
+                      "const": "explicit",
+                      "type": "string"
+                    },
+                    {
+                      "const": "user-store",
+                      "type": "string"
+                    },
+                    {
+                      "const": "inherited",
+                      "type": "string"
+                    },
+                    {
+                      "const": "unknown",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "executor": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "capabilitySource",
+                "adapterProtocol",
+                "adapterVersion",
+                "id",
+                "transport"
+              ],
+              "properties": {
+                "capabilitySource": {
+                  "const": "adapter-verified",
+                  "type": "string"
+                },
+                "adapterProtocol": {
+                  "const": "rolekit/executor-adapter@1",
+                  "type": "string"
+                },
+                "adapterVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "executorVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "capabilitySource",
+                "id",
+                "transport"
+              ],
+              "properties": {
+                "capabilitySource": {
+                  "const": "host-attested",
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "transport": {
+                  "anyOf": [
+                    {
+                      "const": "cli",
+                      "type": "string"
+                    },
+                    {
+                      "const": "in-process",
+                      "type": "string"
+                    },
+                    {
+                      "const": "remote",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "executorVersion": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requestedModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualProvider": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "actualModel": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "profileId": {
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                  "type": "string"
+                },
+                "profileDigest": {
+                  "pattern": "^sha256:[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "summary": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "name",
+              "kind",
+              "provenance"
+            ],
+            "properties": {
+              "name": {
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                "type": "string"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "uri": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "content": {},
+              "mediaType": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "patternProperties": {
+                  "^(.*)$": {}
+                }
+              },
+              "provenance": {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "runId",
+                  "executorId",
+                  "planDigest"
+                ],
+                "properties": {
+                  "runId": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "executorId": {
+                    "minLength": 1,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+                    "type": "string"
+                  },
+                  "planDigest": {
+                    "pattern": "^sha256:[a-f0-9]{64}$",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "content"
+                ]
+              },
+              {
+                "required": [
+                  "uri"
+                ]
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+              "kind",
+              "value"
+            ],
+            "properties": {
+              "kind": {
+                "anyOf": [
+                  {
+                    "const": "command",
+                    "type": "string"
+                  },
+                  {
+                    "const": "file",
+                    "type": "string"
+                  },
+                  {
+                    "const": "url",
+                    "type": "string"
+                  },
+                  {
+                    "const": "note",
+                    "type": "string"
+                  }
+                ]
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "description": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "usage": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "inputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "outputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "totalTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "cachedInputTokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "durationMs": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "costUsd": {
+              "minimum": 0,
+              "type": "number"
+            }
+          }
+        },
+        "startedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "completedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "const": "failed",
               "type": "string"
             },
             {
-              "const": "in-process",
+              "const": "blocked",
               "type": "string"
             },
             {
-              "const": "remote",
+              "const": "cancelled",
               "type": "string"
             }
           ]
         },
-        "model": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "version": {
-          "minLength": 1,
-          "type": "string"
-        }
-      }
-    },
-    "summary": {
-      "minLength": 1,
-      "type": "string"
-    },
-    "output": {},
-    "artifacts": {
-      "type": "array",
-      "items": {
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "name",
-          "kind",
-          "provenance"
-        ],
-        "properties": {
-          "name": {
-            "minLength": 1,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-            "type": "string"
-          },
-          "kind": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "uri": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "content": {},
-          "mediaType": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "metadata": {
-            "type": "object",
-            "patternProperties": {
-              "^(.*)$": {}
-            }
-          },
-          "provenance": {
-            "additionalProperties": false,
-            "type": "object",
-            "required": [
-              "runId",
-              "executorId"
-            ],
-            "properties": {
-              "runId": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "executorId": {
-                "minLength": 1,
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
-    "evidence": {
-      "type": "array",
-      "items": {
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "kind",
-          "value"
-        ],
-        "properties": {
-          "kind": {
-            "anyOf": [
-              {
-                "const": "command",
-                "type": "string"
-              },
-              {
-                "const": "file",
-                "type": "string"
-              },
-              {
-                "const": "url",
-                "type": "string"
-              },
-              {
-                "const": "note",
-                "type": "string"
-              }
-            ]
-          },
-          "value": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "description": {
-            "minLength": 1,
-            "type": "string"
-          }
-        }
-      }
-    },
-    "usage": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "inputTokens": {
-          "minimum": 0,
-          "type": "number"
-        },
-        "outputTokens": {
-          "minimum": 0,
-          "type": "number"
-        },
-        "totalTokens": {
-          "minimum": 0,
-          "type": "number"
-        },
-        "cachedInputTokens": {
-          "minimum": 0,
-          "type": "number"
-        },
-        "durationMs": {
-          "minimum": 0,
-          "type": "number"
-        },
-        "costUsd": {
-          "minimum": 0,
-          "type": "number"
-        }
-      }
-    },
-    "error": {
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "code",
-        "message",
-        "retryable"
-      ],
-      "properties": {
-        "code": {
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-          "type": "string"
-        },
-        "message": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "retryable": {
-          "type": "boolean"
-        },
-        "details": {
+        "error": {
+          "additionalProperties": false,
           "type": "object",
-          "patternProperties": {
-            "^(.*)$": {}
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+              "type": "string"
+            },
+            "message": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object",
+              "patternProperties": {
+                "^(.*)$": {}
+              }
+            }
           }
         }
       }
-    },
-    "createdAt": {
-      "format": "date-time",
-      "type": "string"
     }
-  }
+  ]
 }

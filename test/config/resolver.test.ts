@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path'
 import { describe, it } from 'node:test'
 import { prepareExecutorOptions } from '../../src/adapters/cli/index.ts'
 import type { PiRpcAdapterOptions } from '../../src/adapters/pi-rpc/index.ts'
-import { createBuiltInAdapterRegistry as createBuiltinAdapterRegistry } from '../../src/composition.ts'
+import { createBuiltInAdapterRegistry } from '../../src/composition.ts'
 import {
   type AdapterExecutorProfileConfig,
   compileRoleBinding,
@@ -535,7 +535,7 @@ describe('role binding compilation and runtime resolution', () => {
         compileRoleBinding(
           await loadRolekitConfig(configPath),
           'reviewer',
-          createBuiltinAdapterRegistry(),
+          createBuiltInAdapterRegistry(),
         ),
         /rolekit\.yaml.*\/executors\/codex-reviewer\/options\/provider/u,
       )
@@ -568,7 +568,7 @@ describe('role binding compilation and runtime resolution', () => {
           compileRoleBinding(
             await loadRolekitConfig(configPath),
             'reviewer',
-            createBuiltinAdapterRegistry(),
+            createBuiltInAdapterRegistry(),
           ),
           new RegExp(`/executors/selected/options/${unsafeCase.field}`, 'u'),
         )
@@ -901,7 +901,7 @@ describe('role binding compilation and runtime resolution', () => {
       const compiled = await compileRoleBinding(
         await loadRolekitConfig(configPath),
         'implementer',
-        createBuiltinAdapterRegistry(),
+        createBuiltInAdapterRegistry(),
       )
       const canonicalProfilesDirectory = await realpath(profilesDirectory)
       const normalizedExtensionPath = join(canonicalProfilesDirectory, 'extension.ts')
@@ -932,7 +932,7 @@ describe('role binding compilation and runtime resolution', () => {
 
   it('compiles every profile in the checked-in example without environment values', async () => {
     const loaded = await loadRolekitConfig(resolve('examples/rolekit.yaml'))
-    const registry = createBuiltinAdapterRegistry()
+    const registry = createBuiltInAdapterRegistry()
     const implementer = await compileRoleBinding(loaded, 'implementer', registry)
     const reviewer = await compileRoleBinding(loaded, 'reviewer', registry)
     const piOneShotImplementer = await compileRoleBinding(
@@ -964,7 +964,7 @@ describe('role binding compilation and runtime resolution', () => {
 
   it('returns built-in Pi RPC runtime options with resolved secrets and public markers', async () => {
     const loaded = await loadRolekitConfig(resolve('examples/rolekit.yaml'))
-    const registry = createBuiltinAdapterRegistry()
+    const registry = createBuiltInAdapterRegistry()
     const compiled = await compileRoleBinding(loaded, 'implementer', registry)
     const runtime = await resolveRunBinding(compiled, registry, {
       XAI_API_KEY: 'example-runtime-secret',
@@ -1525,7 +1525,7 @@ describe('role binding compilation and runtime resolution', () => {
         expectedArtifacts: [],
       }
       const loaded = await loadRolekitConfig(configPath)
-      const registry = createBuiltinAdapterRegistry()
+      const registry = createBuiltInAdapterRegistry()
       const denied = await compileRoleBinding(loaded, 'implementer', registry)
       const deniedTarget = compileTaskExecutionTarget(denied, task)
       assert.equal(deniedTarget.admission.allowed, false)

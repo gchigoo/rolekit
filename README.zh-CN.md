@@ -44,7 +44,7 @@ npm.cmd install
 npm.cmd run check
 ```
 
-在许可证与发布动作被明确批准前，package 保持 `private`。
+Package 已采用 MIT license；在发布动作被明确批准前仍保持 `private`。
 
 ## CLI
 
@@ -56,7 +56,7 @@ node .\bin\rolekit.js config validate --config .\examples\rolekit.yaml
 node .\bin\rolekit.js compile `
   --config .\examples\rolekit.yaml `
   --role reviewer `
-  --task .\examples\tasks\implement-feature.yaml `
+  --task .\examples\tasks\review-change.yaml `
   --executor host-reviewer `
   --json
 node .\bin\rolekit.js run `
@@ -68,8 +68,7 @@ node .\bin\rolekit.js finalize --plan .\resolved-plan.json --receipt .\execution
 node .\bin\rolekit.js executors list --config .\examples\rolekit.yaml --json
 node .\bin\rolekit.js executors describe `
   --config .\examples\rolekit.yaml `
-  --executor pi-implementer `
-  --probe `
+  --executor pi-rpc-implementer `
   --json
 ```
 
@@ -92,15 +91,14 @@ version/help 检查，不进行认证。
 plan 或 result。退出码统一为：`0` 成功，`1` 执行/finalize 失败，`2` 用法错误，`3` config/contract
 无效，`4` blocked 或需要 host 执行，`130` SIGINT，`143` SIGTERM；退出码不会改变 envelope 结构。
 
-旧的 `run --role <file> --executor ... --options ...` 形式保留一个弃用周期。只有缺少 `--config` 时才会
-识别为旧模式；文本模式在 stderr 输出警告，JSON 模式只在 envelope 的 `warnings` 数组中输出
-`legacy_run_deprecated`。
+CLI 只接受配置驱动的 `run --config <file> --role <role-id> --task <file>` 形式。旧的
+`run --role <file> --executor ... --options ...` 入口已经移除。
 
 Cursor adapter 使用当前官方的 `agent` 可执行文件，并默认启用 `--sandbox enabled`；`--trust`
 只用于无头模式下的 workspace trust，不代表文件系统 allowlist。只读任务进入 plan mode，拥有
 `repository.write` 的任务进入 forced mode。若任务要求 `shell` 但不要求 `repository.write`，
 adapter 会在 probe 之前返回 `unsupported_permission_combination`，因为 Cursor 无法可靠保证该权限
-组合。旧的 `cursor-agent` 只有在显式配置 `command` 时才会使用，并返回弃用诊断；不会自动回退。
+组合。adapter 不会发现或特殊处理已退役的 `cursor-agent` 入口；自定义 command 会被视为调用方显式提供的可执行文件，并且必须通过与 `agent` 相同的 probe。
 
 Pi 默认禁用 session、context files、extension/skill/prompt-template discovery，并使用临时空的用户
 Agent 目录、受控 system prompt 和按本次准入能力派生的显式工具 allowlist；Pi 不提供独立 approval flag。可以配置精确的
@@ -109,7 +107,7 @@ extension、skill、prompt-template 路径而不打开 discovery；`discoverProj
 `bash` 工具能够写文件，因此在没有 fixture 证明写隔离前不会声称支持该权限组合。Grok 4.5 prompt
 profile 仍完全位于 adapter 内，显式 thinking 使用类型化的 `thinking` 字段。
 
-Codex 默认添加 `--ignore-user-config`、`--ignore-rules`，并计划设置
+Codex 默认添加 `--ignore-user-config`、`--ignore-rules`，并传入
 `project_doc_max_bytes=0`。其中 `--ignore-rules` 隔离的是 execpolicy rules，不是 `AGENTS.md`；项目
 instructions 由独立选项控制。静态 inspect 会把项目 instructions 标为 `unknown`；只有精确类型化控制通过
 有界 differential parser canary 后，runtime admission 才会升级为 `isolated`。显式继承项目 instructions
@@ -118,22 +116,31 @@ instructions 由独立选项控制。静态 inspect 会把项目 instructions �
 `web_search="live"` 通过条件化类型 canary 后才保留该能力，否则阻止执行。在有 fixture 证明可以禁用项目级
 resources/MCP 之前，descriptor 会诚实地把 `projectResources` 标为 `unknown`。
 
-共享进程选项只包含 `command`、`timeoutMs`、`maxOutputBytes`、`environment`，以及显式不安全
-opt-in `inheritAmbientEnvironment`。安全模式绝不会从 `process.env` 复制 adapter 认证值或 config-home；
-凭据必须在敏感的 `environment` 选项中显式提供。公共快照用 marker 替代字面值，有效选项同时记录凭据
-来源集合和显式环境变量名。Pi 与 Cursor 在安全执行时使用临时隔离的用户 home，Codex 默认也使用临时
-隔离 home。Pi 的 `inheritUserAgentDirectory: true` 与 Codex 的 `inheritUserConfig: true` 会显式允许
-用户凭据存储，并报告 `credentials: 'user-store'`；`inheritAmbientEnvironment: true` 则报告
-`credentials: 'inherited'`。若同时启用用户存储并提供显式凭据 key，descriptor 会保守报告
-`credentials: 'unknown'`，有效公共选项仍保留两类来源。Codex behavior canary 始终使用单独分配的最小
-环境和全新的临时隔离 home/store；version/help 不会使用该路径，因此显式配置凭据、ambient
-credential/token 变量和继承的用户存储都不会进入 canary；version/help 写入其所选 home/store 的
-credential/config/cache 状态也无法通过 canary 的 home/store 路径读取。实际执行仍保持调用方选择的独立环境策略。
+adapter 选项有两个入口：
 
-Pi、Codex、Cursor 各自导出严格的类型化选项。未知字段、保留环境变量、`commandArgs`、`extraArgs`、
-任意 capabilities 声明和 raw config override 都会在 probe 之前被拒绝。Probe 会把 help 输出解析成
-精确 option token，并从准备后的实际执行参数计划推导必需 token，包括条件类型化选项。三个内置
-adapter 都只把任务 `allowedPaths` 声明为 advisory，不声称精确文件路径隔离。
+- **内置 config profile** 只暴露 `rolekit.yaml` 可接受的安全子集：共享进程选项是 `command`、
+  `timeoutMs`、`maxOutputBytes` 和敏感的 `environment`；Pi/Pi RPC 额外支持 provider/model/thinking、
+  工具 allowlist、精确 extension/skill/prompt-template 路径和 offline mode；Codex 额外支持 model、
+  reasoning effort 与 web search；Cursor 额外支持 model 和 sandbox mode。
+- **直接 adapter API** 暴露需要 host 明确承担风险的额外 opt-in，包括继承 ambient environment、用户
+  config 或 agent 目录、项目资源发现、Codex profile/project-instruction/exec-policy 继承，以及 Cursor
+  MCP approval。这些直接 API 专属选项会在内置 config profile 中被拒绝，且发生在任何 probe 或执行之前。
+
+安全模式绝不会从 `process.env` 复制 adapter 认证值或 config-home；凭据必须在敏感的 `environment`
+选项中显式提供。公共快照用 marker 替代字面值，有效选项同时记录凭据来源集合和显式环境变量名。Pi 与
+Cursor 在安全执行时使用临时隔离的用户 home，Codex 默认也使用临时隔离 home。直接 API 中的用户存储
+opt-in（例如 Pi 的 `inheritUserAgentDirectory: true` 与 Codex 的 `inheritUserConfig: true`）会报告
+`credentials: 'user-store'`；`inheritAmbientEnvironment: true` 则报告 `credentials: 'inherited'`。若
+同时启用用户存储并提供显式凭据 key，descriptor 会保守报告 `credentials: 'unknown'`，有效公共选项仍
+保留两类来源。Codex behavior canary 始终使用单独分配的最小环境和全新的临时隔离 home/store；version/help
+不会使用该路径，因此显式配置凭据、ambient credential/token 变量和继承的用户存储都不会进入 canary；
+version/help 写入其所选 home/store 的 credential/config/cache 状态也无法通过 canary 的 home/store 路径
+读取。实际执行仍保持调用方选择的独立环境策略。
+
+未知字段、保留环境变量、`commandArgs`、`extraArgs`、任意 capabilities 声明和 raw config override 都会
+在 probe 之前被拒绝。Probe 会把 help 输出解析成精确 option token，并从准备后的实际执行参数计划推导
+必需 token，包括条件类型化选项。三个内置 adapter 都只把任务 `allowedPaths` 声明为 advisory，不声称
+精确文件路径隔离。
 
 ## pre-1.0 adapter 协议迁移
 
@@ -179,8 +186,8 @@ conformance；`schemas/` 同时导出独立的 V1 与 V2 schema。
 
 代码入口固定为 `.`、`core`、`config`、`adapter-cli`、`pi`、`pi-rpc`、`cursor`、`codex` 和
 `testing`。版本化 JSON Schema 从 `schemas/role-spec.v1`、`schemas/task-packet.v1`、descriptor/config/
-execution-plan/receipt 以及 RunResult v1/v2 路径导出。历史文件 `run-result.schema.json` 继续指向 v1；
-显式的 `schemas/run-result.latest` 指向 v2，不会静默重定向历史兼容 alias。
+execution-plan/receipt 以及 RunResult v1/v2 路径导出。未版本化的 `run-result.schema.json` alias 现在指向当前
+RunResult v2 schema；显式的 `schemas/run-result.latest` 也指向 v2。
 
 ## 扩展 executor
 
@@ -189,15 +196,14 @@ adapter 而修改。
 
 ## 发布审批 gate
 
-Package 保持 `private: true`。发布前必须由 owner 完成全部步骤：
+Package 已采用 MIT license，但仍保持 `private: true`。发布前必须由 owner 完成全部步骤：
 
-1. 批准许可证。对可复用 adapter 生态，Apache-2.0 是推荐默认值，但最终选择属于产品/法律决策。
-2. 添加获批的 `LICENSE` 文件与 package `license` 字段。
-3. 运行 `npm run check`、`npm run test:package` 和真实 CLI smoke suite。
-4. 检查 `npm pack --dry-run --json`。
-5. 只有完成以上步骤后才能移除 `private` 并发布。
+1. 确认 MIT license 文本与 package metadata 仍适用于本次 release。
+2. 运行 `npm run check`、`npm run test:package` 和真实 CLI smoke suite。
+3. 检查 `npm pack --dry-run --json`。
+4. 只有获得 owner 明确批准后，才能移除 `private` 并发布。
 
-没有 owner 的明确批准，任何实现 agent 都不得选择许可证、移除 private gate 或发布。
+没有 owner 的明确批准，任何实现 agent 都不得移除 private gate 或发布。
 
 ## 边界文档
 

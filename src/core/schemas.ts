@@ -1050,8 +1050,6 @@ export const RunResultV1Schema = Type.Object(
   { additionalProperties: false, $id: 'https://rolekit.dev/schemas/run-result.v1.json' },
 )
 
-export const RunResultSchema = RunResultV1Schema
-
 const ArtifactRefV2TypeBoxSchema = {
   ...Type.Object(
     {
@@ -1164,14 +1162,11 @@ const RunResultV2TypeBoxSchema = Type.Union(
 
 export const RunResultV2Schema: JsonSchema = RunResultV2TypeBoxSchema
 
+export const RunResultSchema: JsonSchema = RunResultV2Schema
+
 export const LatestRunResultSchema: JsonSchema = RunResultV2Schema
 
-export const AnyRunResultSchema: JsonSchema = Type.Union(
-  [RunResultV1Schema, RunResultV2TypeBoxSchema],
-  {
-    $id: 'https://rolekit.dev/schemas/run-result.any.json',
-  },
-)
+export const AnyRunResultSchema: JsonSchema = RunResultV2Schema
 
 export function createExecutorPayloadSchema(outputSchema: JsonSchema): JsonSchema {
   const embeddedOutput = embedOutputSchemaResource(
